@@ -1,0 +1,9 @@
+[submodule "Irene/vendor/spdlog"]
+	path = Irene/vendor/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "Irene/vendor/GLFW"]
+	path = Irene/vendor/GLFW
+	url = https://github.com/luciennezzz/glfw
+[submodule "Irene/vendor/ImGui"]
+	path = Irene/vendor/ImGui
+	url = https://github.com/luciennezzz/imgui.git

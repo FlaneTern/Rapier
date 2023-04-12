@@ -31,17 +31,30 @@ namespace IRENE {
 
 	ImGuiLayer::~ImGuiLayer() {
 
-	}
+	} 
 
 	void ImGuiLayer::OnAttach() {
+		IMGUI_CHECKVERSION();
+		IRENE_CORE_INFO("{0}", glfwGetVersionString());
 		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		//io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+		//io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
+		//io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 		ImGui::StyleColorsDark();
 
-		ImGuiIO& io = ImGui::GetIO();
-		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
-		io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
+		ImGuiStyle& style = ImGui::GetStyle();
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		}
 
-
+		Application& app = Application::Get();
+		ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)app.GetWindow().GetPlatformWindow(), false);
 		ImGui_ImplOpenGL3_Init("#version 410");
 
 
@@ -61,13 +74,22 @@ namespace IRENE {
 		m_Time = time;
 
 		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
 		static bool show = true;
 		ImGui::ShowDemoWindow(&show);
 
+		io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+			GLFWwindow* backup_current_context = glfwGetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backup_current_context);
+		}
 	}
 
 	void ImGuiLayer::OnEvent(Event& event) {
@@ -191,7 +213,16 @@ namespace IRENE {
 			return false;
 
 		ImGuiIO& io = ImGui::GetIO();
-		io.AddMousePosEvent(e.GetX(), e.GetY());
+		double x = 0;
+		double y = 0;
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			int window_x, window_y;
+			glfwGetWindowPos(wnd, &window_x, &window_y);
+			x += window_x;
+			y += window_y;
+		}
+		io.AddMousePosEvent(e.GetX() + x, e.GetY() + y);
 		//bd->LastValidMousePos = ImVec2(e.GetX(), e.GetY());
 
 		return false;

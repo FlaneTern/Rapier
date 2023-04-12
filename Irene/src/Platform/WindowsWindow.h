@@ -2,6 +2,7 @@
 
 #include "Window.h"
 #include "Log.h"
+#include "Renderer/RendererContext.h"
 
 
 
@@ -40,5 +41,7 @@ namespace IRENE {
 		};
 			
 		WindowData m_Data;
+
+		RendererContext* m_Context;
 	};
 }

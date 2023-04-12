@@ -10,7 +10,7 @@ public:
 	}
 
 	void OnEvent(IRENE::Event& event) override {
-		IRENE_INFO("{0}", event);
+		//IRENE_INFO("{0}", event);
 	}
 };
 

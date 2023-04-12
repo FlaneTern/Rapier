@@ -7,3 +7,4 @@
 [submodule "Irene/vendor/ImGui"]
 	path = Irene/vendor/ImGui
 	url = https://github.com/luciennezzz/imgui.git
+	branch = docking

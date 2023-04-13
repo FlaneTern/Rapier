@@ -1,9 +1,14 @@
 .vs/
 bin/
 bin-itm/
-bin-int/
 
 
-**/*.user
-**/*.vcxproj
-**/*.filters
+*.sln
+*/*.user
+*/*.vcxproj
+*/*.filters
+
+*/*/*/*.vcxproj
+*/*/*/*.filters
+*/*/*/*.user
+*/*.ini

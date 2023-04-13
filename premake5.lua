@@ -20,11 +20,13 @@ include "Irene/vendor/ImGui"
 
 project "Irene"
 	location "Irene"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
+	cppdialect "C++20"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-itm/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "ipch.h"
 	pchsource "Irene/src/ipch.cpp"
@@ -51,35 +53,28 @@ project "Irene"
 		"opengl32.lib"
 	}
 
-	cppdialect "C++20"
-	staticruntime "On"
+
 	systemversion "latest"
 	defines{
 		"IRENE_BUILD_DLL",
-		"GLFW_INCLUDE_NONE"
-	}
-
-	postbuildcommands{
-		("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Forehead")
+		"GLFW_INCLUDE_NONE",
+		"_CRT_SECURE_NO_WARNINGS"
 	}
 
 	filter "configurations:Debug"
-		defines{
-			"IRENE_DEBUG",
-			"IRENE_ENABLE_ASSERTS"
-		}
-		buildoptions "/MDd"
-		symbols "On"
+		defines "IRENE_DEBUG"
+		runtime "Debug"
+		symbols "on"
 	
 	filter "configurations:Release"
 		defines "IRENE_RELEASE"
-		buildoptions "/MD"
-		optimize "On"
+		runtime "Release"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "IRENE_DIST"
-		buildoptions "/MD"
-		optimize "On"
+		runtime "Release"
+		optimize "on"
 
 	
 
@@ -87,9 +82,11 @@ project "Forehead"
 	location "Forehead"
 	kind "ConsoleApp"
 	language "C++"
+	cppdialect "C++20"
+	staticruntime "On"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-itm/" .. outputdir .. "/%{prj.name}")
 
 	files{
 		"%{prj.name}/src/**.h",
@@ -105,21 +102,20 @@ project "Forehead"
 		"Irene"
 	}
 
-	cppdialect "C++20"
-	staticruntime "On"
+
 	systemversion "latest"
 
 	filter "configurations:Debug"
 		defines "IRENE_DEBUG"
-		buildoptions "/MDd"
-		symbols "On"
+		runtime "Debug"
+		symbols "on"
 	
 	filter "configurations:Release"
 		defines "IRENE_RELEASE"
-		buildoptions "/MD"
-		optimize "On"
+		runtime "Release"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "IRENE_DIST"
-		buildoptions "/MD"
-		optimize "On"
+		runtime "Release"
+		optimize "on"

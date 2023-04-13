@@ -18,7 +18,6 @@ class Forehead : public IRENE::Application {
 public:
 	Forehead() {
 		PushLayer(new ExampleLayer());
-		PushOverlay(new IRENE::ImGuiLayer);
 	}
 
 	~Forehead() {

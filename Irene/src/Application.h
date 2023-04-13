@@ -6,6 +6,10 @@
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
 #include "LayerStack.h"
+#include "Renderer/Shader.h"
+
+//temp
+#include "Platform/OpenGLShader.h"
 
 namespace IRENE {
 
@@ -31,6 +35,10 @@ namespace IRENE {
 		LayerStack m_LayerStack;
 
 		static Application* s_Instance;
+
+
+		uint32_t m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+		std::unique_ptr<Shader> m_Shader;
 	};
 
 	Application* CreateApplication();

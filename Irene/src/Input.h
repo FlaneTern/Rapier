@@ -1,6 +1,5 @@
 #pragma once
 #include "ipch.h"
-#include "Core.h"
 
 namespace IRENE {
 	class IRENE_API Input {

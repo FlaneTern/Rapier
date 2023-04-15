@@ -2,9 +2,9 @@
 #include "Layer.h"
 
 #include "imgui.h"
-#include "Platform/imgui_impl_opengl3.h"
+#include "Imgui/build/imgui_impl_opengl3.h"
 
-#include "Platform/imgui_impl_glfw.h"
+#include "Imgui/build/imgui_impl_glfw.h"
 
 #include "Application.h"
 
@@ -20,9 +20,6 @@
 
 #include "Keycode/KeycodeToImGui.h"
 
-//---------------------------
-#include "Platform/imgui_impl_glfw.h"
-//----------------------------
 
 
 namespace IRENE {

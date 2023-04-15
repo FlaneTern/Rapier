@@ -13,6 +13,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Irene/vendor/GLFW/include"
 IncludeDir["Glad"] = "Irene/vendor/Glad/include"
 IncludeDir["ImGui"] = "Irene/vendor/ImGui"
+IncludeDir["glm"] = "Irene/vendor/glm"
 
 include "Irene/vendor/GLFW"
 include "Irene/vendor/Glad"
@@ -34,6 +35,8 @@ project "Irene"
 	files{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl",
 		"%{prj.name}/EntryPoint.h",
 		"%{prj.name}/Irene.h"
 	}
@@ -43,7 +46,8 @@ project "Irene"
 		"%{prj.name}/src",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}"
 	}
 
 	links{
@@ -95,7 +99,8 @@ project "Forehead"
 
 	includedirs{
 		"Irene/vendor/spdlog/include",
-		"Irene"
+		"Irene",
+		"%{IncludeDir.glm}"
 	}
 	 
 	links{

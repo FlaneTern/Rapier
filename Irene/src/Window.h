@@ -1,8 +1,6 @@
 #pragma once
 
 #include "ipch.h"
-
-#include "Core.h"
 #include "Events/Event.h"
 
 namespace IRENE {

@@ -2,7 +2,7 @@
 #include <Glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "WindowsWindow.h"
+#include "Platform/Windows/WindowsWindow.h"
 
 #include "Events/ApplicationEvent.h"
 #include "Events/KeyEvent.h"
@@ -12,7 +12,7 @@
 
 #include "imgui.h"
 
-#include "Platform/OpenGLContext.h"
+#include "Platform/OpenGL/OpenGLContext.h"
 
 //void ImGui_ImplGlfw_MonitorCallback(GLFWmonitor*, int);
 //void ImGui_ImplGlfw_CursorEnterCallback(GLFWwindow* window, int entered);

@@ -1,7 +1,6 @@
-#include "Core.h"
 #include "ipch.h"
 
-#include "Platform/OpenGLShader.h"
+#include "Platform/OpenGL/OpenGLShader.h"
 
 #include "glad/glad.h"
 

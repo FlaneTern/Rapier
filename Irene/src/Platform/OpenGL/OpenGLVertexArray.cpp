@@ -22,6 +22,7 @@ namespace IRENE {
 		}
 
 		IRENE_CORE_ASSERT(false, "Unknown ShaderDataType in ShaderDataTypeToOpenGLType()");
+		return 0;
 	}
 
 

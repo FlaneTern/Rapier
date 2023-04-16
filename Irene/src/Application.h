@@ -10,8 +10,10 @@
 
 #include "Renderer/VertexArray.h"
 
-//temp
+#include "Time/DeltaTime.h"
+
 #include "Platform/OpenGL/OpenGLShader.h"
+
 
 namespace IRENE {
 
@@ -29,7 +31,12 @@ namespace IRENE {
 
 		inline static Application& Get() { return *s_Instance; }
 		inline Window& GetWindow() { return *m_Window; }
-	private:
+
+		virtual void OnUpdate(DeltaTime dt);
+
+
+	//private: //temporarily protected
+	protected:
 		bool OnWindowClose(WindowCloseEvent& e);
 
 		std::unique_ptr<Window> m_Window;
@@ -41,6 +48,8 @@ namespace IRENE {
 
 		std::shared_ptr<VertexArray> m_VertexArray;
 		std::shared_ptr<Shader> m_Shader;
+
+		std::chrono::high_resolution_clock::time_point m_PrevTime = std::chrono::high_resolution_clock::now();
 	};
 
 	Application* CreateApplication();

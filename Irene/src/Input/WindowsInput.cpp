@@ -4,6 +4,8 @@
 #include "Application.h"
 #include "GLFW/glfw3.h"
 
+#include "Keycode/KeycodeToGLFW.h"
+
 namespace IRENE {
 
 	Input* Input::s_Instance = new WindowsInput();
@@ -12,7 +14,7 @@ namespace IRENE {
 	bool WindowsInput::IsKeyPressedImpl(int keycode)
 	{
 		GLFWwindow* wnd = (GLFWwindow*)Application::Get().GetWindow().GetPlatformWindow();
-		int pressed = glfwGetKey(wnd, keycode);
+		int pressed = glfwGetKey(wnd, Key_IreneToGLFW(keycode));
 		return pressed == GLFW_PRESS || pressed == GLFW_REPEAT;
 	}
 

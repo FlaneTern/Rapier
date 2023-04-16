@@ -37,8 +37,9 @@ project "Irene"
 		"%{prj.name}/src/**.cpp",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl",
-		"%{prj.name}/EntryPoint.h",
-		"%{prj.name}/Irene.h"
+		"%{prj.name}/IreneEntryPoint.h",
+		"%{prj.name}/Irene.h",
+		"%{prj.name}/res/**.ishader",
 	}
 
 	includedirs{
@@ -100,6 +101,7 @@ project "Forehead"
 	includedirs{
 		"Irene/vendor/spdlog/include",
 		"Irene",
+		"Irene/src",
 		"%{IncludeDir.glm}"
 	}
 	 

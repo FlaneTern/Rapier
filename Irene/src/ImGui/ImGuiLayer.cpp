@@ -1,5 +1,4 @@
 #include "ipch.h"
-#include "Layer.h"
 
 #include "imgui.h"
 #include "Imgui/build/imgui_impl_opengl3.h"
@@ -61,14 +60,12 @@ namespace IRENE {
 
 	}
 
-	void ImGuiLayer::OnUpdate() {
+	void ImGuiLayer::OnUpdate(DeltaTime dt) {
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
 
-		float time = (float)glfwGetTime();
-		io.DeltaTime = m_Time > 0.0f ? (time - m_Time) : (1.0f / 60.0f);
-		m_Time = time;
+		io.DeltaTime = dt;
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -91,7 +88,7 @@ namespace IRENE {
 
 	void ImGuiLayer::OnEvent(Event& event) {
 		EventDispatcher dispatcher(event);
-
+	
 		dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(ImGuiLayer::OnMouseButtonPressedEvent));
 		dispatcher.Dispatch<MouseButtonReleasedEvent>(BIND_EVENT_FN(ImGuiLayer::OnMouseButtonReleasedEvent));
 		dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(ImGuiLayer::OnMouseMovedEvent));
@@ -173,7 +170,7 @@ namespace IRENE {
 			
 		ImGuiIO& io = ImGui::GetIO();
 		//ImGuiKey imgui_key = ImGui_ImplGlfw_KeyToImGuiKey(e.GetKeyCode());
-		ImGuiKey imgui_key = Key_IRENEToImGui(e.GetKeyCode());
+		ImGuiKey imgui_key = Key_IreneToImGui(e.GetKeyCode());
 		io.AddKeyEvent(imgui_key, 1);
 		//io.SetKeyEventNativeData(imgui_key, e.GetKeyCode(), e.GetScanCode()); // To support legacy indexing (<1.87 user code)
 
@@ -191,7 +188,7 @@ namespace IRENE {
 
 		ImGuiIO& io = ImGui::GetIO();
 		//ImGuiKey imgui_key = ImGui_ImplGlfw_KeyToImGuiKey(e.GetKeyCode());
-		ImGuiKey imgui_key = Key_IRENEToImGui(e.GetKeyCode());
+		ImGuiKey imgui_key = Key_IreneToImGui(e.GetKeyCode());
 		io.AddKeyEvent(imgui_key, 0);
 		//io.SetKeyEventNativeData(imgui_key, e.GetKeyCode(), e.GetScanCode()); // To support legacy indexing (<1.87 user code)
 

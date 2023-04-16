@@ -1,4 +1,5 @@
 #include "ipch.h"
+
 #include "Layer.h"
 
 
@@ -7,4 +8,5 @@ namespace IRENE {
 		: m_DebugName(name){}
 
 	Layer::~Layer() {}
+
 }

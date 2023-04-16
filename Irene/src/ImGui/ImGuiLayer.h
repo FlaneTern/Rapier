@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Layer.h"
 
 
 namespace IRENE {
@@ -10,21 +10,20 @@ namespace IRENE {
 		ImGuiLayer();
 		~ImGuiLayer();
 
-		void OnAttach();
-		void OnDetach();
-		void OnUpdate();
-		void OnEvent(Event& event);
+		void OnAttach() override;
+		void OnDetach() override;
+		void OnUpdate(DeltaTime dt) override;
+		void OnEvent(Event& event) override;
 
-	private:
-		bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& e);
-		bool OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& e);
-		bool OnMouseMovedEvent(MouseMovedEvent& e);
-		bool OnMouseScrolledEvent(MouseScrolledEvent& e);
-		bool OnKeyPressedEvent(KeyPressedEvent& e);
-		bool OnKeyReleasedEvent(KeyReleasedEvent& e);
-		bool OnKeyTypedEvent(KeyTypedEvent& e);
-		bool OnWindowResizeEvent(WindowResizeEvent& e);
-		float m_Time = 0.0;
+	protected:
+		virtual bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& e) override;
+		virtual bool OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& e) override;
+		virtual bool OnMouseMovedEvent(MouseMovedEvent& e) override;
+		virtual bool OnMouseScrolledEvent(MouseScrolledEvent& e) override;
+		virtual bool OnKeyPressedEvent(KeyPressedEvent& e) override;
+		virtual bool OnKeyReleasedEvent(KeyReleasedEvent& e) override;
+		virtual bool OnKeyTypedEvent(KeyTypedEvent& e) override;
+		virtual bool OnWindowResizeEvent(WindowResizeEvent& e) override;
 	};
 }
 

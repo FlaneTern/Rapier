@@ -92,17 +92,17 @@ namespace IRENE {
 
 			switch (action) {
 				case GLFW_PRESS: {
-					KeyPressedEvent event(Key_GLFWToIRENE(key), Key_GLFWToIRENE(scancode), 0);
+					KeyPressedEvent event(Key_GLFWToIrene(key), Key_GLFWToIrene(scancode), 0);
 					data.EventCallback(event);
 					break;
 				}
 				case GLFW_RELEASE: {
-					KeyReleasedEvent event(Key_GLFWToIRENE(key), Key_GLFWToIRENE(scancode));
+					KeyReleasedEvent event(Key_GLFWToIrene(key), Key_GLFWToIrene(scancode));
 					data.EventCallback(event);
 					break;
 				}
 				case GLFW_REPEAT: {
-					KeyPressedEvent event(Key_GLFWToIRENE(key), Key_GLFWToIRENE(scancode), 1);
+					KeyPressedEvent event(Key_GLFWToIrene(key), Key_GLFWToIrene(scancode), 1);
 					data.EventCallback(event);
 					break;
 				}

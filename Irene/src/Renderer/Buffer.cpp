@@ -16,10 +16,10 @@ namespace IRENE {
 		return nullptr;
 	}
 
-	IndexBuffer* IndexBuffer::Create(uint32_t* indices, uint32_t size) {
+	IndexBuffer* IndexBuffer::Create(uint32_t* indices, uint32_t count) {
 		switch (Renderer::GetAPI()) {
 		case RendererAPI::API::None:       IRENE_CORE_ASSERT(false, "RendererAPI::None is not supported!");  return nullptr;
-		case RendererAPI::API::OpenGL:     return new OpenGLIndexBuffer(indices, size);
+		case RendererAPI::API::OpenGL:     return new OpenGLIndexBuffer(indices, count);
 		}
 
 		IRENE_CORE_ASSERT(false, "Unknown RendererAPI!");

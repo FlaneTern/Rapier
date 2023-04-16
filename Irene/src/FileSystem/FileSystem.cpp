@@ -15,22 +15,32 @@ namespace IRENE {
 		return nullptr;
 	}
 
-	std::shared_ptr<std::string> FileSystem::GetDataShader(const std::string& filepath)
-	{
+	std::shared_ptr<std::string> FileSystem::GetDataShader(const std::string& filepath) {
 		m_Filepath = filepath;
 		m_Stream.reset(new std::fstream(filepath));
 
 		IRENE_CORE_ASSERT(m_Stream->is_open(), "Could not open file!");
 
-		std::shared_ptr<std::string> data = std::make_shared<std::string>();
-		std::string temp;
-		while (getline(*m_Stream, temp)) {
-			*data += temp + '\n';
-		}
-		data->pop_back();
+		std::stringstream ss;
+		ss << m_Stream->rdbuf();
+		std::shared_ptr<std::string> data = std::make_shared<std::string>(ss.str());
 
+#ifdef IRENE_DEBUG
+		m_Buffers.push_back(data);
+#endif
 		return data;
 	}
+
+#ifdef IRENE_DEBUG
+	void FileSystem::ClearBuffers() {
+		for (auto it = m_Buffers.begin(); it < m_Buffers.end(); it++) {
+			if (it->use_count() == 1) {
+				m_Buffers.erase(it);
+				it--;
+			}
+		}
+	}
+#endif
 
 
 }

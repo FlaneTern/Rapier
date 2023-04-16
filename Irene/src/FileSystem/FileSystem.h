@@ -1,5 +1,4 @@
 #pragma once
-#include "ipch.h"
 
 namespace IRENE {
 
@@ -19,6 +18,15 @@ namespace IRENE {
 
 		std::unique_ptr<std::fstream> m_Stream;
 		std::string m_Filepath;
+
+
+
+#ifdef IRENE_DEBUG
+	public:
+		void ClearBuffers();
+	private:
+		std::vector<std::shared_ptr<std::string>> m_Buffers;
+#endif
 
 	};
 

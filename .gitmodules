@@ -1,13 +1,15 @@
-[submodule "Irene/vendor/spdlog"]
-	path = Irene/vendor/spdlog
-	url = https://github.com/gabime/spdlog
-[submodule "Irene/vendor/GLFW"]
-	path = Irene/vendor/GLFW
-	url = https://github.com/luciennezzz/glfw
-[submodule "Irene/vendor/ImGui"]
-	path = Irene/vendor/ImGui
+[submodule "Rapier/vendor/spdlog"]
+	path = Rapier/vendor/spdlog
+	url = https://github.com/luciennezzz/spdlog.git
+[submodule "Rapier/vendor/GLFW"]
+	path = Rapier/vendor/GLFW
+	url = https://github.com/luciennezzz/glfw.git
+[submodule "Rapier/vendor/ImGui"]
+	path = Rapier/vendor/ImGui
 	url = https://github.com/luciennezzz/imgui.git
 	branch = docking
-[submodule "Irene/vendor/glm"]
-	path = Irene/vendor/glm
+[submodule "Rapier/vendor/glm"]
+	path = Rapier/vendor/glm
 	url = https://github.com/luciennezzz/glm.git
+[submodule "Rapier/Vendor/ImGui"]
+	branch = docking

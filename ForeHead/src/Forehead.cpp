@@ -1,5 +1,5 @@
-#include "Irene.h"
-#include "IreneEntryPoint.h"
+#include "Rapier.h"
+#include "RapierEntryPoint.h"
 
 #include "Forehead.h"
 #include "ForeheadLayer.h"
@@ -13,7 +13,7 @@ namespace Forehead {
 
 	Forehead::Forehead() {
 
-		using namespace IRENE;
+		using namespace Rapier;
 
 		PushLayer(new ForeheadLayer());
 
@@ -38,10 +38,10 @@ namespace Forehead {
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
 
-		std::shared_ptr<std::string> vertexShader = FileSystem::GetData("../Irene/res/Shader/VertexShader.ishader", FileType::Shader);
-		std::shared_ptr<std::string> fragmentShader = FileSystem::GetData("../Irene/res/Shader/FragmentShader.ishader", FileType::Shader);
+		std::shared_ptr<std::string> vertexShader = FileSystem::GetData("../Rapier/res/Shader/VertexShader.ishader", FileType::Shader);
+		std::shared_ptr<std::string> fragmentShader = FileSystem::GetData("../Rapier/res/Shader/FragmentShader.ishader", FileType::Shader);
 
-		m_Shader.reset(new OpenGLShader(*vertexShader, *fragmentShader));
+		m_Shader.reset(Shader::Create(*vertexShader, *fragmentShader));
 
 		RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 
@@ -52,9 +52,9 @@ namespace Forehead {
 
 	}
 
-	void Forehead::OnUpdate(IRENE::DeltaTime dt) {
+	void Forehead::OnUpdate(Rapier::DeltaTime dt) {
 
-		using namespace IRENE;
+		using namespace Rapier;
 
 	
 		RenderCommand::Clear();
@@ -73,6 +73,6 @@ namespace Forehead {
 
 }
 
-IRENE::Application* IRENE::CreateApplication() {
+Rapier::Application* Rapier::CreateApplication() {
 	return new Forehead::Forehead();
 }

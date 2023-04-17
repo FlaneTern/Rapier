@@ -1,15 +1,15 @@
 #pragma once
-#include "Irene.h"
+#include "Rapier.h"
 
 namespace Forehead {
 
-	class Forehead : public IRENE::Application {
+	class Forehead : public Rapier::Application {
 	public:
 		Forehead();
 
 		~Forehead();
 
-		void OnUpdate(IRENE::DeltaTime dt) override;
+		void OnUpdate(Rapier::DeltaTime dt) override;
 
 
 

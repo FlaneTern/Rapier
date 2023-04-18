@@ -5,8 +5,10 @@
 #include "glad/glad.h"
 #include "glm/gtc/type_ptr.hpp"
 
+#include "FileSystem/FileSystem.h"
+
 namespace Rapier {
-	OpenGLShader::OpenGLShader(const std::string& vertex, const std::string& fragment) {
+	OpenGLShader::OpenGLShader(const std::string& vertexPath, const std::string& fragmentPath) {
 		// Read our shaders into the appropriate buffers
 
 		// Create an empty vertex shader handle
@@ -14,7 +16,9 @@ namespace Rapier {
 
 		// Send the vertex shader source code to GL
 		// Note that std::string's .c_str is NULL character terminated.
-		const GLchar* source = (const GLchar*)vertex.c_str();
+		Ref<std::string> dSource = FileSystem::GetDataShader(vertexPath);
+		const GLchar* source = dSource->c_str();
+		//const GLchar* source = (const GLchar*)vertex.c_str();
 		glShaderSource(vertexShader, 1, &source, 0);
 
 		// Compile the vertex shader
@@ -44,7 +48,10 @@ namespace Rapier {
 
 		// Send the fragment shader source code to GL
 		// Note that std::string's .c_str is NULL character terminated.
-		source = (const GLchar*)fragment.c_str();
+
+		dSource = FileSystem::GetDataShader(fragmentPath);
+		source = dSource->c_str();
+		//source = (const GLchar*)fragment.c_str();
 		glShaderSource(fragmentShader, 1, &source, 0);
 
 		// Compile the fragment shader
@@ -126,5 +133,10 @@ namespace Rapier {
 	void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix) {
 		GLint location  = glGetUniformLocation(m_RendererId, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+	}
+
+	void OpenGLShader::UploadUniformInt(const std::string& name, int value) {
+		GLint location = glGetUniformLocation(m_RendererId, name.c_str());
+		glUniform1i(location, value);
 	}
 }

@@ -14,6 +14,7 @@ IncludeDir["GLFW"] = "Rapier/vendor/GLFW/include"
 IncludeDir["Glad"] = "Rapier/vendor/Glad/include"
 IncludeDir["ImGui"] = "Rapier/vendor/ImGui"
 IncludeDir["glm"] = "Rapier/vendor/glm"
+IncludeDir["stb"] = "Rapier/vendor/stb"
 
 include "Rapier/vendor/GLFW"
 include "Rapier/vendor/Glad"
@@ -39,7 +40,9 @@ project "Rapier"
 		"%{prj.name}/vendor/glm/glm/**.inl",
 		"%{prj.name}/RapierEntryPoint.h",
 		"%{prj.name}/Rapier.h",
-		"%{prj.name}/res/**.ishader",
+		"%{prj.name}/res/**",
+		"%{prj.name}/vendor/stb/**.h",
+		"%{prj.name}/vendor/stb/**.cpp",
 	}
 
 	includedirs{
@@ -48,7 +51,8 @@ project "Rapier"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb}"
 	}
 
 	links{
@@ -96,6 +100,7 @@ project "Forehead"
 	files{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/res/**",
 	}
 
 	includedirs{

@@ -5,14 +5,15 @@
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
 #include "LayerStack.h"
-#include "Renderer/Shader.h"
+#include "Assets/Shader/Shader.h"
 #include "Renderer/Buffer.h"
-
 #include "Renderer/VertexArray.h"
+#include "Assets/Texture/Texture.h"
 
 #include "Time/DeltaTime.h"
 
-#include "Renderer/Shader.h"
+#include "Assets/Shader/Shader.h"
+
 
 
 namespace Rapier {
@@ -39,15 +40,16 @@ namespace Rapier {
 	protected:
 		bool OnWindowClose(WindowCloseEvent& e);
 
-		std::unique_ptr<Window> m_Window;
+		Scope<Window> m_Window;
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 
 		static Application* s_Instance;
 
 
-		std::shared_ptr<VertexArray> m_VertexArray;
-		std::shared_ptr<Shader> m_Shader;
+		Ref<VertexArray> m_VertexArray;
+		Ref<Shader> m_Shader;
+		Ref<Texture2D> m_Texture;
 
 		std::chrono::high_resolution_clock::time_point m_PrevTime = std::chrono::high_resolution_clock::now();
 	};

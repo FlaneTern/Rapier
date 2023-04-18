@@ -1,7 +1,7 @@
 #pragma once
 
 #include "glm/glm.hpp"
-#include "Renderer/Shader.h"
+#include "Assets/Shader/Shader.h"
 
 namespace Rapier{
 	class OpenGLShader : public Shader {
@@ -12,5 +12,6 @@ namespace Rapier{
 		void Unbind() const override;
 
 		virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) override;
+		virtual void UploadUniformInt(const std::string& name, int value) override;
 	};
 }

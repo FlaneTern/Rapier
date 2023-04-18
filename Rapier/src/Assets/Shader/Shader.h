@@ -1,0 +1,26 @@
+#pragma once
+#include "ipch.h"
+#include "glm/glm.hpp"
+
+namespace Rapier {
+	class Shader {
+	public:
+
+		virtual void Bind() const = 0;
+		virtual void Unbind() const = 0;
+
+		virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) = 0;
+		virtual void UploadUniformInt(const std::string& name, int value) = 0;
+
+
+
+		uint32_t GetAssetManagerId() { return m_AssetManagerId; }
+		void SetAssetManagerId(uint32_t id) { m_AssetManagerId = id; }
+
+		static Ref<Shader> Create(const std::string& vertexPath, const std::string& fragmentPath);
+
+	protected:
+		uint32_t m_RendererId;
+		uint32_t m_AssetManagerId;
+	};
+}

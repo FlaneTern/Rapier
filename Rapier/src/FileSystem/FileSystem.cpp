@@ -1,46 +1,40 @@
 #include "ipch.h"
 #include "FileSystem/FileSystem.h"
+#include "stb_image.h"
 
 namespace Rapier {
 
-	std::unique_ptr<FileSystem> FileSystem::s_Instance = std::make_unique<FileSystem>();
+	Scope<FileSystem> FileSystem::s_Instance = std::make_unique<FileSystem>();
 
-	std::shared_ptr<std::string> FileSystem::GetData(const std::string& filepath, FileType type) {
-		switch (type) {
-		case FileType::Shader:   return s_Instance->GetDataShader(filepath);
-		}
-		
+	Ref<std::string> FileSystem::GetDataShader(const std::string& filepath) {
+		std::fstream stream(filepath);
 
-		RAPIER_CORE_ASSERT(false, "Unknown file type!");
-		return nullptr;
-	}
-
-	std::shared_ptr<std::string> FileSystem::GetDataShader(const std::string& filepath) {
-		m_Filepath = filepath;
-		m_Stream.reset(new std::fstream(filepath));
-
-		RAPIER_CORE_ASSERT(m_Stream->is_open(), "Could not open file!");
+		RAPIER_CORE_ASSERT(stream.is_open(), "Could not open file!");
 
 		std::stringstream ss;
-		ss << m_Stream->rdbuf();
-		std::shared_ptr<std::string> data = std::make_shared<std::string>(ss.str());
+		ss << stream.rdbuf();
+		Ref<std::string> data = std::make_shared<std::string>(ss.str());
 
-#ifdef Rapier_DEBUG
-		m_Buffers.push_back(data);
-#endif
 		return data;
 	}
 
-#ifdef Rapier_DEBUG
-	void FileSystem::ClearBuffers() {
-		for (auto it = m_Buffers.begin(); it < m_Buffers.end(); it++) {
-			if (it->use_count() == 1) {
-				m_Buffers.erase(it);
-				it--;
-			}
-		}
+	Ref<TextureData> FileSystem::GetDataTexture(const std::string& filepath) {
+		stbi_set_flip_vertically_on_load(true);
+		int width, height, channels;
+
+
+		///// !!!!!!!!!!!!!!!!!!!!!! free the data !!!!!!!!!!!!!!!!!!!!!!!!!!! /////
+		stbi_uc* stbiData = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
+		///// !!!!!!!!!!!!!!!!!!!!!! free the data !!!!!!!!!!!!!!!!!!!!!!!!!!! /////
+
+		RAPIER_CORE_ASSERT(stbiData, "Could not open file!");
+
+		Ref<TextureData> data = std::make_shared<TextureData>((char*)stbiData, width, height, channels);
+
+		return data;
 	}
-#endif
+
+
 
 
 }

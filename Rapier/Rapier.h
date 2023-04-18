@@ -17,3 +17,4 @@
 #include "src/Keycode/RapierKeycode.h"
 #include "src/Input.h"
 #include "src/Time/DeltaTime.h"
+#include "src/Assets/AssetManager.h"

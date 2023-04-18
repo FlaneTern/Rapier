@@ -4,6 +4,7 @@
 #include "Forehead.h"
 #include "ForeheadLayer.h"
 #include "Geometry/Pentagon.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 namespace Forehead {
 
@@ -18,30 +19,47 @@ namespace Forehead {
 		PushLayer(new ForeheadLayer());
 
 
-		m_VertexArray.reset(VertexArray::Create());
+		m_VertexArray = VertexArray::Create();
 		m_VertexArray->Bind();
 
-		std::shared_ptr<VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(VertexBuffer::Create(Pentagon::s_Pentagon->GetVertices(), Pentagon::s_Pentagon->GetVerticesSize()));
+		float vertices[] = {
+			-0.5, -0.5, 0.0, 0.0, 0.0,
+			 0.5, -0.5, 0.0, 1.0, 0.0,
+			 0.5,  0.5, 0.0, 1.0, 1.0,
+			-0.5,  0.5, 0.0, 0.0, 1.0
+		};
+
+		uint32_t indices[] = {
+			0, 1, 2, 2, 3, 0
+		};
+
+		Ref<VertexBuffer> vertexBuffer;
+		vertexBuffer = VertexBuffer::Create(vertices, sizeof(vertices));
 
 		BufferLayout layout = {
 			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float4, "a_Color" }
+			{ ShaderDataType::Float2, "a_TextureCoord" }
 		};
+
+
 
 		vertexBuffer->SetLayout(layout);
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
 
 
-		std::shared_ptr<IndexBuffer> indexBuffer;
-		indexBuffer.reset(IndexBuffer::Create(Pentagon::s_Pentagon->GetIndices(), Pentagon::s_Pentagon->GetIndicesSize() / sizeof(int)));
+		Ref<IndexBuffer> indexBuffer;
+		indexBuffer = IndexBuffer::Create(indices, sizeof(indices) / sizeof(int));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
 
-		std::shared_ptr<std::string> vertexShader = FileSystem::GetData("../Rapier/res/Shader/VertexShader.ishader", FileType::Shader);
-		std::shared_ptr<std::string> fragmentShader = FileSystem::GetData("../Rapier/res/Shader/FragmentShader.ishader", FileType::Shader);
+		m_Shader = Shader::Create("../Forehead/res/Shader/TextureVertex.rshader", "../Forehead/res/Shader/TextureFragment.rshader");
 
-		m_Shader.reset(Shader::Create(*vertexShader, *fragmentShader));
+		m_Texture = Texture2D::Create("../Forehead/res/Texture/irene-gyatekora.png");
+		
+		m_Shader->Bind();
+		m_Shader->UploadUniformInt("u_Texture", 0);
+
+
 
 		RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 
@@ -56,16 +74,15 @@ namespace Forehead {
 
 		using namespace Rapier;
 
-	
 		RenderCommand::Clear();
-
 
 		OrthographicCamera& cam = OrthographicCamera::GetCamera();
 
+
 		Renderer::BeginScene(cam);
 
-
-		Renderer::Submit(m_VertexArray, m_Shader);
+		m_Texture->Bind();
+		Renderer::Submit(m_VertexArray, m_Shader, glm::scale(glm::mat4(1.0f), glm::vec3(1.0f)));
 
 		Renderer::EndScene();
 	}

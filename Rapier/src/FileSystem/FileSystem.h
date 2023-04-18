@@ -4,29 +4,27 @@ namespace Rapier {
 
 	enum class FileType {
 		None = 0,
-		Shader
+		Shader,
+		Texture
+	};
+
+	struct TextureData {
+		TextureData(const char* s, uint32_t w, uint32_t h, uint32_t ch)
+			: Data(s), Width(w), Height(h), Channels(ch) {}
+
+		std::string_view Data;
+		uint32_t Width;
+		uint32_t Height;
+		uint32_t Channels;
 	};
 
 	class FileSystem {
 
 	public:
-		static std::shared_ptr<std::string> GetData(const std::string& filepath, FileType type);
-
-		std::shared_ptr<std::string> GetDataShader(const std::string& filepath);
+		static Ref<std::string> GetDataShader(const std::string& filepath);
+		static Ref<TextureData> GetDataTexture(const std::string& filepath);
 	private:
-		static std::unique_ptr<FileSystem> s_Instance;
-
-		std::unique_ptr<std::fstream> m_Stream;
-		std::string m_Filepath;
-
-
-
-#ifdef Rapier_DEBUG
-	public:
-		void ClearBuffers();
-	private:
-		std::vector<std::shared_ptr<std::string>> m_Buffers;
-#endif
+		static Scope<FileSystem> s_Instance;
 
 	};
 

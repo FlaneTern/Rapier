@@ -42,6 +42,6 @@ namespace Rapier {
 			
 		WindowData m_Data;
 
-		RendererContext* m_Context;
+		Scope<RendererContext> m_Context;
 	};
 }

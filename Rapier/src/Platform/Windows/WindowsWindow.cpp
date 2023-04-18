@@ -27,8 +27,8 @@ namespace Rapier {
 		RAPIER_CORE_ERROR("GLFW Error ({0})", description);
 	}
 
-	Window* Window::Create(const WindowProps& props) {
-		return new WindowsWindow(props);
+	Scope<Window> Window::Create(const WindowProps& props) {
+		return std::make_unique<WindowsWindow>(props);
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& props) {
@@ -57,7 +57,7 @@ namespace Rapier {
 		}
 
 		m_Window = glfwCreateWindow((int)props.Width, (int)props.Height, props.Title.c_str(), nullptr, nullptr);
-		m_Context = new OpenGLContext(m_Window);
+		m_Context = std::make_unique<OpenGLContext>(m_Window);
 		m_Context->Init();
 
 

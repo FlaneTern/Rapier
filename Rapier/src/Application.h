@@ -5,10 +5,13 @@
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
 #include "LayerStack.h"
+#include "ImGui/ImGuiLayer.h"
 #include "Assets/Shader/Shader.h"
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
 #include "Assets/Texture/Texture.h"
+
+#include "Camera/OrthographicCameraController.h"
 
 #include "Time/DeltaTime.h"
 
@@ -34,22 +37,26 @@ namespace Rapier {
 		inline Window& GetWindow() { return *m_Window; }
 
 		virtual void OnUpdate(DeltaTime dt);
+		virtual void PostUpdate();
 
 
-	//private: //temporarily protected
+
+		Ref<OrthographicCameraController> m_CameraController;
+
+
 	protected:
+
+
+	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 
 		Scope<Window> m_Window;
 		bool m_Running = true;
+
+		ImGuiLayer* m_ImGuiLayer;
 		LayerStack m_LayerStack;
 
 		static Application* s_Instance;
-
-
-		Ref<VertexArray> m_VertexArray;
-		Ref<Shader> m_Shader;
-		Ref<Texture2D> m_Texture;
 
 		std::chrono::high_resolution_clock::time_point m_PrevTime = std::chrono::high_resolution_clock::now();
 	};

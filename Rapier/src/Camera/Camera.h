@@ -9,16 +9,10 @@ namespace Rapier {
 	public:
 		OrthographicCamera(float left, float right, float bottom, float top);
 
-		static OrthographicCamera& GetCamera() { return *s_OrthographicCamera; };
+		void SetProjection(float left, float right, float bottom, float top);
 
-		void Set(const glm::vec3& position, float rotation);
-
-
-		void Update(const glm::vec3& positionOffset, float rotationOffset);
-
-		inline const glm::vec3& GetPosition() { return m_Position; }
-		inline float GetRotation() { return m_Rotation; }
-
+		void SetPosition(glm::vec3 position) { m_Position = position; CalculateViewProjectionMatrix(); }
+		void SetRotation(float rotation) { m_Rotation = rotation; CalculateViewProjectionMatrix(); }
 
 		inline const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		inline const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
@@ -33,7 +27,5 @@ namespace Rapier {
 		glm::mat4 m_ViewMatrix;
 		glm::mat4 m_ProjectionMatrix;
 		glm::mat4 m_ViewProjectionMatrix;
-
-		static std::unique_ptr<OrthographicCamera> s_OrthographicCamera;
 	};
 }

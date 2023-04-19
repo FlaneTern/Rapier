@@ -14,6 +14,10 @@ namespace Rapier {
 		void OnDetach() override;
 		void OnUpdate(DeltaTime dt) override;
 		void OnEvent(Event& event) override;
+		void OnImGuiRender() override;
+
+		void Begin();
+		void End();
 
 	protected:
 		virtual bool OnMouseButtonPressedEvent(MouseButtonPressedEvent& e) override;
@@ -24,6 +28,8 @@ namespace Rapier {
 		virtual bool OnKeyReleasedEvent(KeyReleasedEvent& e) override;
 		virtual bool OnKeyTypedEvent(KeyTypedEvent& e) override;
 		virtual bool OnWindowResizeEvent(WindowResizeEvent& e) override;
+
+		float dt;
 	};
 }
 

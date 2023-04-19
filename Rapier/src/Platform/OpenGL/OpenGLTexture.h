@@ -21,5 +21,6 @@ namespace Rapier {
 		uint32_t m_RendererId;
 		
 		uint32_t m_AssetManagerId;
+		uint32_t m_Slot;
 	};
 }

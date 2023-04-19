@@ -4,13 +4,18 @@
 
 namespace Rapier {
 
-	Scope<FileSystem> FileSystem::s_Instance = std::make_unique<FileSystem>();
-
 	Ref<std::string> FileSystem::GetDataShader(const std::string& filepath) {
-		std::fstream stream(filepath);
+		std::string file = "";
+		for (const auto& entry : std::filesystem::recursive_directory_iterator("../Rapier/res/Shader/")) {
+			if (entry.path().filename() == filepath) {
+				file = entry.path().string();
+				break;
+			}
+		}
+		RAPIER_CORE_ASSERT(!file.empty(), "Could not open file!");
 
-		RAPIER_CORE_ASSERT(stream.is_open(), "Could not open file!");
 
+		std::fstream stream(file);
 		std::stringstream ss;
 		ss << stream.rdbuf();
 		Ref<std::string> data = std::make_shared<std::string>(ss.str());
@@ -19,15 +24,23 @@ namespace Rapier {
 	}
 
 	Ref<TextureData> FileSystem::GetDataTexture(const std::string& filepath) {
+		std::string file = "";
+		for (const auto& entry : std::filesystem::recursive_directory_iterator("../Rapier/res/Texture/")) {
+			if (entry.path().filename() == filepath) {
+				file = entry.path().string();
+				break;
+			}
+		}
+		RAPIER_CORE_ASSERT(!file.empty(), "Could not open file!");
+
+
 		stbi_set_flip_vertically_on_load(true);
 		int width, height, channels;
 
-
 		///// !!!!!!!!!!!!!!!!!!!!!! free the data !!!!!!!!!!!!!!!!!!!!!!!!!!! /////
-		stbi_uc* stbiData = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
+		stbi_uc* stbiData = stbi_load(file.c_str(), &width, &height, &channels, 0);
 		///// !!!!!!!!!!!!!!!!!!!!!! free the data !!!!!!!!!!!!!!!!!!!!!!!!!!! /////
 
-		RAPIER_CORE_ASSERT(stbiData, "Could not open file!");
 
 		Ref<TextureData> data = std::make_shared<TextureData>((char*)stbiData, width, height, channels);
 

@@ -61,18 +61,26 @@ namespace Rapier {
 	}
 
 	void ImGuiLayer::OnUpdate(DeltaTime dt) {
-		ImGuiIO& io = ImGui::GetIO();
-		Application& app = Application::Get();
-		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
+		this->dt = dt;
+	}
 
-		io.DeltaTime = dt;
+	void ImGuiLayer::OnImGuiRender() {
+		static bool show = true;
+		ImGui::Begin("IMGUI", &show, ImGuiWindowFlags_MenuBar);
+		ImGui::Text("%f FPS (%f ms/frame)", 1 / dt, dt * 1000);
+		ImGui::End();
+	}
 
+
+	void ImGuiLayer::Begin() {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+	}
 
-		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
+	void ImGuiLayer::End() {
+		ImGuiIO& io = ImGui::GetIO();
+		Application& app = Application::Get();
 
 		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
 		ImGui::Render();
@@ -85,6 +93,7 @@ namespace Rapier {
 			glfwMakeContextCurrent(backup_current_context);
 		}
 	}
+
 
 	void ImGuiLayer::OnEvent(Event& event) {
 		EventDispatcher dispatcher(event);

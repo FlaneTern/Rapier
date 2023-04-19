@@ -104,10 +104,12 @@ project "Forehead"
 	}
 
 	includedirs{
+		"%{prj.name}/src",
 		"Rapier/vendor/spdlog/include",
 		"Rapier",
 		"Rapier/src",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}"
 	}
 	 
 	links{

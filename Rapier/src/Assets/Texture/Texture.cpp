@@ -8,7 +8,7 @@
 #include "Assets/AssetManager.h"
 
 namespace Rapier {
-	Ref<Texture2D> Texture2D::Create(const std::string& path) {
-		return AssetManager::LoadTexture2D(path);
+	Ref<Texture2D> Texture2D::Create(const std::string& filename) {
+		return AssetManager::LoadTexture2D(filename);
 	}
 }

@@ -18,6 +18,7 @@ namespace Rapier {
 		virtual void OnDetach() {}
 		virtual void OnUpdate(DeltaTime dt) {}
 		virtual void OnEvent(Event& event) {}
+		virtual void OnImGuiRender() {}
 
 		inline const std::string& GetName() const { return m_DebugName; }
 

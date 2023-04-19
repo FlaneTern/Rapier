@@ -9,6 +9,7 @@ static int Key_RapierToGLFW(int key)
     switch (key)
     {
     case RapierKey_Tab: return  GLFW_KEY_TAB;
+    case RapierKey_LeftArrow: return  GLFW_KEY_LEFT;
     case RapierKey_RightArrow: return  GLFW_KEY_RIGHT;
     case RapierKey_UpArrow: return  GLFW_KEY_UP;
     case RapierKey_DownArrow: return  GLFW_KEY_DOWN;

@@ -9,6 +9,9 @@ namespace Forehead {
 			: Layer("Forehead") {}
 
 		void OnUpdate(Rapier::DeltaTime dt) override;
+		void OnAttach() override;
+		void OnImGuiRender() override;
+
 
 		void OnEvent(Rapier::Event& event) override {
 			Rapier::EventDispatcher dispatcher(event);
@@ -31,5 +34,6 @@ namespace Forehead {
 		virtual bool OnKeyReleasedEvent(Rapier::KeyReleasedEvent& e) override;
 		virtual bool OnKeyTypedEvent(Rapier::KeyTypedEvent& e) override;
 		virtual bool OnWindowResizeEvent(Rapier::WindowResizeEvent& e) override;
+
 	};
 }

@@ -23,8 +23,8 @@ namespace Rapier {
 	public:
 		static Ref<std::string> GetDataShader(const std::string& filepath);
 		static Ref<TextureData> GetDataTexture(const std::string& filepath);
+
 	private:
-		static Scope<FileSystem> s_Instance;
 
 	};
 

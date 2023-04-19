@@ -11,13 +11,14 @@ namespace Rapier {
 
 		virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) = 0;
 		virtual void UploadUniformInt(const std::string& name, int value) = 0;
+		virtual void UploadUniformFloat4(const std::string& name, glm::vec4 value) = 0;
 
 
 
 		uint32_t GetAssetManagerId() { return m_AssetManagerId; }
 		void SetAssetManagerId(uint32_t id) { m_AssetManagerId = id; }
 
-		static Ref<Shader> Create(const std::string& vertexPath, const std::string& fragmentPath);
+		static Ref<Shader> Create(const std::string& vertexName, const std::string& fragmentName);
 
 	protected:
 		uint32_t m_RendererId;

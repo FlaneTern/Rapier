@@ -11,4 +11,3 @@ bin-itm/
 */*/*/*.vcxproj
 */*/*/*.filters
 */*/*/*.user
-*/*.ini

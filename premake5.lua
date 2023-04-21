@@ -1,5 +1,6 @@
 workspace "Rapier"
 	architecture "x64"
+	startproject "RapierLantern"
 
 	configurations{
 		"Debug",
@@ -15,6 +16,7 @@ IncludeDir["Glad"] = "Rapier/vendor/Glad/include"
 IncludeDir["ImGui"] = "Rapier/vendor/ImGui"
 IncludeDir["glm"] = "Rapier/vendor/glm"
 IncludeDir["stb"] = "Rapier/vendor/stb"
+IncludeDir["entt"] = "Rapier/vendor/entt/include"
 
 include "Rapier/vendor/GLFW"
 include "Rapier/vendor/Glad"
@@ -52,7 +54,8 @@ project "Rapier"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb}"
+		"%{IncludeDir.stb}",
+		"%{IncludeDir.entt}"
 	}
 
 	links{
@@ -109,7 +112,58 @@ project "Forehead"
 		"Rapier",
 		"Rapier/src",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.entt}"
+	}
+	 
+	links{
+		"Rapier"
+	}
+
+
+	systemversion "latest"
+
+	filter "configurations:Debug"
+		defines "RAPIER_DEBUG"
+		runtime "Debug"
+		symbols "on"
+	
+	filter "configurations:Release"
+		defines "RAPIER_RELEASE"
+		runtime "Release"
+		optimize "on"
+
+	filter "configurations:Dist"
+		defines "RAPIER_DIST"
+		runtime "Release"
+		optimize "on"
+
+
+
+project "RapierLantern"
+	location "RapierLantern"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++20"
+	staticruntime "On"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-itm/" .. outputdir .. "/%{prj.name}")
+
+	files{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/res/**",
+	}
+
+	includedirs{
+		"%{prj.name}/src",
+		"Rapier/vendor/spdlog/include",
+		"Rapier",
+		"Rapier/src",
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.entt}"
 	}
 	 
 	links{

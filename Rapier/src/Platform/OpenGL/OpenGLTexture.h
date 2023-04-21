@@ -11,6 +11,8 @@ namespace Rapier {
 		virtual uint32_t GetWidth() const override { return m_Width; }
 		virtual uint32_t GetHeight() const override { return m_Height; }
 
+		virtual uint32_t GetRendererId() const override { return m_RendererId; };
+
 		virtual uint32_t GetAssetManagerId() const override { return m_AssetManagerId; }
 		virtual void SetAssetManagerId(uint32_t id) override { m_AssetManagerId = id; }
 

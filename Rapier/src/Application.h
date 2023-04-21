@@ -11,11 +11,10 @@
 #include "Renderer/VertexArray.h"
 #include "Assets/Texture/Texture.h"
 
-#include "Camera/OrthographicCameraController.h"
-
 #include "Time/DeltaTime.h"
 
 #include "Assets/Shader/Shader.h"
+#include "Scene/Scene.h"
 
 
 
@@ -39,9 +38,7 @@ namespace Rapier {
 		virtual void OnUpdate(DeltaTime dt);
 		virtual void PostUpdate();
 
-
-
-		Ref<OrthographicCameraController> m_CameraController;
+		Ref<Scene> m_ActiveScene;
 
 
 	protected:

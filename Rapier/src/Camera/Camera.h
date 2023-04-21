@@ -4,6 +4,27 @@
 
 namespace Rapier {
 
+	class Camera {
+	public:
+		Camera() = default;
+
+		Camera(const glm::mat4& cam)
+			: m_ProjectionMatrix(cam) {} // !!!!!!! set left, right, ...
+
+		Camera(float left, float right, float bottom, float top, float nearClip, float farClip);
+
+		void SetViewportSize(uint32_t width, uint32_t height);
+
+		void CalculateProjection();
+
+		const glm::mat4& GetProjection() const { return m_ProjectionMatrix; }
+	private:
+		glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
+
+		float m_AspectRatio = 16.0f / 9.0f, m_Size = 2.0f;
+		float m_FarClip = 1.0f, m_NearClip = -1.0f;
+	};
+
 	class OrthographicCamera {
 
 	public:

@@ -10,6 +10,7 @@ namespace Forehead {
 
 		void OnUpdate(Rapier::DeltaTime dt) override;
 		void OnAttach() override;
+		void OnImGuiRender() override;
 
 
 		void OnEvent(Rapier::Event& event) override {

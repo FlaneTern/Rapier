@@ -14,15 +14,15 @@
 
 namespace Rapier {
 
-	uint32_t AssetManager::s_ShaderId = 0;
-	uint32_t AssetManager::s_Texture2DId = 0;
+	static std::map<AssetIdentifier, Ref<Shader>, CompareAssetIdentifier> s_Shaders;
+	static std::map<AssetIdentifier, Ref<Texture2D>, CompareAssetIdentifier> s_Textures2D;
 
-	std::map<AssetIdentifier, Ref<Shader>, CompareAssetIdentifier> AssetManager::s_Shaders;
-	std::map<AssetIdentifier, Ref<Texture2D>, CompareAssetIdentifier> AssetManager::s_Textures2D;
+	static uint32_t s_ShaderId = 0;
+	static uint32_t s_Texture2DId = 0;
 
-	std::map<AssetManager::DefaultShaderId, Ref<Shader>> AssetManager::s_DefaultShaders;
-	std::map<AssetManager::DefaultTexture2DId, Ref<Texture2D>> AssetManager::s_DefaultTextures2D;
-	std::map<AssetManager::DefaultVertexArrayId, Ref<VertexArray>> AssetManager::s_DefaultVertexArrays;
+	static std::map<AssetManager::DefaultShaderId, Ref<Shader>> s_DefaultShaders;
+	static std::map<AssetManager::DefaultTexture2DId, Ref<Texture2D>> s_DefaultTextures2D;
+	static std::map<AssetManager::DefaultVertexArrayId, Ref<VertexArray>> s_DefaultVertexArrays;
 
 
 
@@ -94,6 +94,7 @@ namespace Rapier {
 	void AssetManager::LoadDefaultShaders() {
 		LoadDefaultShader("GradientVertex.rshader", "GradientFragment.rshader", DefaultShaderId::GradientColorShader);
 		LoadDefaultShader("TextureVertex.rshader", "TextureFragment.rshader", DefaultShaderId::TextureShader);
+		LoadDefaultShader("SolidCircleVertex.rshader", "SolidCircleFragment.rshader", DefaultShaderId::SolidCircleShader);
 	}
 
 	void AssetManager::LoadDefaultTexture2Ds() {
@@ -109,16 +110,16 @@ namespace Rapier {
 		Ref<VertexArray> va = VertexArray::Create();
 
 		float QuadVertices[] = {
-			-1.0f, -1.0f, 0.0f,
-			 1.0f, -1.0f, 0.0f,
-			 1.0f,  1.0f, 0.0f,
-			-1.0f,  1.0f, 0.0f,
+			-0.5f, -0.5f, 0.0f,
+			 0.5f, -0.5f, 0.0f,
+			 0.5f,  0.5f, 0.0f,
+			-0.5f,  0.5f, 0.0f,
 		};
 
 		Ref<VertexBuffer> vb = VertexBuffer::Create(QuadVertices, sizeof(QuadVertices));
 		vb->SetLayout({
 			{ShaderDataType::Float3, "a_Position"}
-			});
+		});
 
 		uint32_t QuadIndices[] = { 0, 1, 2, 2, 3, 0 };
 		Ref<IndexBuffer> ib = IndexBuffer::Create(QuadIndices, sizeof(QuadIndices) / sizeof(uint32_t));
@@ -135,10 +136,10 @@ namespace Rapier {
 		va->Bind();
 
 		float vertices[] = {
-			-1.0, -1.0, 0.0, 0.0, 0.0,
-			 1.0, -1.0, 0.0, 1.0, 0.0,
-			 1.0,  1.0, 0.0, 1.0, 1.0,
-			-1.0,  1.0, 0.0, 0.0, 1.0
+			-0.5, -0.5, 0.0, 0.0, 0.0,
+			 0.5, -0.5, 0.0, 1.0, 0.0,
+			 0.5,  0.5, 0.0, 1.0, 1.0,
+			-0.5,  0.5, 0.0, 0.0, 1.0
 		};
 
 		uint32_t indices[] = {
@@ -239,4 +240,9 @@ namespace Rapier {
 		return nullptr;
 	}
 
+
+
+	Ref<Shader> AssetManager::GetDefaultShader(DefaultShaderId id) { return s_DefaultShaders[id]; }
+	Ref<Texture2D> AssetManager::GetDefaultTexture2D(DefaultTexture2DId id) { return s_DefaultTextures2D[id]; }
+	Ref<VertexArray> AssetManager::GetDefaultVertexArray(DefaultVertexArrayId id) { return s_DefaultVertexArrays[id]; }
 }

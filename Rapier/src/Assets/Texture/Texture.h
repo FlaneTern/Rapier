@@ -12,6 +12,8 @@ namespace Rapier {
 		virtual uint32_t GetAssetManagerId() const = 0;
 		virtual void SetAssetManagerId(uint32_t id) = 0;
 
+		virtual uint32_t GetRendererId() const = 0;
+
 		virtual void Bind(uint32_t slot = 0) const = 0;
 	};
 

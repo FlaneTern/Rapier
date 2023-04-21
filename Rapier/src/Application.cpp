@@ -28,8 +28,6 @@ namespace Rapier {
 		Renderer2D::Create();
 		AssetManager::Init();
 
-		m_CameraController = std::make_shared<OrthographicCameraController>();
-
 		m_ImGuiLayer = new ImGuiLayer;
 		PushOverlay(m_ImGuiLayer);
 
@@ -56,13 +54,13 @@ namespace Rapier {
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
 
-		m_CameraController->OnEvent(e);
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
 			(*--it)->OnEvent(e);
 			if (e.m_Handled)
 				break;
 		}
+
 	}
 
 	void Application::OnUpdate(DeltaTime dt) {
@@ -78,8 +76,6 @@ namespace Rapier {
 		while (m_Running) {
 			DeltaTime dt = DeltaTime(m_PrevTime);
 			m_PrevTime = std::chrono::high_resolution_clock::now();
-			//RAPIER_CORE_INFO("time : {0} seconds, {1} fps", dt, 1 / dt);
-			m_CameraController->OnUpdate(dt);
 
 			OnUpdate(dt);
 
@@ -96,9 +92,10 @@ namespace Rapier {
 			}
 			m_ImGuiLayer->End();
 
+			PostUpdate();
+
 			m_Window->OnUpdate();
 
-			PostUpdate();
 		}
 	}
 

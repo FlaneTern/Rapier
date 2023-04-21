@@ -42,11 +42,7 @@ namespace Rapier {
 
 	private:
 
-		static std::map<AssetIdentifier, Ref<Shader>, CompareAssetIdentifier> s_Shaders;
-		static std::map<AssetIdentifier, Ref<Texture2D>, CompareAssetIdentifier> s_Textures2D;
 
-		static uint32_t s_ShaderId;
-		static uint32_t s_Texture2DId;
 
 
 
@@ -54,7 +50,8 @@ namespace Rapier {
 	public:
 		enum class DefaultShaderId {
 			GradientColorShader = 0,
-			TextureShader
+			TextureShader,
+			SolidCircleShader
 		};
 
 		enum class DefaultTexture2DId {
@@ -69,12 +66,12 @@ namespace Rapier {
 		};
 
 
+		static Ref<Shader> GetDefaultShader(DefaultShaderId id);
+		static Ref<Texture2D> GetDefaultTexture2D(DefaultTexture2DId id);
+		static Ref<VertexArray> GetDefaultVertexArray(DefaultVertexArrayId id);
+
 	private:
 		friend class Renderer2D;
-
-		static Ref<Shader> GetDefaultShader(DefaultShaderId id) { return s_DefaultShaders[id]; }
-		static Ref<Texture2D> GetDefaultTexture2D(DefaultTexture2DId id) { return s_DefaultTextures2D[id]; }
-		static Ref<VertexArray> GetDefaultVertexArray(DefaultVertexArrayId id) { return s_DefaultVertexArrays[id]; }
 
 
 
@@ -85,9 +82,7 @@ namespace Rapier {
 		static void LoadDefaultTexture2D(const std::string& filename, DefaultTexture2DId id);
 
 
-		static std::map<DefaultShaderId, Ref<Shader>> s_DefaultShaders;
-		static std::map<DefaultTexture2DId, Ref<Texture2D>> s_DefaultTextures2D;
-		static std::map<DefaultVertexArrayId, Ref<VertexArray>> s_DefaultVertexArrays;
+
 
 
 		static void CreateVertexArrayQuad();

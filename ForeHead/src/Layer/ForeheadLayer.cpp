@@ -7,14 +7,24 @@
 
 namespace Forehead {
 
+	static float width = 1.0f;
+	static float height = 1.0f;
+	static float x = 0.0f;
+	static float y = 0.0f;
+
 	void ForeheadLayer::OnUpdate(Rapier::DeltaTime dt) {
 
-		Rapier::Renderer2D::DrawTexture({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }, Rapier::AssetManager::DefaultTexture2DId::IreneGyatekora3);
+		Rapier::Renderer2D::DrawTexture({ x, y, 0.0f }, { width, height }, Rapier::AssetManager::DefaultTexture2DId::IreneGyatekora3);
 
 	}
 
 	void ForeheadLayer::OnImGuiRender() {
-
+		ImGui::Begin("Forehead");
+		ImGui::SliderFloat("width", &width, 0.0f, 3.0f);
+		ImGui::SliderFloat("height", &height, 0.0f, 3.0f);
+		ImGui::SliderFloat("x", &x, -3.0f, 3.0f);
+		ImGui::SliderFloat("y", &y, -3.0f, 3.0f);
+		ImGui::End();
 	}
 
 	void ForeheadLayer::OnAttach() {

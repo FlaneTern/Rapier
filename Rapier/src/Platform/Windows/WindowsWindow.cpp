@@ -40,6 +40,7 @@ namespace Rapier {
 	}
 
 	void WindowsWindow::Init(const WindowProps& props) {
+		
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
@@ -162,6 +163,8 @@ namespace Rapier {
 		//});
 		//glfwSetCursorEnterCallback(m_Window, ImGui_ImplGlfw_CursorEnterCallback);
 
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	void WindowsWindow::Shutdown() {

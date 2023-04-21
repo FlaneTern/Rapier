@@ -175,10 +175,8 @@ namespace Rapier {
 
 		ImGui_ImplGlfw_UpdateKeyModifiers(wnd);
 
-		//int ImGuiKeycode = ImGui_ImplGlfw_TranslateUntranslatedKey(e.GetKeyCode(), e.GetScanCode());
 			
 		ImGuiIO& io = ImGui::GetIO();
-		//ImGuiKey imgui_key = ImGui_ImplGlfw_KeyToImGuiKey(e.GetKeyCode());
 		ImGuiKey imgui_key = Key_RapierToImGui(e.GetKeyCode());
 		io.AddKeyEvent(imgui_key, 1);
 		//io.SetKeyEventNativeData(imgui_key, e.GetKeyCode(), e.GetScanCode()); // To support legacy indexing (<1.87 user code)
@@ -193,10 +191,7 @@ namespace Rapier {
 
 		ImGui_ImplGlfw_UpdateKeyModifiers(wnd);
 
-		//int ImGuiKeycode = ImGui_ImplGlfw_TranslateUntranslatedKey(e.GetKeyCode(), e.GetScanCode());
-
 		ImGuiIO& io = ImGui::GetIO();
-		//ImGuiKey imgui_key = ImGui_ImplGlfw_KeyToImGuiKey(e.GetKeyCode());
 		ImGuiKey imgui_key = Key_RapierToImGui(e.GetKeyCode());
 		io.AddKeyEvent(imgui_key, 0);
 		//io.SetKeyEventNativeData(imgui_key, e.GetKeyCode(), e.GetScanCode()); // To support legacy indexing (<1.87 user code)

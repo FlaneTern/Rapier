@@ -1,5 +1,5 @@
 #include "Rapier.h"
-#include "RapierEntryPoint.h"
+//#include "RapierEntryPoint.h"
 
 #include "Forehead.h"
 #include "Layer/ForeheadLayer.h"
@@ -46,6 +46,6 @@ namespace Forehead {
 	}
 }
 
-Rapier::Application* Rapier::CreateApplication() {
-	return new Forehead::Forehead();
-}
+//Rapier::Application* Rapier::CreateApplication() {
+//	return new Forehead::Forehead();
+//}

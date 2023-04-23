@@ -6,7 +6,7 @@
 #include "Platform/OpenGL/OpenGLShader.h"
 
 namespace Rapier {
-	Ref<Shader> Shader::Create(const std::string& vertexName, const std::string& fragmentName) {
-		return AssetManager::LoadShader(vertexName, fragmentName);
+	Ref<Shader> Shader::Create(const std::string& filename) {
+		return AssetManager::LoadShader(filename);
 	}
 }

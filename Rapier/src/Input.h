@@ -4,14 +4,12 @@
 namespace Rapier {
 	class RAPIER_API Input {
 	public:
-		static bool IsKeyPressed(int keycode) { return s_Instance->IsKeyPressedImpl(keycode); }
-		static bool IsMouseButtonPressed(int button) { return s_Instance->IsMouseButtonPressedImpl(button); }
-		static std::pair<float, float> GetMousePos() { return s_Instance->GetMousePosImpl(); }
-	protected:
-		virtual bool IsKeyPressedImpl(int keycode) = 0;
-		virtual bool IsMouseButtonPressedImpl(int button) = 0;
-		virtual std::pair<float, float> GetMousePosImpl() = 0;
+		static bool IsKeyPressed(int keycode);
+		static bool IsMouseButtonPressed(int button);
+		static std::pair<float, float> GetMousePos();
+
+		static void BlockInput();
+		static void UnblockInput();
 	private:
-		static Input* s_Instance;
 	};
 }

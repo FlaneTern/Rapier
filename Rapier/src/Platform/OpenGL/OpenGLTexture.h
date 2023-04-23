@@ -13,6 +13,8 @@ namespace Rapier {
 
 		virtual uint32_t GetRendererId() const override { return m_RendererId; };
 
+		virtual const std::string& GetFilepath() const override { return m_Filepath; }
+
 		virtual uint32_t GetAssetManagerId() const override { return m_AssetManagerId; }
 		virtual void SetAssetManagerId(uint32_t id) override { m_AssetManagerId = id; }
 
@@ -24,5 +26,7 @@ namespace Rapier {
 		
 		uint32_t m_AssetManagerId;
 		uint32_t m_Slot;
+
+		std::string m_Filepath;
 	};
 }

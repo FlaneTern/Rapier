@@ -17,10 +17,12 @@ namespace Rapier {
 		m_ActiveScene = Application::Get().m_ActiveScene;
 
 		m_EntityListPanel = std::make_shared<EntityListPanel>(m_ActiveScene);
+		m_AssetPanel = std::make_shared<AssetPanel>(m_ActiveScene);
 	}
 
 	void GuiLayer::OnImGuiRender() {
 		m_EntityListPanel->OnImGuiRender();
+		m_AssetPanel->OnImGuiRender();
 	}
 
 	bool GuiLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& e) {

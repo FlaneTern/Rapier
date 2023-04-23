@@ -10,6 +10,7 @@ namespace Rapier {
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
 	{
 		Ref<TextureData> data = FileSystem::GetDataTexture(path);
+		m_Filepath = path;
 
 		m_Width = data->Width;
 		m_Height = data->Height;

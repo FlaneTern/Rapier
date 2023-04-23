@@ -18,7 +18,7 @@ namespace Rapier {
 		uint32_t GetAssetManagerId() { return m_AssetManagerId; }
 		void SetAssetManagerId(uint32_t id) { m_AssetManagerId = id; }
 
-		static Ref<Shader> Create(const std::string& vertexName, const std::string& fragmentName);
+		static Ref<Shader> Create(const std::string& filename);
 
 	protected:
 		uint32_t m_RendererId;

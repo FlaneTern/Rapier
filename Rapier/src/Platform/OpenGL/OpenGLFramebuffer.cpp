@@ -29,11 +29,11 @@ namespace Rapier {
 		//////////////////////////////////////////////// MEMORY LEAK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ////////////////////////////////////////////////
 		//////////////////////////////////////////////// MEMORY LEAK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ////////////////////////////////////////////////
 		//////////////////////////////////////////////// MEMORY LEAK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ////////////////////////////////////////////////
-		if (m_RendererId) {
-			glDeleteTextures(1, &m_ColorAttachment);
-			glDeleteTextures(1, &m_DepthAttachment);
-			glDeleteFramebuffers(1, &m_RendererId);
-		}
+		if (m_RendererId) { //////////////////////////// MEMORY LEAK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ////////////////////////////////////////////////
+			glDeleteTextures(1, &m_ColorAttachment);//// MEMORY LEAK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ////////////////////////////////////////////////
+			glDeleteTextures(1, &m_DepthAttachment);//// MEMORY LEAK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ////////////////////////////////////////////////
+			glDeleteFramebuffers(1, &m_RendererId);///// MEMORY LEAK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ////////////////////////////////////////////////
+		}/////////////////////////////////////////////// MEMORY LEAK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ////////////////////////////////////////////////
 		//////////////////////////////////////////////// MEMORY LEAK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ////////////////////////////////////////////////
 		//////////////////////////////////////////////// MEMORY LEAK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ////////////////////////////////////////////////
 		//////////////////////////////////////////////// MEMORY LEAK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ////////////////////////////////////////////////
@@ -49,8 +49,8 @@ namespace Rapier {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorAttachment, 0);
-
-
+		
+		
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_DepthAttachment);
 		glBindTexture(GL_TEXTURE_2D, m_DepthAttachment);
 		glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, m_Specification.Width, m_Specification.Height);

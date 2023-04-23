@@ -2,6 +2,7 @@
 #include "Rapier.h"
 
 #include "Layer/Gui/EntityListPanel.h"
+#include "Layer/Gui/AssetPanel.h"
 
 namespace Rapier {
 
@@ -46,5 +47,6 @@ namespace Rapier {
 
 		Ref<Scene> m_ActiveScene = nullptr;
 		Ref<EntityListPanel> m_EntityListPanel;
+		Ref<AssetPanel> m_AssetPanel;
 	};
 }

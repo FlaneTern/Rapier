@@ -6,6 +6,8 @@
 namespace Rapier {
 
 	class Scene;
+	struct NativeScriptComponent;
+
 	class Entity {
 	public:
 		Entity() = default;
@@ -34,8 +36,26 @@ namespace Rapier {
 		template<typename T>
 		void RemoveComponent() {
 			RAPIER_CORE_ASSERT(HasComponent<T>(), "Entity already does not have component!");
-			return m_Scene->m_Registry.remove<T>(m_EntityHandle);
+
+			// Do this better ?? ////////////////////////////
+			if(typeid(T) == typeid(NativeScriptComponent))
+				DestroyScript();
+			// Do this better ?? ////////////////////////////
+
+			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
+
+		template<typename T, typename... Args>
+		T& ResetComponent(Args&&... args) {
+			RemoveComponent<T>();
+			return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+		}
+
+		void DestroyScript();
+
+		operator entt::entity() const { return m_EntityHandle; }
+		operator uint32_t() const { return (uint32_t)m_EntityHandle; }
+
 
 	private:
 		entt::entity m_EntityHandle = entt::null;

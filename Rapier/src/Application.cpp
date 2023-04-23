@@ -23,9 +23,7 @@ namespace Rapier {
 
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
-
-		Renderer::Create();
-		Renderer2D::Create();
+		FileSystem::Init();
 		AssetManager::Init();
 
 		m_ImGuiLayer = new ImGuiLayer;

@@ -8,7 +8,7 @@
 #include "FileSystem/FileSystem.h"
 
 namespace Rapier {
-	OpenGLShader::OpenGLShader(const std::string& vertexPath, const std::string& fragmentPath) {
+	OpenGLShader::OpenGLShader(const std::string& filename) {
 		// Read our shaders into the appropriate buffers
 
 		// Create an empty vertex shader handle
@@ -16,8 +16,8 @@ namespace Rapier {
 
 		// Send the vertex shader source code to GL
 		// Note that std::string's .c_str is NULL character terminated.
-		Ref<std::string> dSource = FileSystem::GetDataShader(vertexPath);
-		const GLchar* source = dSource->c_str();
+		auto[vertexSource, fragmentSource]  = FileSystem::GetDataShader(filename);
+		const GLchar* source = vertexSource.c_str();
 		//const GLchar* source = (const GLchar*)vertex.c_str();
 		glShaderSource(vertexShader, 1, &source, 0);
 
@@ -49,8 +49,7 @@ namespace Rapier {
 		// Send the fragment shader source code to GL
 		// Note that std::string's .c_str is NULL character terminated.
 
-		dSource = FileSystem::GetDataShader(fragmentPath);
-		source = dSource->c_str();
+		source = fragmentSource.c_str();
 		//source = (const GLchar*)fragment.c_str();
 		glShaderSource(fragmentShader, 1, &source, 0);
 

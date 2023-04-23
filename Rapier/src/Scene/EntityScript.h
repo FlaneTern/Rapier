@@ -14,6 +14,7 @@ namespace Rapier {
 			return m_Entity.GetComponent<T>();
 		}
 
+		bool EnableOnUpdate = true;
 
 	protected:
 		friend class Scene;

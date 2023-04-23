@@ -11,7 +11,6 @@
 namespace Rapier {
 
 	struct SceneData {
-		SceneData(const OrthographicCamera& camera) : ViewProjectionMatrix(camera.GetViewProjectionMatrix()) {}
 		SceneData(const glm::mat4& camera) : ViewProjectionMatrix(camera) {}
 		glm::mat4 ViewProjectionMatrix;
 	};
@@ -19,8 +18,7 @@ namespace Rapier {
 
 	class Renderer {
 	public:
-
-		static void BeginScene(const OrthographicCamera& camera);
+		static void BeginScene(const glm::mat4& camera);
 
 		static void EndScene();
 
@@ -28,18 +26,8 @@ namespace Rapier {
 
 		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 
-
-		static void Create();
-		Renderer(const Renderer& other) = delete;
-
-
 	private:
-		Renderer();
-
-		static Scope<Renderer> s_Renderer;
-
-		Scope<SceneData> m_SceneData;
-		bool m_StartedScene;
+		Renderer() = delete;
 		
 	};
 
@@ -54,8 +42,6 @@ namespace Rapier {
 
 	class Renderer2D {
 	public:
-
-		static void BeginScene(const OrthographicCamera& camera);
 		static void BeginScene(const glm::mat4& camera);
 
 		static void EndScene();
@@ -63,13 +49,6 @@ namespace Rapier {
 		static void Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::mat4& transform = glm::mat4(1.0f));
 
 		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
-
-
-		static void Create();
-		Renderer2D(const Renderer2D& other) = delete;
-
-
-
 
 		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
 		static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation = 0.0f);
@@ -79,9 +58,6 @@ namespace Rapier {
 
 		static void DrawTexture(const glm::mat4& transform, Ref<Texture2D> texture);
 		static void DrawTexture(const glm::vec3& position, const glm::vec2& size, Ref<Texture2D> texture, float rotation = 0.0f);
-		static void DrawTexture(const glm::vec3& position, const glm::vec2& size, AssetManager::DefaultTexture2DId id, float rotation = 0.0f);
-
-
 
 		static void DrawCircle(const glm::mat4& transform, const glm::vec4& color);
 		static void DrawCircle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
@@ -90,12 +66,7 @@ namespace Rapier {
 
 
 	private:
-		Renderer2D();
-
-		static Scope<Renderer2D> s_Renderer2D;
-
-		Scope<SceneData> m_SceneData;
-		bool m_StartedScene;
+		Renderer2D() = delete;
 
 	};
 

@@ -2,7 +2,7 @@
 #include "entt.hpp"
 #include "Time/DeltaTime.h"
 #include "Scene/Components.h"
-#include "Scene/Entity.h"
+#include "Scene/EntityScript.h"
 #include "Scene/Scene.h"
 
 #include "Renderer/Renderer.h"
@@ -18,9 +18,16 @@ namespace Rapier {
 		return entity;
 	}
 
+	void Scene::DestroyEntity(Entity& entity) {
+		entity.DestroyScript();
+		m_Registry.destroy(entity);
+	}
+
 
 
 	void Scene::OnUpdate(DeltaTime dt) {
+
+		RenderCommand::Clear();
 
 		// Run Entity Updates
 		{
@@ -34,7 +41,7 @@ namespace Rapier {
 					script.Instance->OnCreate();
 				}
 
-				script.Instance->OnUpdate(dt);
+				if(script.Instance->EnableOnUpdate) script.Instance->OnUpdate(dt);
 			}
 		}
 
@@ -60,7 +67,6 @@ namespace Rapier {
 		Renderer2D::BeginScene(CameraViewProjection);
 		
 		{
-			//auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 			auto group = m_Registry.view<TransformComponent, SpriteRendererComponent>();
 			for (auto entity : group) {
 				const auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
@@ -91,4 +97,16 @@ namespace Rapier {
 		}
 	}
 
+
+	void Scene::SetPrimaryCamera(Entity& entity) {
+		auto group = m_Registry.view<CameraComponent>();
+
+		for (auto entity : group) {
+			auto& camera = group.get<CameraComponent>(entity);
+
+			camera.Primary = false;
+		}
+
+		entity.GetComponent<CameraComponent>().Primary = true;
+	}
 }

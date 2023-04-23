@@ -4,11 +4,12 @@
 
 namespace Rapier {
 
-	class EntityListPanel : Panel {
+	class AssetPanel : Panel {
 	public:
-		EntityListPanel(Ref<Scene> scene)
+		AssetPanel(Ref<Scene> scene)
 			: Panel(scene) {}
 
 		virtual void OnImGuiRender() override;
+
 	};
 }

@@ -12,19 +12,21 @@ namespace Rapier {
 
 	void LanternLayer::OnUpdate(DeltaTime dt) {
 
-		m_Framebuffer->Bind(); 
 
-        RenderCommand::Clear();
-		m_ActiveScene->OnUpdate(dt);
-
-
-		/*Renderer2D::DrawCircle({ 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f }, { 1.0f, 0.5f, 1.0f, 1.0f });
-		Renderer2D::DrawQuad({ -x, -y }, { width, height }, { 1.0f, 0.0f, 0.0f, 1.0f }, rotation);
-		Renderer2D::DrawQuad({  x, -y }, { width, height }, { 0.0f, 0.0f, 1.0f, 1.0f }, rotation);
-		Renderer2D::DrawQuad({ -x,  y }, { width, height }, { 0.0f, 1.0f, 0.0f, 1.0f }, rotation);
-		Renderer2D::DrawQuad({  x,  y }, { width, height }, { 0.5f, 0.5f, 0.5f, 1.0f }, rotation);
-        Renderer2D::DrawTexture({ xT, yT, 0.0f }, { widthT, heightT }, AssetManager::DefaultTexture2DId::IreneGyatekora3, rotationT);*/
+		if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
+			m_ViewportPanelSize.x > 0.0f && m_ViewportPanelSize.y > 0.0f && // zero sized framebuffer is invalid
+			(spec.Width != m_ViewportPanelSize.x || spec.Height != m_ViewportPanelSize.y))
+		{
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportPanelSize.x, (uint32_t)m_ViewportPanelSize.y);
+			m_Framebuffer->Resize((uint32_t)m_ViewportPanelSize.x, (uint32_t)m_ViewportPanelSize.y);
+		}
 		
+
+
+		m_Framebuffer->Bind(); 
+		RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+        RenderCommand::Clear();
+		m_ActiveScene->OnUpdate(dt);		
         
 		m_Framebuffer->Unbind();
 	}
@@ -41,13 +43,8 @@ namespace Rapier {
 		//////////////////////////////////////////////////////////////// TESTING ////////////////////////////////////////////////////////////////
 
 		m_Texture = Texture2D::Create("irene-gyatekora-v1.png");
-		//m_Texture = AssetManager::GetDefaultTexture2D(AssetManager::DefaultTexture2DId::IreneGyatekora2);
 		FramebufferSpecification spec = { 1366, 768 };
 		m_Framebuffer = Framebuffer::Create(spec);
-
-
-
-
 
 
 		class TextureControl : public EntityScript {
@@ -68,18 +65,17 @@ namespace Rapier {
 		};
 
 		class SquareControlX : public EntityScript {
-			float x = -2.0f;
 			bool forward = true;
 
-
 			virtual void OnUpdate(DeltaTime dt) override {
+				auto& transform = GetComponent<TransformComponent>().Transform;
+				float x = transform[3][0];
 
 				if (x > 3.0f) 
 					forward = false;
 				else if (x < -3.0f) 
 					forward = true;
 
-				auto& transform = GetComponent<TransformComponent>().Transform;
 
 				if (forward) 
 					x += 3.0f * dt;
@@ -91,18 +87,17 @@ namespace Rapier {
 
 
 		class SquareControlY : public EntityScript {
-			float y = -2.0f;
 			bool forward = true;
 
-
 			virtual void OnUpdate(DeltaTime dt) override {
+				auto& transform = GetComponent<TransformComponent>().Transform;
+				float y = transform[3][1];
 
 				if (y > 3.0f) 
 					forward = false;
 				else if (y < -3.0f) 
 					forward = true;
 
-				auto& transform = GetComponent<TransformComponent>().Transform;
 
 				if (forward) 
 					y += 3.0f * dt;
@@ -127,7 +122,8 @@ namespace Rapier {
 
 		Entity cameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
 		float l = -16.0f * 3.0f / 9.0f, r = 16.0f * 3.0f / 9.0f, b = -1.0f * 3.0f, t = 1.0f * 3.0f, f = -1.0f, n = 1.0f;
-		cameraEntity.AddComponent<CameraComponent>(l, r, b, t, f, n);
+		auto& cameraComponent = cameraEntity.AddComponent<CameraComponent>(l, r, b, t, f, n);
+		cameraComponent.Primary = true;
 		cameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 		
 
@@ -183,16 +179,11 @@ namespace Rapier {
 		m_MainViewportFocused = ImGui::IsWindowFocused();
 		m_MainViewportHovered = ImGui::IsWindowHovered();
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-		if (m_ViewportPanelSize != *(glm::vec2*)&viewportPanelSize) {
-			m_Framebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
-			m_ViewportPanelSize = { viewportPanelSize.x, viewportPanelSize.y };
-			m_ActiveScene->OnViewportResize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
-		}
-	    uint32_t textureId = m_Framebuffer->GetColorAttachmentRendererId();
-        ImGui::Image((void*)textureId, ImVec2{ m_ViewportPanelSize.x, m_ViewportPanelSize.y }, ImVec2{0,1}, ImVec2{1,0});
+		m_ViewportPanelSize = { viewportPanelSize.x, viewportPanelSize.y };
+		uint32_t textureId = m_Framebuffer->GetColorAttachmentRendererId();
+		ImGui::Image((void*)textureId, ImVec2{ m_ViewportPanelSize.x, m_ViewportPanelSize.y }, ImVec2{0,1}, ImVec2{1,0});
 	    ImGui::End();
 		ImGui::PopStyleVar();
-        
 		
 	}
 

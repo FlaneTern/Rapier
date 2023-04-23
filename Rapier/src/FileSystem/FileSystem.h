@@ -21,11 +21,24 @@ namespace Rapier {
 	class FileSystem {
 
 	public:
-		static Ref<std::string> GetDataShader(const std::string& filepath);
-		static Ref<TextureData> GetDataTexture(const std::string& filepath);
+
+		static void Init();
+
+		static std::pair<std::string, std::string> GetDataShader(const std::string& filename);
+		static Ref<TextureData> GetDataTexture(const std::string& filename);
+
+		static void RefreshTextureDirectory();
+		static void RefreshShaderDirectory();
+
+		static bool IsDirectory(const std::string& name);
+		static bool IsTexture(const std::string & name);
+		static bool IsShader(const std::string & name);
 
 	private:
-
+		static std::vector<std::string> s_TextureDirectoryEntries;
+		static std::vector<std::string> s_ShaderDirectoryEntries;
+		friend class AssetManager;
+		friend class AssetPanel;
 	};
 
 }

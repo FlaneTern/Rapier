@@ -12,19 +12,22 @@
 
 
 
+
+
+
+
 namespace Rapier {
 
-	static std::map<AssetIdentifier, Ref<Shader>, CompareAssetIdentifier> s_Shaders;
-	static std::map<AssetIdentifier, Ref<Texture2D>, CompareAssetIdentifier> s_Textures2D;
-
-	static uint32_t s_ShaderId = 0;
-	static uint32_t s_Texture2DId = 0;
-
-	static std::map<AssetManager::DefaultShaderId, Ref<Shader>> s_DefaultShaders;
-	static std::map<AssetManager::DefaultTexture2DId, Ref<Texture2D>> s_DefaultTextures2D;
-	static std::map<AssetManager::DefaultVertexArrayId, Ref<VertexArray>> s_DefaultVertexArrays;
 
 
+	std::map<std::string, Ref<Texture2D>> AssetManager::s_Textures2D;
+
+	static std::map<std::string, Ref<Shader>> l_Shaders;
+	static std::map<std::string, Ref<VertexArray>> l_VertexArrays;
+
+	static uint32_t l_ShaderId = 0;
+	static uint32_t l_Texture2DId = 0;
+	static uint32_t l_VertexArrayId = 0;
 
 	/// <summary>
 	/// Checks for the list of saved shaders. If the shader already exists returns it, else creates the shader and returns it.
@@ -32,22 +35,24 @@ namespace Rapier {
 	/// <param name="vertexName">: Filepath to the vertex shader</param>
 	/// <param name="fragmentName">: Filepath to the vertex shader</param>
 	/// <returns>The loaded shader</returns>
-	Ref<Shader> AssetManager::LoadShader(const std::string& vertexName, const std::string& fragmentName) {
-		auto exists = s_Shaders.find(vertexName + fragmentName);
-		if (exists != s_Shaders.end()) {
-			RAPIER_CORE_INFO("Shader with filename :'{0}' was already created!", vertexName + fragmentName);
+	Ref<Shader> AssetManager::LoadShader(const std::string& filename) {
+
+		auto exists = l_Shaders.find(filename);
+		if (exists != l_Shaders.end()) {
+			RAPIER_CORE_INFO("Shader with filename :'{0}' was already created!", filename);
 			return exists->second;
 		}
 
 		Ref<Shader> shader;
 		switch (Renderer::GetAPI()) {
 		case RendererAPI::API::None:       RAPIER_CORE_ASSERT(false, "RendererAPI::None is not supported!");  shader = nullptr;
-		case RendererAPI::API::OpenGL:     shader =  std::make_shared<OpenGLShader>(vertexName, fragmentName);
+		case RendererAPI::API::OpenGL:     shader =  std::make_shared<OpenGLShader>(filename);
 		}
 		
-		shader->SetAssetManagerId(s_ShaderId);
-		s_Shaders.insert({ { s_ShaderId, vertexName + fragmentName }, shader });
-		s_ShaderId++;
+		shader->SetAssetManagerId(l_ShaderId);
+		l_Shaders.insert({ filename, shader });
+
+		l_ShaderId++;
 
 		return shader;
 	}
@@ -59,21 +64,22 @@ namespace Rapier {
 	/// <param name="filename">: Filepath to the texture</param>
 	/// <returns>The loaded texture</returns>
 	Ref<Texture2D> AssetManager::LoadTexture2D(const std::string& filename) {
+		
 		auto exists = s_Textures2D.find(filename);
 		if (exists != s_Textures2D.end()) {
 			RAPIER_CORE_INFO("Texture with filename :'{0}' was already created!", filename);
 			return exists->second;
 		}
-
+		
 		Ref<Texture2D> texture2D;
 		switch (Renderer::GetAPI()) {
 		case RendererAPI::API::None:       RAPIER_CORE_ASSERT(false, "RendererAPI::None is not supported!");  texture2D = nullptr;
 		case RendererAPI::API::OpenGL:     texture2D = std::make_shared<OpenGLTexture2D>(filename);
 		}
 
-		texture2D->SetAssetManagerId(s_Texture2DId);
-		s_Textures2D.insert({ { s_Texture2DId, filename }, texture2D });
-		s_Texture2DId++;
+		texture2D->SetAssetManagerId(l_Texture2DId);
+		s_Textures2D.insert({ filename , texture2D });
+		l_Texture2DId++;
 
 		return texture2D;
 	}
@@ -82,8 +88,16 @@ namespace Rapier {
 
 	void AssetManager::Init() {
 		CreateVertexArrays();
-		LoadDefaultShaders();
-		LoadDefaultTexture2Ds();
+		
+		for (const auto& entry : FileSystem::s_TextureDirectoryEntries) {
+			if(FileSystem::IsTexture(entry))
+				LoadTexture2D(entry);
+		}
+
+		for (const auto& entry : FileSystem::s_ShaderDirectoryEntries) {
+			if (FileSystem::IsShader(entry))
+				LoadShader(entry);
+		}
 	}
 
 	void AssetManager::CreateVertexArrays() {
@@ -92,15 +106,15 @@ namespace Rapier {
 	}
 
 	void AssetManager::LoadDefaultShaders() {
-		LoadDefaultShader("GradientVertex.rshader", "GradientFragment.rshader", DefaultShaderId::GradientColorShader);
-		LoadDefaultShader("TextureVertex.rshader", "TextureFragment.rshader", DefaultShaderId::TextureShader);
-		LoadDefaultShader("SolidCircleVertex.rshader", "SolidCircleFragment.rshader", DefaultShaderId::SolidCircleShader);
+		LoadShader("GradientQuad.rshader");
+		LoadShader("Texture.rshader");
+		LoadShader("SolidCircle.rshader");
 	}
 
 	void AssetManager::LoadDefaultTexture2Ds() {
-		LoadDefaultTexture2D("irene-gyatekora.png", DefaultTexture2DId::IreneGyatekora);
-		LoadDefaultTexture2D("irene-gyatekora-v0.png", DefaultTexture2DId::IreneGyatekora2);
-		LoadDefaultTexture2D("irene-gyatekora-v1.png", DefaultTexture2DId::IreneGyatekora3);
+		LoadTexture2D("irene-gyatekora.png");
+		LoadTexture2D("irene-gyatekora-v0.png");
+		LoadTexture2D("irene-gyatekora-v1.png");
 	}
 
 
@@ -127,7 +141,8 @@ namespace Rapier {
 		va->AddVertexBuffer(vb);
 		va->SetIndexBuffer(ib);
 
-		s_DefaultVertexArrays.insert({DefaultVertexArrayId::Quad, va});
+		l_VertexArrays.insert({ "Quad", va });
+		l_VertexArrayId++;
 	}
 
 
@@ -161,48 +176,14 @@ namespace Rapier {
 		va->AddVertexBuffer(vb);
 		va->SetIndexBuffer(ib);
 
-		s_DefaultVertexArrays.insert({ DefaultVertexArrayId::Texture, va });
+		l_VertexArrays.insert({ "Texture", va });
+		l_VertexArrayId++;
 	}
-
-	void AssetManager::LoadDefaultShader(const std::string& vertexName, const std::string& fragmentName, DefaultShaderId id) {
-		Ref<Shader> shader;
-		switch (Renderer::GetAPI()) {
-		case RendererAPI::API::None:       RAPIER_CORE_ASSERT(false, "RendererAPI::None is not supported!");  shader = nullptr;
-		case RendererAPI::API::OpenGL:     shader = std::make_shared<OpenGLShader>(vertexName, fragmentName);
-		}
-
-		shader->SetAssetManagerId((uint32_t)id);
-		s_DefaultShaders.insert({ id, shader });
-
-
-		// temp !!!!! //////////////////////////////
-		// temp !!!!! //////////////////////////////
-		// temp !!!!! //////////////////////////////
-		if (id == DefaultShaderId::TextureShader) {
-			shader->Bind();
-			shader->UploadUniformInt("u_Texture", 0);
-		}
-	}
-
-
-	void AssetManager::LoadDefaultTexture2D(const std::string& filename, DefaultTexture2DId id) {
-		Ref<Texture2D> texture2D;
-		switch (Renderer::GetAPI()) {
-		case RendererAPI::API::None:       RAPIER_CORE_ASSERT(false, "RendererAPI::None is not supported!");  texture2D = nullptr;
-		case RendererAPI::API::OpenGL:     texture2D = std::make_shared<OpenGLTexture2D>(filename);
-		}
-
-		texture2D->SetAssetManagerId((uint32_t)id);
-		s_DefaultTextures2D.insert({ id, texture2D });
-	}
-
-
-
 
 
 	Ref<Shader> AssetManager::GetShader(const std::string& filename) {
-		auto exists = s_Shaders.find(filename);
-		if (exists != s_Shaders.end()) {
+		auto exists = l_Shaders.find(filename);
+		if (exists != l_Shaders.end()) {
 			return exists->second;
 		}
 
@@ -210,15 +191,6 @@ namespace Rapier {
 		return nullptr;
 	}
 
-	Ref<Shader> AssetManager::GetShader(uint32_t id) {
-		auto exists = s_Shaders.find(id);
-		if (exists != s_Shaders.end()) {
-			return exists->second;
-		}
-
-		RAPIER_CORE_INFO("Shader with id :'{0}' doesn't exist!", id);
-		return nullptr;
-	}
 
 	Ref<Texture2D> AssetManager::GetTexture2D(const std::string& filename) {
 		auto exists = s_Textures2D.find(filename);
@@ -230,19 +202,61 @@ namespace Rapier {
 		return nullptr;
 	}
 
-	Ref<Texture2D> AssetManager::GetTexture2D(uint32_t id){
-		auto exists = s_Textures2D.find(id);
-		if (exists != s_Textures2D.end()) {
+
+
+	Ref<VertexArray> AssetManager::GetVertexArray(const std::string& filename) {
+		auto exists = l_VertexArrays.find(filename);
+		if (exists != l_VertexArrays.end()) {
 			return exists->second;
+		}
+
+		RAPIER_CORE_INFO("Texture with filename :'{0}' doesn't exist!", filename);
+		return nullptr;
+	}
+
+	/*
+	Ref<Shader> AssetManager::GetShader(uint32_t id) {
+		for (auto& entry : l_Shaders) {
+			if (entry.second->GetAssetManagerId() == id) {
+				return entry.second;
+			}
+		}
+
+		RAPIER_CORE_INFO("Shader with id :'{0}' doesn't exist!", id);
+		return nullptr;
+	}
+	Ref<Texture2D> AssetManager::GetTexture2D(uint32_t id){
+		for (auto& entry : s_Textures2D) {
+			if (entry.second->GetAssetManagerId() == id) {
+				return entry.second;
+			}
 		}
 
 		RAPIER_CORE_INFO("Texture with id :'{0}' doesn't exist!", id);
 		return nullptr;
 	}
+	Ref<VertexArray> AssetManager::GetVertexArray(uint32_t id) {
+		for (auto& entry : l_VertexArrays) {
+			if (entry.second->GetAssetManagerId() == id) {
+				return entry.second;
+			}
+		}
+
+		RAPIER_CORE_INFO("Texture with id :'{0}' doesn't exist!", id);
+		return nullptr;
+	}
+	*/
+
+	std::vector<Ref<Texture2D>> AssetManager::GetAllTexture2D() {
+		std::vector<Ref<Texture2D>> textures;
+		textures.reserve(s_Textures2D.size());
+
+		for (const auto& textureEntry : s_Textures2D) {
+			textures.push_back(textureEntry.second);
+		}
+
+		return textures;
+	}
 
 
-
-	Ref<Shader> AssetManager::GetDefaultShader(DefaultShaderId id) { return s_DefaultShaders[id]; }
-	Ref<Texture2D> AssetManager::GetDefaultTexture2D(DefaultTexture2DId id) { return s_DefaultTextures2D[id]; }
-	Ref<VertexArray> AssetManager::GetDefaultVertexArray(DefaultVertexArrayId id) { return s_DefaultVertexArrays[id]; }
 }

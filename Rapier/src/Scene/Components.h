@@ -1,12 +1,14 @@
 #pragma once
 
 #include "glm/glm.hpp"
-#include "Scene/EntityScript.h"
+
 
 #include "Camera/Camera.h"
 #include "Assets/Texture/Texture.h"
 
 namespace Rapier {
+
+	class EntityScript;
 
 	struct TagComponent {
 		std::string Tag;
@@ -18,6 +20,9 @@ namespace Rapier {
 
 		operator std::string& () { return Tag; }
 		operator const std::string() const { return Tag; }
+
+		static constexpr std::string_view AddName = "Add Tag Component\0";
+		static constexpr std::string_view RemoveName = "Remove Tag Component\0";
 	};
 
 	struct TransformComponent {
@@ -30,6 +35,9 @@ namespace Rapier {
 
 		operator glm::mat4& () { return Transform; }
 		operator const glm::mat4& () const { return Transform; }
+
+		static constexpr std::string_view AddName = "Add Transform Component\0";
+		static constexpr std::string_view RemoveName = "Remove Transform Component\0";
 	};
 
 
@@ -47,6 +55,9 @@ namespace Rapier {
 
 		SpriteRendererComponent(Ref<Texture2D> texture, const glm::vec4& color)
 			: Color(color), Texture(texture) {}
+
+		static constexpr std::string_view AddName = "Add Sprite Renderer Component\0";
+		static constexpr std::string_view RemoveName = "Remove Sprite Renderer Component\0";
 	};
 
 
@@ -61,11 +72,14 @@ namespace Rapier {
 			InstantiateScript = []() { return static_cast<EntityScript*>(new T()); };
 			DestroyScript = [](NativeScriptComponent* nsc) { delete nsc->Instance; nsc->Instance = nullptr; };
 		}
+
+		static constexpr std::string_view AddName = "Add Native Script Component\0";
+		static constexpr std::string_view RemoveName = "Remove Native Script Component\0";
 	};
 
 	struct CameraComponent {
 		Camera Camera;
-		bool Primary = true;
+		bool Primary = false;
 		bool FixedAspectRatio = false;
 
 		CameraComponent() = default;
@@ -75,6 +89,12 @@ namespace Rapier {
 		CameraComponent(const glm::mat4& cam)
 			: Camera(cam) {}
 
+		static constexpr std::string_view AddName = "Add Camera Component\0";
+		static constexpr std::string_view RemoveName = "Remove Camera Component\0";
 	};
 
+
+
+
+#define COMPONENTS_LIST CameraComponent, SpriteRendererComponent
 }

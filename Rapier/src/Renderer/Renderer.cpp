@@ -8,27 +8,17 @@
 
 namespace Rapier {
 
-	std::unique_ptr<Renderer> Renderer::s_Renderer = nullptr;
+	static Scope<SceneData> l_SceneData;
+	bool l_StartedScene = false;
 
-	void Renderer::Create() {
-		RAPIER_CORE_ASSERT(!s_Renderer, "Renderer already exists!");
-
-		Renderer::s_Renderer.reset(new Renderer());
-	}
-
-	void Renderer::BeginScene(const OrthographicCamera& camera) {
-		RAPIER_CORE_ASSERT(!s_Renderer->m_StartedScene, "Scene has already started!");
-		s_Renderer->m_StartedScene = true;
-		s_Renderer->m_SceneData.reset(new SceneData(camera));
-	}
 
 	void Renderer::EndScene() {
-		s_Renderer->m_StartedScene = false;
+		l_StartedScene = false;
 	}
 
 	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::mat4& transform) {
 		shader->Bind();
-		shader->UploadUniformMat4("u_ViewProjection", s_Renderer->m_SceneData->ViewProjectionMatrix);
+		shader->UploadUniformMat4("u_ViewProjection", l_SceneData->ViewProjectionMatrix);
 		shader->UploadUniformMat4("u_Transform", transform);
 
 		vertexArray->Bind();
@@ -36,11 +26,6 @@ namespace Rapier {
 	}
 
 
-	Renderer::Renderer()
-		:m_StartedScene(false) {}
-
-
-
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,46 +33,28 @@ namespace Rapier {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+	static Scope<SceneData> l_SceneData2D;
+	bool l_StartedScene2D = false;
 
-	std::unique_ptr<Renderer2D> Renderer2D::s_Renderer2D = nullptr;
-
-	void Renderer2D::Create() {
-		RAPIER_CORE_ASSERT(!s_Renderer2D, "Renderer already exists!");
-
-		Renderer2D::s_Renderer2D.reset(new Renderer2D());
-	}
-
-	void Renderer2D::BeginScene(const OrthographicCamera& camera) {
-		RAPIER_CORE_ASSERT(!s_Renderer2D->m_StartedScene, "Scene has already started!");
-		s_Renderer2D->m_StartedScene = true;
-		s_Renderer2D->m_SceneData.reset(new SceneData(camera));
-	}
 
 	void Renderer2D::BeginScene(const glm::mat4& camera) {
-		RAPIER_CORE_ASSERT(!s_Renderer2D->m_StartedScene, "Scene has already started!");
-		s_Renderer2D->m_StartedScene = true;
-		s_Renderer2D->m_SceneData.reset(new SceneData(camera));
+		RAPIER_CORE_ASSERT(!l_StartedScene2D, "Scene has already started!");
+		l_StartedScene2D = true;
+		l_SceneData2D.reset(new SceneData(camera));
 	}
 
 	void Renderer2D::EndScene() {
-		s_Renderer2D->m_StartedScene = false;
+		l_StartedScene2D = false;
 	}
 
 	void Renderer2D::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::mat4& transform) {
 		shader->Bind();
-		shader->UploadUniformMat4("u_ViewProjection", s_Renderer2D->m_SceneData->ViewProjectionMatrix);
+		shader->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
 		shader->UploadUniformMat4("u_Transform", transform);
 
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);
 	}
-
-
-	Renderer2D::Renderer2D()
-		:m_StartedScene(false) {}
-
-
-
 
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float rotation) {
@@ -112,28 +79,26 @@ namespace Rapier {
 
 
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
-		Ref<Shader> shader = AssetManager::GetDefaultShader(AssetManager::DefaultShaderId::GradientColorShader);
+		Ref<Shader> shader = AssetManager::GetShader("GradientQuad.rshader");
 		shader->Bind();
-		shader->UploadUniformMat4("u_ViewProjection", s_Renderer2D->m_SceneData->ViewProjectionMatrix);
+		shader->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
 		shader->UploadUniformMat4("u_Transform", transform);
 		shader->UploadUniformFloat4("u_Color", color);
 
-		Ref<VertexArray> va = AssetManager::GetDefaultVertexArray(AssetManager::DefaultVertexArrayId::Quad);
+		Ref<VertexArray> va = AssetManager::GetVertexArray("Quad");
 		va->Bind();
 		RenderCommand::DrawIndexed(va);
 	}
 
 
-
-
 	void Renderer2D::DrawTexture(const glm::mat4& transform, Ref<Texture2D> texture) {
 		texture->Bind();
-		Ref<Shader> shader = AssetManager::GetDefaultShader(AssetManager::DefaultShaderId::TextureShader);
+		Ref<Shader> shader = AssetManager::GetShader("Texture.rshader");
 		shader->Bind();
-		shader->UploadUniformMat4("u_ViewProjection", s_Renderer2D->m_SceneData->ViewProjectionMatrix);
+		shader->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
 		shader->UploadUniformMat4("u_Transform", transform);
 
-		Ref<VertexArray> va = AssetManager::GetDefaultVertexArray(AssetManager::DefaultVertexArrayId::Texture);
+		Ref<VertexArray> va = AssetManager::GetVertexArray("Texture");
 		va->Bind();
 		RenderCommand::DrawIndexed(va);
 	}
@@ -146,20 +111,15 @@ namespace Rapier {
 		DrawTexture(transform, texture);
 	}
 
-	void Renderer2D::DrawTexture(const glm::vec3& position, const glm::vec2& size, AssetManager::DefaultTexture2DId id, float rotation) {
-		DrawTexture(position, size, AssetManager::GetDefaultTexture2D(id), rotation);
-	}
-
-
 
 	void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& color) {
-		Ref<Shader> shader = AssetManager::GetDefaultShader(AssetManager::DefaultShaderId::SolidCircleShader);
+		Ref<Shader> shader = AssetManager::GetShader("SolidCircle.rshader");
 		shader->Bind();
-		shader->UploadUniformMat4("u_ViewProjection", s_Renderer2D->m_SceneData->ViewProjectionMatrix);
+		shader->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
 		shader->UploadUniformMat4("u_Transform", transform);
 		shader->UploadUniformFloat4("u_Color", color);
 
-		Ref<VertexArray> va = AssetManager::GetDefaultVertexArray(AssetManager::DefaultVertexArrayId::Quad);
+		Ref<VertexArray> va = AssetManager::GetVertexArray("Quad");
 		va->Bind();
 		RenderCommand::DrawIndexed(va);
 	}

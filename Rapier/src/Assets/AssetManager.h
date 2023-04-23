@@ -24,6 +24,10 @@ namespace Rapier {
 		static std::vector<Ref<Texture2D>> GetAllTexture2D();
 
 
+		static Ref<Shader> IsShaderLoaded(const std::string& filename);
+		static Ref<Texture2D> IsTexture2DLoaded(const std::string& filename);
+
+
 		// IMPLEMENT BETTER DEFAULT SYSTEM !!!!! //
 		// IMPLEMENT BETTER DEFAULT SYSTEM !!!!! //
 		// IMPLEMENT BETTER DEFAULT SYSTEM !!!!! //
@@ -48,15 +52,14 @@ namespace Rapier {
 
 
 
-
 	private:
 		friend class Renderer2D;
 		friend class AssetPanel;
 
-		static std::map<std::string, Ref<Texture2D>> s_Textures2D;
+		static std::unordered_map<std::string, Ref<Texture2D>> s_Textures2D;
 
-		static void LoadDefaultShaders();
-		static void LoadDefaultTexture2Ds();
+		static void LoadAllShaders();
+		static void LoadAllTexture2Ds();
 		static void CreateVertexArrays();
 
 		static void CreateVertexArrayQuad();

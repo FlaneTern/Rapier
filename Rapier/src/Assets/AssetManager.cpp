@@ -10,38 +10,23 @@
 #include "Platform/OpenGL/OpenGLTexture.h"
 
 
-
-
-
-
-
-
 namespace Rapier {
 
 
 
-	std::map<std::string, Ref<Texture2D>> AssetManager::s_Textures2D;
+	std::unordered_map<std::string, Ref<Texture2D>> AssetManager::s_Textures2D;
 
-	static std::map<std::string, Ref<Shader>> l_Shaders;
-	static std::map<std::string, Ref<VertexArray>> l_VertexArrays;
+	static std::unordered_map<std::string, Ref<Shader>> l_Shaders;
+	static std::unordered_map<std::string, Ref<VertexArray>> l_VertexArrays;
 
 	static uint32_t l_ShaderId = 0;
 	static uint32_t l_Texture2DId = 0;
 	static uint32_t l_VertexArrayId = 0;
 
-	/// <summary>
-	/// Checks for the list of saved shaders. If the shader already exists returns it, else creates the shader and returns it.
-	/// </summary>
-	/// <param name="vertexName">: Filepath to the vertex shader</param>
-	/// <param name="fragmentName">: Filepath to the vertex shader</param>
-	/// <returns>The loaded shader</returns>
 	Ref<Shader> AssetManager::LoadShader(const std::string& filename) {
-
-		auto exists = l_Shaders.find(filename);
-		if (exists != l_Shaders.end()) {
-			RAPIER_CORE_INFO("Shader with filename :'{0}' was already created!", filename);
-			return exists->second;
-		}
+		auto exists = IsShaderLoaded(filename);
+		if (exists)
+			return exists;
 
 		Ref<Shader> shader;
 		switch (Renderer::GetAPI()) {
@@ -58,18 +43,10 @@ namespace Rapier {
 	}
 
 
-	/// <summary>
-	/// Checks for the list of saved textures. If the shader already exists returns it, else creates the texture and returns it.
-	/// </summary>
-	/// <param name="filename">: Filepath to the texture</param>
-	/// <returns>The loaded texture</returns>
 	Ref<Texture2D> AssetManager::LoadTexture2D(const std::string& filename) {
-		
-		auto exists = s_Textures2D.find(filename);
-		if (exists != s_Textures2D.end()) {
-			RAPIER_CORE_INFO("Texture with filename :'{0}' was already created!", filename);
-			return exists->second;
-		}
+		auto exists = IsTexture2DLoaded(filename);
+		if (exists)
+			return exists;
 		
 		Ref<Texture2D> texture2D;
 		switch (Renderer::GetAPI()) {
@@ -88,16 +65,8 @@ namespace Rapier {
 
 	void AssetManager::Init() {
 		CreateVertexArrays();
-		
-		for (const auto& entry : FileSystem::s_TextureDirectoryEntries) {
-			if(FileSystem::IsTexture(entry))
-				LoadTexture2D(entry);
-		}
-
-		for (const auto& entry : FileSystem::s_ShaderDirectoryEntries) {
-			if (FileSystem::IsShader(entry))
-				LoadShader(entry);
-		}
+		LoadAllShaders();
+		LoadAllTexture2Ds();
 	}
 
 	void AssetManager::CreateVertexArrays() {
@@ -105,20 +74,39 @@ namespace Rapier {
 		CreateVertexArrayTexture();
 	}
 
-	void AssetManager::LoadDefaultShaders() {
-		LoadShader("GradientQuad.rshader");
-		LoadShader("Texture.rshader");
-		LoadShader("SolidCircle.rshader");
+	void AssetManager::LoadAllShaders() {
+		for (const auto& entry : FileSystem::s_ShaderDirectoryEntries) {
+			if (FileSystem::IsShader(entry) && !IsShaderLoaded(entry)) {
+				LoadShader(entry);
+			}
+		}
 	}
 
-	void AssetManager::LoadDefaultTexture2Ds() {
-		LoadTexture2D("irene-gyatekora.png");
-		LoadTexture2D("irene-gyatekora-v0.png");
-		LoadTexture2D("irene-gyatekora-v1.png");
+	void AssetManager::LoadAllTexture2Ds() {
+		for (const auto& entry : FileSystem::s_TextureDirectoryEntries) {
+			if (FileSystem::IsTexture(entry) && !IsTexture2DLoaded(entry))
+				LoadTexture2D(entry);
+		}
 	}
 
 
+	Ref<Shader> AssetManager::IsShaderLoaded(const std::string& filename) {
+		auto exists = l_Shaders.find(filename);
+		if (exists != l_Shaders.end()) {
+			return exists->second;
+		}
 
+		return nullptr;
+	}
+
+	Ref<Texture2D> AssetManager::IsTexture2DLoaded(const std::string& filename) {
+		auto exists = s_Textures2D.find(filename);
+		if (exists != s_Textures2D.end()) {
+			return exists->second;
+		}
+
+		return nullptr;
+	}
 
 	void AssetManager::CreateVertexArrayQuad() {
 		Ref<VertexArray> va = VertexArray::Create();

@@ -77,10 +77,12 @@ namespace Rapier {
 	}
 
 	bool FileSystem::IsTexture(const std::string& name) {
+		if (name.size() < 4) return false;
 		return name.substr(name.size() - 4, 4) == ".png";
 	}
 
 	bool FileSystem::IsShader(const std::string& name) {
+		if (name.size() < 8) return false;
 		return name.substr(name.size() - 8, 8) == ".rshader";
 	}
 

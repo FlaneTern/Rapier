@@ -30,6 +30,7 @@ namespace Rapier {
             {
 				if (ImGui::MenuItem("Refresh")) {
 					FileSystem::RefreshTextureDirectory();
+					AssetManager::LoadAllTexture2Ds();
 				}
                 ImGui::EndMenu();
             }

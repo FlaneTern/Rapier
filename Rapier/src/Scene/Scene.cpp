@@ -71,10 +71,8 @@ namespace Rapier {
 			for (auto entity : group) {
 				const auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-				if (sprite.Texture)
-					Renderer2D::DrawTexture(transform, sprite.Texture);
-				else
-					Renderer2D::DrawQuad(transform, sprite.Color);
+
+				Renderer2D::DrawTexture(transform, sprite.Texture, sprite.Color);
 
 			}
 

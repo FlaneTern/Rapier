@@ -6,6 +6,26 @@
 #include "glad/glad.h"
 
 namespace Rapier {
+	OpenGLTexture2D::OpenGLTexture2D() {
+		m_Filepath = "White Texture";
+
+		m_Width = 1;
+		m_Height = 1;
+
+		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererId);
+		glTextureStorage2D(m_RendererId, 1, GL_RGB8, m_Width, m_Height);
+
+		glTextureParameteri(m_RendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(m_RendererId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		uint32_t white = 0xffffffff;
+		glTextureSubImage2D(m_RendererId, 0, 0, 0, m_Width, m_Height, GL_RGBA, GL_UNSIGNED_BYTE, &white);
+
+	}
+
 
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
 	{

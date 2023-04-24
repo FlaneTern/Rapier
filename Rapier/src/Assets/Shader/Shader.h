@@ -12,6 +12,7 @@ namespace Rapier {
 		virtual void UploadUniformMat4(const std::string& name, const glm::mat4& matrix) = 0;
 		virtual void UploadUniformInt(const std::string& name, int value) = 0;
 		virtual void UploadUniformFloat4(const std::string& name, glm::vec4 value) = 0;
+		virtual void UploadUniformIntArray(const std::string& name, int* value, uint32_t count) = 0;
 
 
 

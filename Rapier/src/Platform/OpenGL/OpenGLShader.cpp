@@ -143,4 +143,9 @@ namespace Rapier {
 		GLint location = glGetUniformLocation(m_RendererId, name.c_str());
 		glUniform4f(location, value.x, value.y, value.z, value.w);
 	}
+
+	void OpenGLShader::UploadUniformIntArray(const std::string& name, int* value, uint32_t count) {
+		GLint location = glGetUniformLocation(m_RendererId, name.c_str());
+		glUniform1iv(location, count, value);
+	}
 }

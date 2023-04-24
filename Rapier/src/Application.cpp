@@ -25,6 +25,7 @@ namespace Rapier {
 		m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 		FileSystem::Init();
 		AssetManager::Init();
+		Renderer2D::Init();
 
 		m_ImGuiLayer = new ImGuiLayer;
 		PushOverlay(m_ImGuiLayer);

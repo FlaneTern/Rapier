@@ -17,11 +17,9 @@ namespace Rapier {
 	std::unordered_map<std::string, Ref<Texture2D>> AssetManager::s_Textures2D;
 
 	static std::unordered_map<std::string, Ref<Shader>> l_Shaders;
-	static std::unordered_map<std::string, Ref<VertexArray>> l_VertexArrays;
 
 	static uint32_t l_ShaderId = 0;
 	static uint32_t l_Texture2DId = 0;
-	static uint32_t l_VertexArrayId = 0;
 
 	Ref<Shader> AssetManager::LoadShader(const std::string& filename) {
 		auto exists = IsShaderLoaded(filename);
@@ -61,18 +59,29 @@ namespace Rapier {
 		return texture2D;
 	}
 
+	Ref<Texture2D> AssetManager::GetWhiteTexture() {
+		return s_Textures2D["WhiteTexture"];
+	}
 
 
 	void AssetManager::Init() {
-		CreateVertexArrays();
+		CreateWhiteTexture();
 		LoadAllShaders();
 		LoadAllTexture2Ds();
 	}
 
-	void AssetManager::CreateVertexArrays() {
-		CreateVertexArrayQuad();
-		CreateVertexArrayTexture();
+	void AssetManager::CreateWhiteTexture() {
+		Ref<Texture2D> texture2D;
+		switch (Renderer::GetAPI()) {
+		case RendererAPI::API::None:       RAPIER_CORE_ASSERT(false, "RendererAPI::None is not supported!");  texture2D = nullptr;
+		case RendererAPI::API::OpenGL:     texture2D = std::make_shared<OpenGLTexture2D>();
+		}
+
+		texture2D->SetAssetManagerId(l_Texture2DId);
+		s_Textures2D.insert({ "WhiteTexture" , texture2D });
+		l_Texture2DId++;;
 	}
+
 
 	void AssetManager::LoadAllShaders() {
 		for (const auto& entry : FileSystem::s_ShaderDirectoryEntries) {
@@ -108,65 +117,6 @@ namespace Rapier {
 		return nullptr;
 	}
 
-	void AssetManager::CreateVertexArrayQuad() {
-		Ref<VertexArray> va = VertexArray::Create();
-
-		float QuadVertices[] = {
-			-0.5f, -0.5f, 0.0f,
-			 0.5f, -0.5f, 0.0f,
-			 0.5f,  0.5f, 0.0f,
-			-0.5f,  0.5f, 0.0f,
-		};
-
-		Ref<VertexBuffer> vb = VertexBuffer::Create(QuadVertices, sizeof(QuadVertices));
-		vb->SetLayout({
-			{ShaderDataType::Float3, "a_Position"}
-		});
-
-		uint32_t QuadIndices[] = { 0, 1, 2, 2, 3, 0 };
-		Ref<IndexBuffer> ib = IndexBuffer::Create(QuadIndices, sizeof(QuadIndices) / sizeof(uint32_t));
-
-		va->AddVertexBuffer(vb);
-		va->SetIndexBuffer(ib);
-
-		l_VertexArrays.insert({ "Quad", va });
-		l_VertexArrayId++;
-	}
-
-
-	void AssetManager::CreateVertexArrayTexture() {
-		Ref<VertexArray> va = VertexArray::Create();
-		va->Bind();
-
-		float vertices[] = {
-			-0.5, -0.5, 0.0, 0.0, 0.0,
-			 0.5, -0.5, 0.0, 1.0, 0.0,
-			 0.5,  0.5, 0.0, 1.0, 1.0,
-			-0.5,  0.5, 0.0, 0.0, 1.0
-		};
-
-		uint32_t indices[] = {
-			0, 1, 2, 2, 3, 0
-		};
-
-		Ref<VertexBuffer> vb;
-		vb = VertexBuffer::Create(vertices, sizeof(vertices));
-
-		vb->SetLayout({
-			{ ShaderDataType::Float3, "a_Position" },
-			{ ShaderDataType::Float2, "a_TextureCoord" }
-		});
-
-		Ref<IndexBuffer> ib;
-		ib = IndexBuffer::Create(indices, sizeof(indices) / sizeof(int));
-
-
-		va->AddVertexBuffer(vb);
-		va->SetIndexBuffer(ib);
-
-		l_VertexArrays.insert({ "Texture", va });
-		l_VertexArrayId++;
-	}
 
 
 	Ref<Shader> AssetManager::GetShader(const std::string& filename) {
@@ -192,15 +142,7 @@ namespace Rapier {
 
 
 
-	Ref<VertexArray> AssetManager::GetVertexArray(const std::string& filename) {
-		auto exists = l_VertexArrays.find(filename);
-		if (exists != l_VertexArrays.end()) {
-			return exists->second;
-		}
 
-		RAPIER_CORE_INFO("Texture with filename :'{0}' doesn't exist!", filename);
-		return nullptr;
-	}
 
 	/*
 	Ref<Shader> AssetManager::GetShader(uint32_t id) {

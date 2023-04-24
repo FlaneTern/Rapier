@@ -2,6 +2,7 @@
 
 #include "glm/glm.hpp"
 
+#include "Assets/AssetManager.h"
 
 #include "Camera/Camera.h"
 #include "Assets/Texture/Texture.h"
@@ -43,12 +44,12 @@ namespace Rapier {
 
 	struct SpriteRendererComponent {
 		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
-		Ref<Texture2D> Texture = nullptr;
+		Ref<Texture2D> Texture = AssetManager::GetWhiteTexture();
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent& other) = default;
 		SpriteRendererComponent(const glm::vec4& color)
-			: Color(color), Texture(nullptr) {}
+			: Color(color), Texture(AssetManager::GetWhiteTexture()) {}
 
 		SpriteRendererComponent(Ref<Texture2D> texture)
 			: Color({1.0f, 1.0f, 1.0f, 1.0f}), Texture(texture) {}

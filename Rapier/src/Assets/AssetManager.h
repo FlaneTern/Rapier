@@ -2,6 +2,7 @@
 
 #include "Assets/Shader/Shader.h"
 #include "Assets/Texture/Texture.h"
+#include "Renderer/VertexArray.h"
 
 namespace Rapier {
 
@@ -12,14 +13,13 @@ namespace Rapier {
 
 		static Ref<Shader> LoadShader(const std::string& filename);
 		static Ref<Texture2D> LoadTexture2D(const std::string& filename);
+		static Ref<Texture2D> GetWhiteTexture();
 
 
 		static Ref<Shader> GetShader(const std::string& filename);
 		//static Ref<Shader> GetShader(uint32_t id);
 		static Ref<Texture2D> GetTexture2D(const std::string& filename);
 		//static Ref<Texture2D> GetTexture2D(uint32_t id);
-		static Ref<VertexArray> GetVertexArray(const std::string& filename);
-		//static Ref<VertexArray> GetVertexArray(uint32_t id);
 
 		static std::vector<Ref<Texture2D>> GetAllTexture2D();
 
@@ -58,12 +58,9 @@ namespace Rapier {
 
 		static std::unordered_map<std::string, Ref<Texture2D>> s_Textures2D;
 
+		static void CreateWhiteTexture();
 		static void LoadAllShaders();
 		static void LoadAllTexture2Ds();
-		static void CreateVertexArrays();
-
-		static void CreateVertexArrayQuad();
-		static void CreateVertexArrayTexture();
 
 	};
 

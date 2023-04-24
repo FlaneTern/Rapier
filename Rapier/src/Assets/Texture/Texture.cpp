@@ -11,4 +11,8 @@ namespace Rapier {
 	Ref<Texture2D> Texture2D::Create(const std::string& filename) {
 		return AssetManager::LoadTexture2D(filename);
 	}
+
+	Ref<Texture2D> Texture2D::CreateWhiteTexture() {
+		return AssetManager::GetWhiteTexture();
+	}
 }

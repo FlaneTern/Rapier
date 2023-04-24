@@ -114,8 +114,10 @@ namespace Rapier {
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
+		virtual void SetData(void* data, uint32_t size) = 0;
 
 		static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
+		static Ref<VertexBuffer> Create(uint32_t size);
 	};
 
 

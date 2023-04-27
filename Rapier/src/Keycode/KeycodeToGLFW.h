@@ -113,6 +113,9 @@ static int Key_RapierToGLFW(int key)
     case RapierKey_F10: return GLFW_KEY_F10;
     case RapierKey_F11: return GLFW_KEY_F11;
     case RapierKey_F12: return GLFW_KEY_F12;
+    case RapierKey_MouseLeft:   return GLFW_MOUSE_BUTTON_1;
+    case RapierKey_MouseRight:  return GLFW_MOUSE_BUTTON_2;
+    case RapierKey_MouseMiddle: return GLFW_MOUSE_BUTTON_3;
     default: return GLFW_KEY_UNKNOWN;
     }
 }

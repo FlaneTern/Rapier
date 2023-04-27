@@ -22,7 +22,7 @@ namespace Rapier {
 		static Ref<Shader> Create(const std::string& filename);
 
 	protected:
-		uint32_t m_RendererId;
+		RendererId m_RendererId;
 		uint32_t m_AssetManagerId;
 	};
 }

@@ -9,10 +9,11 @@
 namespace Rapier {
 	// Implement ifdef based on platform
 
-	bool l_Blocked = false;
+	bool l_BlockKey = false;
+	bool l_BlockMouse = false;
 
 	bool Input::IsKeyPressed(int keycode) {
-		if (l_Blocked) 
+		if (l_BlockKey)
 			return false;
 
 		GLFWwindow* wnd = (GLFWwindow*)Application::Get().GetWindow().GetPlatformWindow();
@@ -21,11 +22,11 @@ namespace Rapier {
 	}
 
 	bool Input::IsMouseButtonPressed(int button) {
-		if (l_Blocked) 
+		if (l_BlockMouse)
 			return false;
 
 		GLFWwindow* wnd = (GLFWwindow*)Application::Get().GetWindow().GetPlatformWindow();
-		int pressed = glfwGetMouseButton(wnd, button);
+		int pressed = glfwGetMouseButton(wnd, Key_RapierToGLFW(button));
 		return pressed == GLFW_PRESS;
 	}
 
@@ -40,11 +41,11 @@ namespace Rapier {
 		return { (float)x, (float)y };
 	}
 
-	void Input::BlockInput() {
-		l_Blocked = true;
+	void Input::SetBlockKeyInput(bool enable) {
+		l_BlockKey = enable;
 	}
 
-	void Input::UnblockInput() {
-		l_Blocked = false;
+	void Input::SetBlockMouseInput(bool enable) {
+		l_BlockMouse = enable;
 	}
 }

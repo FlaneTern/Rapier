@@ -27,7 +27,7 @@ namespace Rapier {
 
 	private:
 		float m_AspectRatio = 16.0f / 9.0f, m_Size = 2.0f;
-		float m_FarClip = 1.0f, m_NearClip = -1.0f;
+		float m_FarClip = 1000.0f, m_NearClip = -1000.0f;
 		glm::mat4 m_ProjectionMatrix = glm::ortho(-m_Size * m_AspectRatio * 0.5f, m_Size * m_AspectRatio * 0.5f,
 			-m_Size * 0.5f, m_Size * 0.5f, m_NearClip, m_FarClip);
 

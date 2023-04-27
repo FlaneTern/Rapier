@@ -1,5 +1,4 @@
 #include "Layer/GuiLayer.h"
-#include "Geometry/Pentagon.h"
 #include "RapierLantern.h"
 
 #include "glm/gtc/matrix_transform.hpp"

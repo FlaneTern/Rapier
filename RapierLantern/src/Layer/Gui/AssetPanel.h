@@ -11,5 +11,9 @@ namespace Rapier {
 
 		virtual void OnImGuiRender() override;
 
+	private:
+		void DrawTexturePanel();
+		void DrawShaderPanel();
+
 	};
 }

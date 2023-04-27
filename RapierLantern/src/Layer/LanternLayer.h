@@ -39,9 +39,9 @@ namespace Rapier {
 		virtual bool OnWindowResizeEvent(Rapier::WindowResizeEvent& e) override;
 
 		Ref<Framebuffer> m_Framebuffer;
-		Ref<Texture2D> m_Texture;
 
 		glm::vec2 m_ViewportPanelSize = { 0.0f,0.0f };
+		glm::vec2 m_ViewportMinBound;
 
 		bool m_MainViewportFocused = false;
 		bool m_MainViewportHovered = false;

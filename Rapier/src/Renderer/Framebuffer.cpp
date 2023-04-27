@@ -13,6 +13,6 @@ namespace Rapier {
 		case RendererAPI::API::OpenGL:     return std::make_shared<OpenGLFramebuffer>(spec);
 		}
 
-
+		return nullptr;
 	}
 }

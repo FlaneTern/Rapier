@@ -36,7 +36,7 @@ namespace Rapier {
 		m_Height = data->Height;
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererId);
-		glTextureStorage2D(m_RendererId, 1, GL_RGB8, m_Width, m_Height);
+		glTextureStorage2D(m_RendererId, 1, GL_RGBA8, m_Width, m_Height);
 
 		glTextureParameteri(m_RendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(m_RendererId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

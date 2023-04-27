@@ -20,7 +20,7 @@ namespace Rapier {
 		virtual void Unbind() const override;
 
 	private:
-		uint32_t m_RendererId;
+		RendererId m_RendererId;
 		std::vector<std::shared_ptr<VertexBuffer>> m_VertexBuffers;
 		std::shared_ptr<IndexBuffer> m_IndexBuffer;
 	};

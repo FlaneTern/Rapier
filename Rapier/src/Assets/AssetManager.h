@@ -15,6 +15,9 @@ namespace Rapier {
 		static Ref<Texture2D> LoadTexture2D(const std::string& filename);
 		static Ref<Texture2D> GetWhiteTexture();
 
+		static void UnloadAllTexture2Ds();
+		static void UnloadAllShaders();
+
 
 		static Ref<Shader> GetShader(const std::string& filename);
 		//static Ref<Shader> GetShader(uint32_t id);
@@ -55,8 +58,6 @@ namespace Rapier {
 	private:
 		friend class Renderer2D;
 		friend class AssetPanel;
-
-		static std::unordered_map<std::string, Ref<Texture2D>> s_Textures2D;
 
 		static void CreateWhiteTexture();
 		static void LoadAllShaders();

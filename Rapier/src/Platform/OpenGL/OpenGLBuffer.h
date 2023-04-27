@@ -19,7 +19,7 @@ namespace Rapier {
 		virtual const BufferLayout& GetLayout() const override { return m_Layout; }
 
 	private:
-		uint32_t m_RendererId;
+		RendererId m_RendererId;
 		BufferLayout m_Layout;
 	};
 
@@ -34,7 +34,7 @@ namespace Rapier {
 		virtual void Unbind() const override;
 
 	private:
-		uint32_t m_RendererId;
+		RendererId m_RendererId;
 		uint32_t m_Count;
 	};
 }

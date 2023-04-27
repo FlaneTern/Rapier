@@ -27,8 +27,6 @@ namespace Rapier {
 
 	void Scene::OnUpdate(DeltaTime dt) {
 
-		RenderCommand::Clear();
-
 		// Run Entity Updates
 		{
 			auto group = m_Registry.view<NativeScriptComponent>();
@@ -55,7 +53,7 @@ namespace Rapier {
 
 				if (camera.Primary) {
 					auto pro = camera.Camera.GetProjection();
-					CameraViewProjection = camera.Camera.GetProjection() * glm::inverse(transform.Transform);
+					CameraViewProjection = camera.Camera.GetProjection() * glm::inverse(transform.GetTransform());
 					break;
 				}
 			}
@@ -71,8 +69,7 @@ namespace Rapier {
 			for (auto entity : group) {
 				const auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-
-				Renderer2D::DrawTexture(transform, sprite.Texture, sprite.Color);
+				Renderer2D::DrawTexture(transform, sprite.Texture, sprite.Color, (int)entity);
 
 			}
 
@@ -97,6 +94,8 @@ namespace Rapier {
 
 
 	void Scene::SetPrimaryCamera(Entity& entity) {
+		RAPIER_CORE_ASSERT(entity.HasComponent<CameraComponent>(), "Entity doesn't have camera component!");
+
 		auto group = m_Registry.view<CameraComponent>();
 
 		for (auto entity : group) {

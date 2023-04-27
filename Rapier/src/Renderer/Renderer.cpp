@@ -37,8 +37,11 @@ namespace Rapier {
 		glm::vec3 Position;
 		glm::vec4 Color;
 		glm::vec2 TexCoords;
-		float TexIndex;
+		int TexIndex;
+		int EntityId;
 	};
+
+
 
 	static constexpr uint32_t l_MaxQuadCount = 10000;
 	static constexpr uint32_t l_MaxQuadVertices = 4 * l_MaxQuadCount;
@@ -50,9 +53,7 @@ namespace Rapier {
 	static QuadVertex* l_QuadVertexBufferCurrentPtr = nullptr;
 
 	static uint32_t l_CurrentQuadCount = 0;
-
-	static std::vector<Ref<Texture2D>> l_TextureSlots;
-	static uint32_t l_CurrentTextureCount = 1;
+	static Ref<VertexBuffer> l_QuadVertexBuffer = nullptr;
 
 
 
@@ -70,15 +71,23 @@ namespace Rapier {
 		{ 0.0f, 1.0f  }
 	};
 
+
+	static uint32_t l_CurrentTextureCount = 1;
+	static std::vector<Ref<Texture2D>> l_TextureSlots;
+
+
 	static Scope<SceneData> l_SceneData2D = nullptr;
 	bool l_StartedScene2D = false;
 	static std::unordered_map<std::string, Ref<VertexArray>> l_VertexArrays;
 
-	static Ref<VertexBuffer> l_QuadVertexBuffer = nullptr;
 
 	void Renderer2D::Init() {
 		RenderCommand::Init();
 		CreateVertexArrays();
+	}
+	
+	void Renderer2D::Shutdown() {
+		delete[] l_QuadVertexBufferBasePtr;
 	}
 
 	void Renderer2D::BeginScene(const glm::mat4& camera) {
@@ -100,16 +109,6 @@ namespace Rapier {
 		l_StartedScene2D = false;
 	}
 
-#if 0
-	void Renderer2D::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::mat4& transform) {
-		shader->Bind();
-		shader->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
-		shader->UploadUniformMat4("u_Transform", transform);
-
-		vertexArray->Bind();
-		RenderCommand::DrawIndexed(vertexArray);
-	}
-#endif
 
 
 	void Renderer2D::Flush() {
@@ -118,7 +117,7 @@ namespace Rapier {
 
 		// Bind textures
 		int samplers[l_MaxTextureCount];
-		for (int i = 0; i < l_CurrentTextureCount; i++) {
+		for (uint32_t i = 0; i < l_CurrentTextureCount; i++) {
 			l_TextureSlots[i]->Bind(i);
 			samplers[i] = i;
 		}
@@ -138,7 +137,7 @@ namespace Rapier {
 		l_CurrentQuadCount = 0;
 	}
 
-	void Renderer2D::DrawTexture(const glm::mat4& transform, Ref<Texture2D> texture, const glm::vec4& color) {
+	void Renderer2D::DrawTexture(const glm::mat4& transform, Ref<Texture2D> texture, const glm::vec4& color, int entityId) {
 
 
 		Ref<Shader> shader = AssetManager::GetShader("Texture.rshader");
@@ -172,40 +171,21 @@ namespace Rapier {
 			l_QuadVertexBufferCurrentPtr->Color = color;
 			l_QuadVertexBufferCurrentPtr->TexCoords = l_TextureCoords[i];
 			l_QuadVertexBufferCurrentPtr->TexIndex = textureSlot;
+			l_QuadVertexBufferCurrentPtr->EntityId = entityId;
 			l_QuadVertexBufferCurrentPtr++;
 		}
 
 		l_CurrentQuadCount++;
 	}
 
-	void Renderer2D::DrawTexture(const glm::vec3& position, const glm::vec2& size, Ref<Texture2D> texture, float rotation, const glm::vec4& color) {
+	void Renderer2D::DrawTexture(const glm::vec3& position, const glm::vec2& size, Ref<Texture2D> texture, float rotation, const glm::vec4& color, int entityId) {
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
 			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), glm::vec3(0, 0, 1))
 			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		DrawTexture(transform, texture, color);
+		DrawTexture(transform, texture, color, entityId);
 	}
 
-
-	void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& color) {
-		Ref<Shader> shader = AssetManager::GetShader("SolidCircle.rshader");
-		shader->Bind();
-		shader->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
-		shader->UploadUniformMat4("u_Transform", transform);
-		shader->UploadUniformFloat4("u_Color", color);
-
-
-		Ref<VertexArray> va = l_VertexArrays["Quad"];
-		va->Bind();
-		RenderCommand::DrawIndexed(va);
-	}
-
-	void Renderer2D::DrawCircle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
-			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-		
-		DrawCircle(transform, color);
-	}
 
 	void Renderer2D::CreateVertexArrays() {
 		Ref<VertexArray> va = VertexArray::Create();
@@ -216,6 +196,7 @@ namespace Rapier {
 			{ShaderDataType::Float4, "a_Color"},
 			{ShaderDataType::Float2, "a_TextureCoord"},
 			{ShaderDataType::Float, "a_TextureIndex"},
+			{ShaderDataType::Int, "a_EntityId"},
 			});
 
 		va->AddVertexBuffer(l_QuadVertexBuffer);
@@ -248,4 +229,35 @@ namespace Rapier {
 		l_TextureSlots[0] = AssetManager::GetWhiteTexture();
 
 	}
+
+	void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& color) {
+		Ref<Shader> shader = AssetManager::GetShader("Circle.rshader");
+		shader->Bind();
+		shader->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
+		shader->UploadUniformMat4("u_Transform", transform);
+		shader->UploadUniformFloat4("u_Color", color);
+
+
+		Ref<VertexArray> va = l_VertexArrays["Quad"];
+		va->Bind();
+		RenderCommand::DrawIndexed(va);
+	}
+
+	void Renderer2D::DrawCircle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position)
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		
+		DrawCircle(transform, color);
+	}
+
+#if 0
+	void Renderer2D::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::mat4& transform) {
+		shader->Bind();
+		shader->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
+		shader->UploadUniformMat4("u_Transform", transform);
+
+		vertexArray->Bind();
+		RenderCommand::DrawIndexed(vertexArray);
+	}
+#endif
 }

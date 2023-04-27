@@ -14,7 +14,7 @@ namespace Rapier {
 
 
 
-	std::unordered_map<std::string, Ref<Texture2D>> AssetManager::s_Textures2D;
+	static std::unordered_map<std::string, Ref<Texture2D>> s_Textures2D;
 
 	static std::unordered_map<std::string, Ref<Shader>> l_Shaders;
 
@@ -98,6 +98,21 @@ namespace Rapier {
 		}
 	}
 
+	void AssetManager::UnloadAllTexture2Ds() {
+		for (auto it = s_Textures2D.begin(); it != s_Textures2D.end();) {
+
+			if (it->second.use_count() == 1) 
+				it = s_Textures2D.erase(it);
+			else 
+				it++;
+			
+		}
+	}
+
+	void AssetManager::UnloadAllShaders() {
+		// TODO
+
+	}
 
 	Ref<Shader> AssetManager::IsShaderLoaded(const std::string& filename) {
 		auto exists = l_Shaders.find(filename);

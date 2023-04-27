@@ -4,7 +4,6 @@
 #include "RapierLantern.h"
 #include "Layer/LanternLayer.h"
 #include "Layer/GuiLayer.h"
-#include "Geometry/Pentagon.h"
 #include "LanternCamera.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "entt.hpp"

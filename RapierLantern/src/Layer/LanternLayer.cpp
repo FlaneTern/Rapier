@@ -1,5 +1,4 @@
 #include "Layer/LanternLayer.h"
-#include "Geometry/Pentagon.h"
 #include "RapierLantern.h"
 #include "LanternCamera.h"
 
@@ -25,8 +24,33 @@ namespace Rapier {
 
 		m_Framebuffer->Bind(); 
 		RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
-        RenderCommand::Clear();
+		RenderCommand::Clear();
+		m_Framebuffer->ClearAttachment(1, -1);
 		m_ActiveScene->OnUpdate(dt);		
+
+
+		// Mouse positions
+		auto [mx, my] = ImGui::GetMousePos();
+		mx -= m_ViewportMinBound.x;
+		my -= m_ViewportMinBound.y;
+
+		my = m_ViewportPanelSize.y - my;
+
+		// Selecting entity
+		if (mx >= 0 && my >= 0 && mx < m_ViewportPanelSize.x && my <= m_ViewportPanelSize.y) {
+			int entityId = m_Framebuffer->ReadPixel(1, mx, my);
+			RAPIER_CORE_INFO("POS : {0}, {1}, {2}", mx, my, entityId);
+
+			if (Input::IsMouseButtonPressed(RapierKey_MouseLeft)) {
+				if (entityId == -1)
+					m_ActiveScene->ClearSelectedEntities();
+				else {
+					if(!Input::IsKeyPressed(RapierKey_LeftShift))
+						m_ActiveScene->ClearSelectedEntities();
+					m_ActiveScene->AddSelectedEntities(entityId);
+				}
+			}
+		}
         
 		m_Framebuffer->Unbind();
 	}
@@ -36,14 +60,12 @@ namespace Rapier {
 		m_ActiveScene = Application::Get().m_ActiveScene;
 
 
-
-
-
-
 		//////////////////////////////////////////////////////////////// TESTING ////////////////////////////////////////////////////////////////
 
-		m_Texture = Texture2D::Create("irene-gyatekora-v1.png");
-		FramebufferSpecification spec = { 1366, 768 };
+		FramebufferSpecification spec;
+		spec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::DEPTH24STENCIL8 };
+		spec.Width = 1366;
+		spec.Height = 768;
 		m_Framebuffer = Framebuffer::Create(spec);
 
 
@@ -54,13 +76,17 @@ namespace Rapier {
 
 			virtual void OnUpdate(DeltaTime dt) override {
 
-				auto& transform = GetComponent<TransformComponent>().Transform;
-				transform = glm::rotate(transform, glm::radians(RotationSpeed * dt), glm::vec3(0, 0, 1));
+				auto& transform = GetComponent<TransformComponent>();
 
-				if (Input::IsKeyPressed(RapierKey_W)) transform[3][1] += TranslationSpeed * dt;
-				if (Input::IsKeyPressed(RapierKey_S)) transform[3][1] -= TranslationSpeed * dt;
-				if (Input::IsKeyPressed(RapierKey_D)) transform[3][0] += TranslationSpeed * dt;
-				if (Input::IsKeyPressed(RapierKey_A)) transform[3][0] -= TranslationSpeed * dt;
+				transform.Rotation.z += RotationSpeed * dt;
+				if (transform.Rotation.z >= 360.0f)
+					transform.Rotation.z -= 360.0f;
+				
+
+				if (Input::IsKeyPressed(RapierKey_W)) transform.Translation.y += TranslationSpeed * dt;
+				if (Input::IsKeyPressed(RapierKey_S)) transform.Translation.y -= TranslationSpeed * dt;
+				if (Input::IsKeyPressed(RapierKey_D)) transform.Translation.x += TranslationSpeed * dt;
+				if (Input::IsKeyPressed(RapierKey_A)) transform.Translation.x -= TranslationSpeed * dt;
 			}
 		};
 
@@ -68,8 +94,8 @@ namespace Rapier {
 			bool forward = true;
 
 			virtual void OnUpdate(DeltaTime dt) override {
-				auto& transform = GetComponent<TransformComponent>().Transform;
-				float x = transform[3][0];
+				auto& transform = GetComponent<TransformComponent>();
+				float& x = transform.Translation.x;
 
 				if (x > 3.0f) 
 					forward = false;
@@ -81,7 +107,6 @@ namespace Rapier {
 					x += 3.0f * dt;
 				else 
 					x -= 3.0f * dt;
-				transform[3][0] = x;
 			}
 		};
 
@@ -90,8 +115,8 @@ namespace Rapier {
 			bool forward = true;
 
 			virtual void OnUpdate(DeltaTime dt) override {
-				auto& transform = GetComponent<TransformComponent>().Transform;
-				float y = transform[3][1];
+				auto& transform = GetComponent<TransformComponent>();
+				float& y = transform.Translation.y;
 
 				if (y > 3.0f) 
 					forward = false;
@@ -103,7 +128,6 @@ namespace Rapier {
 					y += 3.0f * dt;
 				else 
 					y -= 3.0f * dt;
-				transform[3][1] = y;
 			}
 		};
 
@@ -116,12 +140,12 @@ namespace Rapier {
 		squarey.AddComponent<NativeScriptComponent>().Bind<SquareControlY>();
 
 		auto texture = m_ActiveScene->CreateEntity("Texture");
-		texture.AddComponent<SpriteRendererComponent>(m_Texture);
+		texture.AddComponent<SpriteRendererComponent>(AssetManager::GetTexture2D("irene-gyatekora-v1.png"));
 		texture.AddComponent<NativeScriptComponent>().Bind<TextureControl>();
 
 
 		Entity cameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
-		float l = -16.0f * 3.0f / 9.0f, r = 16.0f * 3.0f / 9.0f, b = -1.0f * 3.0f, t = 1.0f * 3.0f, f = -1.0f, n = 1.0f;
+		float l = -16.0f * 3.0f / 9.0f, r = 16.0f * 3.0f / 9.0f, b = -1.0f * 3.0f, t = 1.0f * 3.0f, f = -1000.0f, n = 1000.0f;
 		auto& cameraComponent = cameraEntity.AddComponent<CameraComponent>(l, r, b, t, f, n);
 		cameraComponent.Primary = true;
 		cameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
@@ -169,6 +193,26 @@ namespace Rapier {
             ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
             ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
         }
+		// Menu Bar
+		if (ImGui::BeginMenuBar())
+		{
+			if (ImGui::BeginMenu("File"))
+			{
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Editor"))
+			{
+				if (ImGui::MenuItem("Scene Editor"))
+					RAPIER_CORE_INFO("Scene Editor");
+				if (ImGui::MenuItem("Texture Editor"))
+					RAPIER_CORE_INFO("Texture Editor");
+				if (ImGui::MenuItem("Audio Editor"))
+					RAPIER_CORE_INFO("Audio Editor");
+
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
 
         ImGui::End();
 
@@ -178,12 +222,19 @@ namespace Rapier {
 	    ImGui::Begin("Viewport");
 		m_MainViewportFocused = ImGui::IsWindowFocused();
 		m_MainViewportHovered = ImGui::IsWindowHovered();
+
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+		ImVec2 windowPos = ImGui::GetWindowPos();
 		m_ViewportPanelSize = { viewportPanelSize.x, viewportPanelSize.y };
-		uint32_t textureId = m_Framebuffer->GetColorAttachmentRendererId();
-		ImGui::Image((void*)textureId, ImVec2{ m_ViewportPanelSize.x, m_ViewportPanelSize.y }, ImVec2{0,1}, ImVec2{1,0});
+		m_ViewportMinBound = { windowPos.x, windowPos.y };
+
+		uint32_t textureId = m_Framebuffer->GetColorAttachmentRendererId(0);
+		ImGui::Image((void*)textureId, viewportPanelSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 	    ImGui::End();
 		ImGui::PopStyleVar();
+
+		Input::SetBlockKeyInput(!m_MainViewportFocused);
+		Input::SetBlockMouseInput(!m_MainViewportHovered);
 		
 	}
 

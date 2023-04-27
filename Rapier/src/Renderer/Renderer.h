@@ -51,14 +51,15 @@ namespace Rapier {
 		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 
 
-		static void DrawTexture(const glm::mat4& transform, Ref<Texture2D> texture, const glm::vec4& color);
+		static void DrawTexture(const glm::mat4& transform, Ref<Texture2D> texture, const glm::vec4& color, int entityId = -1);
 		static void DrawTexture(const glm::vec3& position, const glm::vec2& size, Ref<Texture2D> texture, 
-			float rotation = 0.0f, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
+			float rotation = 0.0f, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f }, int entityId = -1);
 
 		static void DrawCircle(const glm::mat4& transform, const glm::vec4& color);
 		static void DrawCircle(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
 
 		static void Init();
+		static void Shutdown();
 
 		static void Flush();
 

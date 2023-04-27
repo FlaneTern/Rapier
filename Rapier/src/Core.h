@@ -36,5 +36,7 @@ namespace Rapier {
 	using Ref = std::shared_ptr<T>;
 
 	using RapierData = std::vector<std::byte>;
+
+	typedef uint32_t RendererId;
 }
 

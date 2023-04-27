@@ -9,7 +9,6 @@ namespace Rapier {
 
 	static Ref<Scene>  l_ActiveScene = nullptr;
 	static bool l_NextFrame = true;
-	static uint32_t l_Selected = -1;
 	static char l_Newname[64] = "";
 
 
@@ -26,7 +25,8 @@ namespace Rapier {
 		else if (ImGui::Button("Set as Primary Camera")) {
 			l_ActiveScene->SetPrimaryCamera(entity);
 		}
-		ImGui::SliderFloat(" Size", &cameraProjectionSize, 0.0f, 10.0f);
+		ImGui::SetNextItemWidth(150);
+		ImGui::SliderFloat(" Size", &cameraProjectionSize, 0.5f, 10.0f);
 		ImGui::Unindent();
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
@@ -34,18 +34,22 @@ namespace Rapier {
 	}
 
 	static void DrawTransformComponentUI(Entity& entity) {
-		auto& transform = entity.GetComponent<TransformComponent>().Transform;
-		float translate[] = { transform[3][0], transform[3][1], transform[3][2] };
+		auto& transform = entity.GetComponent<TransformComponent>();
+		float* translate = (float*)&transform.Translation;
+		float* rotation = (float*)&transform.Rotation;
+		float* scale = (float*)&transform.Scale;
 
 		ImGui::Text("Transform Component");
 		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::SliderFloat3("Position", translate, -5.0f, 5.0f);
+		ImGui::SetNextItemWidth(150);
+		ImGui::SliderFloat3("Translation", translate, -5.0f, 5.0f);
+		ImGui::SetNextItemWidth(150);
+		ImGui::SliderFloat3("Rotation", rotation, 0.0f, 360.0f);
+		ImGui::SetNextItemWidth(150);
+		ImGui::SliderFloat3("Scale", scale, 0.0f, 5.0f);
 		ImGui::Unindent();
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
 
-		transform[3][0] = translate[0];
-		transform[3][1] = translate[1];
-		transform[3][2] = translate[2];
 	}
 
 	static void DrawNativeScriptComponentUI(Entity& entity) {
@@ -63,24 +67,29 @@ namespace Rapier {
 
 		ImGui::Text("Sprite Renderer Component");
 		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		if (spriteRendererComponent.Texture) {
-			if (ImGui::Button("Reload Texture"))
-				ImGui::OpenPopup("Reload Texture");
 
-			if(ImGui::Button("Remove Texture"))
-				entity.ResetComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.8f, 0.8f, 1.0f });
-		}
-		else {
-			float* color = (float*)&spriteRendererComponent.Color;
-			ImGui::ColorEdit4("MyColor##2f", color);
+		static constexpr char addString[] = "Add Texture";
+		static constexpr char reloadString[] = "Reload Texture";
 
-			if (ImGui::Button("Add Texture"))
-				ImGui::OpenPopup("Add Texture");
+		bool isWhiteTexture = spriteRendererComponent.Texture == AssetManager::GetWhiteTexture();
+		if (ImGui::Button(isWhiteTexture ? addString : reloadString))
+			ImGui::OpenPopup("Reload Texture");
 
-		}
+		ImGui::SameLine();
 
-		if (ImGui::BeginPopupModal("Reload Texture", NULL, ImGuiWindowFlags_MenuBar)
-			|| ImGui::BeginPopupModal("Add Texture", NULL, ImGuiWindowFlags_MenuBar)) 
+		if(ImGui::Button("Remove Texture"))
+			entity.ResetComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.8f, 0.8f, 1.0f });
+		
+
+		float* color = (float*)&spriteRendererComponent.Color;
+		ImGui::SetNextItemWidth(150);
+		ImGui::ColorEdit4("MyColor##2f", color);
+
+
+
+		
+
+		if (ImGui::BeginPopupModal("Reload Texture", NULL, ImGuiWindowFlags_MenuBar)) 
 		{
 			for (const auto& textureRef : AssetManager::GetAllTexture2D()) {
 				if (ImGui::Button(textureRef->GetFilepath().c_str())) {
@@ -160,17 +169,24 @@ namespace Rapier {
 
 
 		ImGuiTreeNodeFlags node_flags = base_flags;
-		const bool is_selected = l_Selected == (uint32_t)entity;
+		const bool is_selected = l_ActiveScene->IsEntitySelected(entity);
 		if (is_selected)
 			node_flags |= ImGuiTreeNodeFlags_Selected;
 
-		bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)(uint32_t)entityId, node_flags, tag.Tag.c_str());
+		bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)(uint32_t)entity, node_flags, tag.Tag.c_str());
 
-		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
-			l_Selected = entity;
+		// Currently Key Input gets blocked if main viewport is not focused
+		// This breaks
+		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
+			if (!Input::IsKeyPressed(RapierKey_LeftShift))
+				l_ActiveScene->ClearSelectedEntities();
+			l_ActiveScene->AddSelectedEntities(entity);
+		}
 
 		if (ImGui::BeginPopupContextItem()) {
-			l_Selected = entity;
+			if (!Input::IsKeyPressed(RapierKey_LeftShift))
+				l_ActiveScene->ClearSelectedEntities();
+			l_ActiveScene->AddSelectedEntities(entity);
 
 			bool renamed = false;
 

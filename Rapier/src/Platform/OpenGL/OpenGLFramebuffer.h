@@ -13,15 +13,24 @@ namespace Rapier {
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
-		virtual uint32_t GetColorAttachmentRendererId() const override { return m_ColorAttachment; }
+
+		virtual void ClearAttachment(uint32_t attachmentIndex, int value) override;
+
+		virtual RendererId GetColorAttachmentRendererId(uint32_t attachmentIndex) const override { return m_ColorAttachments[attachmentIndex]; }
+		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
 		virtual const FramebufferSpecification& GetSpecification() const override { return m_Specification; }
 
 		virtual void Resize(uint32_t width, uint32_t height);
 
 	private:
-		uint32_t m_RendererId = 0;
+		RendererId m_RendererId = 0;
 		FramebufferSpecification m_Specification;
 
-		uint32_t m_ColorAttachment = 0, m_DepthAttachment = 0;
+
+		std::vector<FramebufferTextureSpecification> m_ColorAttachmentSpecifications;
+		FramebufferTextureSpecification m_DepthAttachmentSpecification;
+
+		std::vector<RendererId> m_ColorAttachments;
+		RendererId m_DepthAttachment = 0;
 	};
 }

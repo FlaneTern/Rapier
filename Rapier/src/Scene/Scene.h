@@ -15,9 +15,24 @@ namespace Rapier {
 
 		void SetPrimaryCamera(Entity& entity);
 
+		const std::unordered_set<uint32_t>& GetSelectedEntities() const { return m_SelectedEntities; }
+		void AddSelectedEntities(uint32_t entityId) { m_SelectedEntities.insert(entityId); }
+		void ClearSelectedEntities() { m_SelectedEntities.clear(); }
+		void RemoveSelectedEntities(uint32_t entityId) { 
+			auto it = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), entityId);
+			if (it != m_SelectedEntities.end())
+				m_SelectedEntities.erase(it);
+		}
+		bool IsEntitySelected(uint32_t entityId) {
+			auto it = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), entityId);
+			return it != m_SelectedEntities.end();
+		}
+
 	private:
 		friend class Entity;
 		friend class EntityListPanel;
+
 		entt::registry m_Registry;
+		std::unordered_set<uint32_t> m_SelectedEntities;
 	};
 }

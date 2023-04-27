@@ -8,8 +8,8 @@ namespace Rapier {
 		static bool IsMouseButtonPressed(int button);
 		static std::pair<float, float> GetMousePos();
 
-		static void BlockInput();
-		static void UnblockInput();
+		static void SetBlockKeyInput(bool enable);
+		static void SetBlockMouseInput(bool enable);
 	private:
 	};
 }

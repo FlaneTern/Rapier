@@ -18,21 +18,21 @@ namespace Rapier {
 
 
 		virtual void OnUpdate(DeltaTime dt) override {
-			auto& transform = GetComponent<TransformComponent>().Transform;
-			auto& projection = GetComponent<CameraComponent>().Camera;
-			float projectionSize = projection.GetSize();
+			auto& transformComponent = GetComponent<TransformComponent>();
+			auto& projectionComponent = GetComponent<CameraComponent>().Camera;
+			float projectionSize = projectionComponent.GetSize();
 
-			if (Input::IsKeyPressed(RapierKey_UpArrow)) transform[3][1] += TranslationSpeed * projectionSize * dt;
-			if (Input::IsKeyPressed(RapierKey_DownArrow)) transform[3][1] -= TranslationSpeed * projectionSize * dt;
-			if (Input::IsKeyPressed(RapierKey_RightArrow)) transform[3][0] += TranslationSpeed * projectionSize * dt;
-			if (Input::IsKeyPressed(RapierKey_LeftArrow)) transform[3][0] -= TranslationSpeed * projectionSize * dt;
+			if (Input::IsKeyPressed(RapierKey_UpArrow))    transformComponent.Translation.y += TranslationSpeed * projectionSize * dt;
+			if (Input::IsKeyPressed(RapierKey_DownArrow))  transformComponent.Translation.y -= TranslationSpeed * projectionSize * dt;
+			if (Input::IsKeyPressed(RapierKey_RightArrow)) transformComponent.Translation.x += TranslationSpeed * projectionSize * dt;
+			if (Input::IsKeyPressed(RapierKey_LeftArrow))  transformComponent.Translation.x -= TranslationSpeed * projectionSize * dt;
 
-			if (Input::IsKeyPressed(RapierKey_LeftBracket))  transform = glm::rotate(transform, glm::radians(RotationSpeed * dt), glm::vec3(0, 0, 1));
-			if (Input::IsKeyPressed(RapierKey_RightBracket)) transform = glm::rotate(transform, glm::radians(-RotationSpeed * dt), glm::vec3(0, 0, 1));
+			if (Input::IsKeyPressed(RapierKey_LeftBracket))  transformComponent.Rotation.z += RotationSpeed * dt;
+			if (Input::IsKeyPressed(RapierKey_RightBracket)) transformComponent.Rotation.z -= RotationSpeed * dt;
 
 
-			if (Input::IsKeyPressed(RapierKey_Equal)) projection.SetSize(std::max(projectionSize - projectionSize * 1.50f * dt,  0.5f));
-			if (Input::IsKeyPressed(RapierKey_Minus)) projection.SetSize(std::min(projectionSize + projectionSize * 1.50f * dt, 15.0f));
+			if (Input::IsKeyPressed(RapierKey_Equal)) projectionComponent.SetSize(std::max(projectionSize - projectionSize * 1.50f * dt,  0.5f));
+			if (Input::IsKeyPressed(RapierKey_Minus)) projectionComponent.SetSize(std::min(projectionSize + projectionSize * 1.50f * dt, 15.0f));
 		}
 	};
 

@@ -7,9 +7,22 @@
 #include "Camera/Camera.h"
 #include "Assets/Texture/Texture.h"
 
+#include "Random/UUID.h"
+
 namespace Rapier {
 
 	class EntityScript;
+
+	struct UUIDComponent {
+		UUID Id;
+
+		UUIDComponent() = default;
+		UUIDComponent(const UUIDComponent& other) = default;
+		UUIDComponent(UUID uuid)
+			: Id(uuid) {}
+		UUIDComponent(uint64_t uuid)
+			: Id(uuid) {}
+	};
 
 	struct TagComponent {
 		std::string Tag;
@@ -81,6 +94,7 @@ namespace Rapier {
 
 	struct NativeScriptComponent {
 		EntityScript* Instance = nullptr;
+		bool EnableOnUpdate = true;
 
 		EntityScript* (*InstantiateScript)();
 		void (*DestroyScript)(NativeScriptComponent*);

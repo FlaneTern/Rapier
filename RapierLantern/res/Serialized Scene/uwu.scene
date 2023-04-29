@@ -1,0 +1,56 @@
+Scene: SceneTitle
+Entities:
+  - Entity: 13210315360660327995
+    TagComponent:
+      Tag: Square X
+    TransformComponent:
+      Translation: [-0.452158272, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.200000003, 0.300000012, 0.800000012, 1]
+      Filename: White Texture
+    NativeScriptComponent:
+      ScriptName: SquareControlX
+  - Entity: 6409180028198732768
+    TagComponent:
+      Tag: Square Y
+    TransformComponent:
+      Translation: [0, -0.452158272, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.800000012, 0.300000012, 0.200000003, 1]
+      Filename: White Texture
+    NativeScriptComponent:
+      ScriptName: SquareControlY
+  - Entity: 3708419997997880702
+    TagComponent:
+      Tag: Texture
+    TransformComponent:
+      Translation: [-1.46616066, 0.0844742954, 0]
+      Rotation: [0, 0, 200.145721]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      Filename: irene-gyatekora-v1.png
+    NativeScriptComponent:
+      ScriptName: TextureControl
+  - Entity: 17758388058149192326
+    TagComponent:
+      Tag: Camera Entity
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        AspectRatio: 1.95698929
+        NearClip: -1000
+        FarClip: 1000
+        Height: 465
+        Size: 15
+      Primary: true
+      FixedAspectRatio: false
+    NativeScriptComponent:
+      ScriptName: CameraController

@@ -1,0 +1,12 @@
+Scene: SceneTitle
+Entities:
+  - Entity: 6463172917086693210
+    TagComponent:
+      Tag: UnknownEntity
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.800000012, 0.800000012, 0.800000012, 1]
+      Filename: White Texture

@@ -5,6 +5,11 @@
 
 namespace Rapier {
 
+	Camera::Camera(float aspectRatio, float size, float farClip, float nearClip, uint32_t height)
+		: m_AspectRatio(aspectRatio), m_Size(size), m_FarClip(farClip), m_NearClip(nearClip), m_Height(height) {
+		CalculateProjection();
+	}
+
 	Camera::Camera(float left, float right, float bottom, float top, float farClip, float nearClip)
 		: m_ProjectionMatrix(glm::ortho(left, right, bottom, top, farClip, nearClip))
 	{

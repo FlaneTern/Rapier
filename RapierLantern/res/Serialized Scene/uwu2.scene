@@ -1,0 +1,70 @@
+Scene: SceneTitle
+Entities:
+  - Entity: 15569181457901345079
+    TagComponent:
+      Tag: Zeruertza
+    TransformComponent:
+      Translation: [0, 0, -0.625]
+      Rotation: [0, 0, 0]
+      Scale: [10, 10, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      Filename: zeruertza.png
+  - Entity: 17758388058149192326
+    TagComponent:
+      Tag: Camera Entity
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        AspectRatio: 1.45585215
+        NearClip: -1000
+        FarClip: 1000
+        Height: 487
+        Size: 6.06079435
+      Primary: true
+      FixedAspectRatio: false
+    NativeScriptComponent:
+      ScriptName: CameraController
+      EnableOnUpdate: true
+  - Entity: 3708419997997880702
+    TagComponent:
+      Tag: Texture
+    TransformComponent:
+      Translation: [-3.32859826, -1.22598577, 0]
+      Rotation: [0, 0, 149.165802]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      Filename: irene-gyatekora-v1.png
+    NativeScriptComponent:
+      ScriptName: TextureControl
+      EnableOnUpdate: true
+  - Entity: 6409180028198732768
+    TagComponent:
+      Tag: Square Y
+    TransformComponent:
+      Translation: [0, 0.593343556, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.800000012, 0.300000012, 0.200000003, 1]
+      Filename: White Texture
+    NativeScriptComponent:
+      ScriptName: SquareControlY
+      EnableOnUpdate: true
+  - Entity: 13210315360660327995
+    TagComponent:
+      Tag: Square X
+    TransformComponent:
+      Translation: [0.593343556, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.200000003, 0.300000012, 0.800000012, 1]
+      Filename: White Texture
+    NativeScriptComponent:
+      ScriptName: SquareControlX
+      EnableOnUpdate: true

@@ -13,3 +13,6 @@
 	url = https://github.com/luciennezzz/glm.git
 [submodule "Rapier/Vendor/ImGui"]
 	branch = docking
+[submodule "Rapier/vendor/yaml-cpp"]
+	path = Rapier/vendor/yaml-cpp
+	url = https://github.com/luciennezzz/yaml-cpp.git

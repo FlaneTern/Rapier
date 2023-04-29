@@ -1,38 +1,43 @@
 #pragma once
 
+#include "Time/DeltaTime.h"
+
+#include "glm/glm.hpp"
 #include "entt.hpp"
 
 namespace Rapier {
 	class Entity;
+	class SceneSerializer;
+
 	class Scene {
 	public:
 		Entity CreateEntity(const std::string& name = "UnknownEntity");
+		Entity LoadEntity(uint64_t uuid, const std::string& name = "UnknownEntity");
 		void DestroyEntity(Entity& entity);
 
-		void OnUpdate(DeltaTime dt);
+		void OnUpdateRuntime(DeltaTime dt);
+		void OnUpdateEdit(DeltaTime dt, glm::mat4 camera);
 
 		void OnViewportResize(uint32_t width, uint32_t height);
 
 		void SetPrimaryCamera(Entity& entity);
+		Entity GetPrimaryCamera();
 
-		const std::unordered_set<uint32_t>& GetSelectedEntities() const { return m_SelectedEntities; }
-		void AddSelectedEntities(uint32_t entityId) { m_SelectedEntities.insert(entityId); }
-		void ClearSelectedEntities() { m_SelectedEntities.clear(); }
-		void RemoveSelectedEntities(uint32_t entityId) { 
-			auto it = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), entityId);
-			if (it != m_SelectedEntities.end())
-				m_SelectedEntities.erase(it);
-		}
-		bool IsEntitySelected(uint32_t entityId) {
-			auto it = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), entityId);
-			return it != m_SelectedEntities.end();
-		}
-
+		const std::unordered_set<uint64_t>& GetSelectedEntities() const { return m_SelectedEntities; }
+		void AddSelectedEntities(Entity& entity);
+		void ClearSelectedEntities();
+		void RemoveSelectedEntities(Entity& entity);
+		bool IsEntitySelected(Entity& entity);
+		
+		static Ref<Scene> Copy(Ref<Scene> other);
 	private:
 		friend class Entity;
 		friend class EntityListPanel;
+		friend class SceneSerializer;
+
+		void RenderScene(const glm::mat4& camera);
 
 		entt::registry m_Registry;
-		std::unordered_set<uint32_t> m_SelectedEntities;
+		std::unordered_set<uint64_t> m_SelectedEntities;
 	};
 }

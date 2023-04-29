@@ -1,6 +1,7 @@
 #include "Rapier.h"
 
 #include "Layer/Gui/EntityListPanel.h"
+#include "Assets/Script/Script.h"
 
 #include "imgui.h"
 
@@ -8,9 +9,30 @@ namespace Rapier {
 
 
 	static Ref<Scene>  l_ActiveScene = nullptr;
-	static bool l_NextFrame = true;
 	static char l_Newname[64] = "";
 
+	template<typename... Args>
+	static void DrawAddRemoveNativeScriptComponent(Entity& entity) {
+
+		([&] {
+
+			Args script;
+			if (ImGui::Button(script.GetName().c_str())) {
+				entity.ResetComponent<NativeScriptComponent>().Bind<Args>();
+				ImGui::CloseCurrentPopup();
+			}
+
+		}(), ...);
+
+	}
+
+	static void DrawUUIDComponentUI(Entity& entity) {
+		ImGui::Text("UUID");
+		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
+		ImGui::Text(std::to_string(entity.GetUUID()).c_str());
+		ImGui::Unindent();
+		ImGui::Dummy(ImVec2(0.0f, 20.0f));
+	}
 
 	static void DrawCameraComponentUI(Entity& entity) {
 		// Camera projection
@@ -57,7 +79,22 @@ namespace Rapier {
 
 		ImGui::Text("Native Script Component");
 		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		ImGui::Checkbox("Script Enable OnUpdate", &nativeScriptComponent.Instance->EnableOnUpdate);
+
+
+		ImGui::Checkbox("Script Enable OnUpdate", &nativeScriptComponent.EnableOnUpdate);
+
+
+		if (ImGui::Button("Change Script")) 
+			ImGui::OpenPopup("Change Script"); 
+
+		if (ImGui::BeginPopupModal("Change Script", NULL, ImGuiWindowFlags_MenuBar)) {
+			DrawAddRemoveNativeScriptComponent<ALL_ENTITY_SCRIPTS>(entity);
+
+			if (ImGui::Button("Cancel")) {
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}
 		ImGui::Unindent();
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
 	}
@@ -113,7 +150,7 @@ namespace Rapier {
 
 
 	template<typename... Args>
-	static bool DrawAddRemoveAllComponents(Entity& entity) {
+	static bool DrawAddRemoveComponents(Entity& entity) {
 		bool modified = false;
 
 		([&] {
@@ -145,7 +182,8 @@ namespace Rapier {
 
 		if (!hasComponent && ImGui::Button(NativeScriptComponent::AddName.data())) {
 			auto& script = entity.AddComponent<NativeScriptComponent>();
-			script.Bind<EntityScript>(); script.Instance = script.InstantiateScript();
+			script.Bind<EntityScript>(); 
+			//script.Instance = script.InstantiateScript();
 			return true;
 		}
 
@@ -173,7 +211,7 @@ namespace Rapier {
 		if (is_selected)
 			node_flags |= ImGuiTreeNodeFlags_Selected;
 
-		bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)(uint32_t)entity, node_flags, tag.Tag.c_str());
+		bool node_open = ImGui::TreeNodeEx((void*)entity.GetUUID(), node_flags, tag.Tag.c_str());
 
 		// Currently Key Input gets blocked if main viewport is not focused
 		// This breaks
@@ -197,7 +235,7 @@ namespace Rapier {
 
 			if (ImGui::BeginPopup("Add/Remove Components")) {
 
-				modifiedComponent |= DrawAddRemoveAllComponents<COMPONENTS_LIST>(entity);
+				modifiedComponent |= DrawAddRemoveComponents<COMPONENTS_LIST>(entity);
 				modifiedComponent |= DrawAddRemoveNativeScriptComponentPopup(entity);
 
 				ImGui::EndPopup();
@@ -238,6 +276,8 @@ namespace Rapier {
 
 		if (node_open) {
 			ImGui::Separator();
+			if (entity.HasComponent<UUIDComponent>())
+				DrawUUIDComponentUI(entity);
 			if (entity.HasComponent<TransformComponent>()) 
 				DrawTransformComponentUI(entity);
 			if (entity.HasComponent<CameraComponent>()) 
@@ -268,7 +308,7 @@ namespace Rapier {
 
 		if (ImGui::Button("Add Entity")) {
 			Entity entity = m_ActiveScene->CreateEntity();
-			entity.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.8f, 0.8f, 1.0f });
+			entity.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f });
 		}
 		ImGui::Separator();
 

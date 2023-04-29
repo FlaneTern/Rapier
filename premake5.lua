@@ -17,10 +17,12 @@ IncludeDir["ImGui"] = "Rapier/vendor/ImGui"
 IncludeDir["glm"] = "Rapier/vendor/glm"
 IncludeDir["stb"] = "Rapier/vendor/stb"
 IncludeDir["entt"] = "Rapier/vendor/entt/include"
+IncludeDir["yaml_cpp"] = "Rapier/vendor/yaml-cpp/include"
 
 include "Rapier/vendor/GLFW"
 include "Rapier/vendor/Glad"
 include "Rapier/vendor/ImGui"
+include "Rapier/vendor/yaml-cpp"
 
 project "Rapier"
 	location "Rapier"
@@ -55,14 +57,16 @@ project "Rapier"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml_cpp}"
 	}
 
 	links{
 		"Glad",
 		"GLFW",
 		"ImGui",
-		"opengl32.lib"
+		"opengl32.lib",
+		"yaml-cpp"
 	}
 
 
@@ -70,7 +74,8 @@ project "Rapier"
 	defines{
 		"RAPIER_BUILD_DLL",
 		"GLFW_INCLUDE_NONE",
-		"_CRT_SECURE_NO_WARNINGS"
+		"_CRT_SECURE_NO_WARNINGS",
+		"YAML_CPP_STATIC_DEFINE"
 	}
 
 	filter "configurations:Debug"

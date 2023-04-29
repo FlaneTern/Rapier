@@ -10,15 +10,7 @@
 namespace Rapier {
 
 
-	static Ref<Scene>  l_ActiveScene = nullptr;
-	static bool l_NextFrame = true;
-	static int l_id = 0;
-	static uint32_t l_Selected = -1;
-	static char l_Newname[64] = "";
-
-
 	void AssetPanel::OnImGuiRender() {
-		l_ActiveScene = m_ActiveScene;
 
 		DrawTexturePanel();
 		DrawShaderPanel();
@@ -64,10 +56,23 @@ namespace Rapier {
 			ImGui::BeginGroup();
 
 			Ref<Texture> texture = AssetManager::GetTexture2D(entry);
-			if (texture)
+			if (texture) {
 				ImGui::ImageButton((void*)texture->GetRendererId(), ImVec2{ 128, 128 }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
-			else
+
+				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+				{
+					const char* textureName = texture->GetFilepath().c_str();
+					ImGui::SetDragDropPayload("TextureDND", textureName, texture->GetFilepath().length() + 1);
+
+					// Display preview (could be anything, e.g. when dragging an image we could decide to display
+					// the filename and a small preview of the image, etc.)
+					ImGui::Text(entry.c_str());
+					ImGui::EndDragDropSource();
+				}
+			}
+			else {
 				ImGui::Text("Texture not loaded!");
+			}
 
 			ImGui::PushTextWrapPos(ImGui::GetCursorPos().x + 150);
 			ImGui::Text(entry.c_str());

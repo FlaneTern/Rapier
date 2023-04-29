@@ -14,17 +14,14 @@ namespace Rapier {
 			return m_Entity.GetComponent<T>();
 		}
 
-		bool EnableOnUpdate = true;
+		virtual std::string GetName() { return "EntityScript"; }
 
 	protected:
 		friend class Scene;
 
-		virtual void OnCreate() {}
 		virtual void OnUpdate(DeltaTime dt) {}
 		virtual void OnDestroy() {}
-
-	private:
-		friend class Scene;
+		virtual void OnCreate() {}
 		Entity m_Entity;
 		
 	};

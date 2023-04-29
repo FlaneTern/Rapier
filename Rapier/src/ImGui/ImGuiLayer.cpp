@@ -12,6 +12,8 @@
 #include "Events/KeyEvent.h"
 #include "ImGuiLayer.h"
 
+#include "PerformanceStats.h"
+
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -94,7 +96,34 @@ namespace Rapier {
 
 	void ImGuiLayer::OnImGuiRender() {
 		static bool show = true;
-		ImGui::Begin("IMGUI", &show, ImGuiWindowFlags_MenuBar);
+		ImGui::Begin("Stats", &show);
+
+		static ImGuiTreeNodeFlags base_flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth;
+
+		ImGui::Separator();
+		bool fd_node_open = ImGui::TreeNodeEx("Frame Stats", base_flags, "Frame Stats");
+		if (fd_node_open) {
+			auto& frameData = PerformanceStats::GetFrameData();
+			ImGui::Separator();
+			for (const auto& funcTime : frameData.FunctionTime) {
+				ImGui::Text("%s : %f ms", funcTime.FunctionName.c_str(), funcTime.FunctionTimeMS);
+			}
+			ImGui::TreePop();
+		}
+
+		ImGui::Separator();
+
+		bool rd_node_open = ImGui::TreeNodeEx("Renderer Stats", base_flags, "Renderer Stats");
+		if (rd_node_open) {
+			auto& rendererData = PerformanceStats::GetRendererData();
+			ImGui::Separator();
+			ImGui::Text("Draw Calls : %u", rendererData.DrawCallCount);
+			ImGui::Text("Quad Count : %u", rendererData.QuadCount);
+			ImGui::Text("Texture Count : %u", rendererData.TextureCount);
+			ImGui::TreePop();
+		}
+		ImGui::Separator();
+
 		ImGui::Text("%f FPS (%f ms/frame)", 1 / dt, dt * 1000);
 		ImGui::End();
 	}

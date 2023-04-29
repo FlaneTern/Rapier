@@ -31,30 +31,6 @@ namespace Rapier {
 		static Ref<Texture2D> IsTexture2DLoaded(const std::string& filename);
 
 
-		// IMPLEMENT BETTER DEFAULT SYSTEM !!!!! //
-		// IMPLEMENT BETTER DEFAULT SYSTEM !!!!! //
-		// IMPLEMENT BETTER DEFAULT SYSTEM !!!!! //
-		// IMPLEMENT BETTER DEFAULT SYSTEM !!!!! //
-
-		enum class DefaultShaderId {
-			GradientColorShader = 0,
-			TextureShader,
-			SolidCircleShader
-		};
-
-		enum class DefaultTexture2DId {
-			IreneGyatekora = 0,
-			IreneGyatekora2,
-			IreneGyatekora3
-		};
-
-		enum class DefaultVertexArrayId {
-			Quad = 0,
-			Texture
-		};
-
-
-
 	private:
 		friend class Renderer2D;
 		friend class AssetPanel;

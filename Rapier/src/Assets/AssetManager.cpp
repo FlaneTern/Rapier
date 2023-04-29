@@ -140,7 +140,7 @@ namespace Rapier {
 			return exists->second;
 		}
 
-		RAPIER_CORE_INFO("Shader with filename :'{0}' doesn't exist!", filename);
+		//RAPIER_CORE_INFO("Shader with filename :'{0}' doesn't exist!", filename);
 		return nullptr;
 	}
 
@@ -151,7 +151,7 @@ namespace Rapier {
 			return exists->second;
 		}
 
-		RAPIER_CORE_INFO("Texture with filename :'{0}' doesn't exist!", filename);
+		//RAPIER_CORE_INFO("Texture with filename :'{0}' doesn't exist!", filename);
 		return nullptr;
 	}
 

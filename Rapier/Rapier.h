@@ -17,7 +17,8 @@
 #include "src/Renderer/Framebuffer.h"
 
 #include "src/Camera/Camera.h"
-#include "src/Camera/CameraController.h"
+
+#include "src/Assets/Script/Script.h"
 
 #include "src/Events/Event.h"
 #include "src/Events/MouseEvent.h"

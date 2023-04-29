@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "Camera/Camera.h"
 #include "Assets/Shader/Shader.h"
+#include "PerformanceStats.h"
 
 
 #include "glm/gtc/matrix_transform.hpp"
@@ -112,6 +113,8 @@ namespace Rapier {
 
 
 	void Renderer2D::Flush() {
+		PerformanceStats::AddDrawCallCount();
+
 		uint32_t dataSize = (uint32_t)((uint8_t*)l_QuadVertexBufferCurrentPtr - (uint8_t*)l_QuadVertexBufferBasePtr);
 		l_QuadVertexBuffer->SetData(l_QuadVertexBufferBasePtr, dataSize);
 
@@ -138,14 +141,14 @@ namespace Rapier {
 	}
 
 	void Renderer2D::DrawTexture(const glm::mat4& transform, Ref<Texture2D> texture, const glm::vec4& color, int entityId) {
-
+		PerformanceStats::AddQuadCount();
 
 		Ref<Shader> shader = AssetManager::GetShader("Texture.rshader");
 
 		uint32_t textureSlot = 0;
 
 		if (l_CurrentQuadCount == l_MaxQuadCount) {
-			// flush;
+			Flush();
 		}
 
 		for (uint32_t i = 0; i < l_MaxTextureCount; i++) {
@@ -155,19 +158,28 @@ namespace Rapier {
 			}
 		}
 
-		if (textureSlot == 0 && texture != AssetManager::GetWhiteTexture()) {
-			if (l_CurrentTextureCount < l_MaxTextureCount) {
-				l_TextureSlots[l_CurrentTextureCount] = texture;
-				textureSlot = l_CurrentTextureCount;
-				l_CurrentTextureCount++;
-			}
-			else {
-				//flush
-			}
+		bool isWhiteTexture = texture == AssetManager::GetWhiteTexture();
+		if (textureSlot == 0 && !isWhiteTexture) {
+			if (l_CurrentTextureCount >= l_MaxTextureCount) 
+				Flush();
+
+			PerformanceStats::AddTextureCount();
+			
+			l_TextureSlots[l_CurrentTextureCount] = texture;
+			textureSlot = l_CurrentTextureCount;
+			l_CurrentTextureCount++;
+			
+
 		}
 
+		static glm::vec4 temp;
 		for (uint32_t i = 0; i < 4; i++) {
-			l_QuadVertexBufferCurrentPtr->Position = transform * l_QuadVertexPosition[i];
+			// Position.x is scaled according to texture aspect ratio
+			temp = l_QuadVertexPosition[i];
+			temp.x *= (float)texture->GetWidth() / (float)texture->GetHeight();
+
+
+			l_QuadVertexBufferCurrentPtr->Position = transform * temp;
 			l_QuadVertexBufferCurrentPtr->Color = color;
 			l_QuadVertexBufferCurrentPtr->TexCoords = l_TextureCoords[i];
 			l_QuadVertexBufferCurrentPtr->TexIndex = textureSlot;

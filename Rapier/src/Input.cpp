@@ -30,7 +30,7 @@ namespace Rapier {
 		return pressed == GLFW_PRESS;
 	}
 
-	std::pair<float, float> Input::GetMousePos() {
+	glm::vec2 Input::GetMousePos() {
 		// input block ?
 
 

@@ -3,8 +3,6 @@
 
 #include "RapierLantern.h"
 #include "Layer/LanternLayer.h"
-#include "Layer/GuiLayer.h"
-#include "LanternCamera.h"
 #include "glm/gtc/matrix_transform.hpp"
 #include "entt.hpp"
 
@@ -19,7 +17,6 @@ namespace Rapier {
 		m_ActiveScene = std::make_shared<Scene>();
 
 		PushLayer(new LanternLayer());
-		PushLayer(new GuiLayer());
 
 		RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 

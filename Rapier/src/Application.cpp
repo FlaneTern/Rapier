@@ -9,6 +9,8 @@
 #include "FileSystem/FileSystem.h"
 #include "Assets/AssetManager.h"
 
+#include "PerformanceStats.h"
+
 
 namespace Rapier {
 
@@ -75,6 +77,7 @@ namespace Rapier {
 		while (m_Running) {
 			DeltaTime dt = DeltaTime(m_PrevTime);
 			m_PrevTime = std::chrono::high_resolution_clock::now();
+			PerformanceStats::BeginFrame();
 
 			OnUpdate(dt);
 

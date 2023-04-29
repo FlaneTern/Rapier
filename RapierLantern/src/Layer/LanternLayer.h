@@ -1,6 +1,10 @@
 #pragma once
 #include "Rapier.h"
 
+#include "Layer/Gui/EntityListPanel.h"
+#include "Layer/Gui/AssetPanel.h"
+#include "LanternCamera.h"
+
 namespace Rapier {
 
 	class LanternLayer : public Layer {
@@ -29,6 +33,8 @@ namespace Rapier {
 
 		}
 
+	private:
+
 		virtual bool OnMouseButtonPressedEvent(Rapier::MouseButtonPressedEvent& e) override;
 		virtual bool OnMouseButtonReleasedEvent(Rapier::MouseButtonReleasedEvent& e) override;
 		virtual bool OnMouseMovedEvent(Rapier::MouseMovedEvent& e) override;
@@ -42,11 +48,38 @@ namespace Rapier {
 
 		glm::vec2 m_ViewportPanelSize = { 0.0f,0.0f };
 		glm::vec2 m_ViewportMinBound;
+		glm::vec2 m_ViewportMousePos;
+		glm::vec2 m_SceneMousePos;
 
 		bool m_MainViewportFocused = false;
 		bool m_MainViewportHovered = false;
 
 		Ref<Scene> m_ActiveScene = nullptr;
+		Ref<Scene> m_RuntimeScene = nullptr;
 
+		Ref<EntityListPanel> m_EntityListPanel;
+		Ref<AssetPanel> m_AssetPanel;
+
+		LanternCamera m_LanternCamera;
+
+
+		void NewScene();
+		void SaveScene();
+		void LoadScene();
+
+		void CalculateMousePos();
+
+		enum class SceneState {
+			Edit,
+			Pause,
+			Runtime
+		};
+
+		void PlayScene();
+		void PauseScene();
+		void StopScene();
+
+		SceneState m_SceneState;
 	};
 }
+

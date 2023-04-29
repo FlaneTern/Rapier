@@ -31,8 +31,15 @@ namespace Rapier {
 		static void RefreshShaderDirectory();
 
 		static bool IsDirectory(const std::string& name);
-		static bool IsTexture(const std::string & name);
-		static bool IsShader(const std::string & name);
+		static bool IsTexture(const std::string& name);
+		static bool IsShader(const std::string& name);
+
+		//static void SerializeScene(const std::string& filename, const char* data);
+		//static std::string DeserializeScene(const std::string& filename);
+
+		static std::string SceneOpenFileDialog();
+		static std::string SceneSaveFileDialog();
+
 
 	private:
 		static std::vector<std::string> s_TextureDirectoryEntries;

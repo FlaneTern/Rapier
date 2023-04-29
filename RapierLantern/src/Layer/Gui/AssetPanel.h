@@ -4,7 +4,7 @@
 
 namespace Rapier {
 
-	class AssetPanel : Panel {
+	class AssetPanel : public Panel {
 	public:
 		AssetPanel(Ref<Scene> scene)
 			: Panel(scene) {}

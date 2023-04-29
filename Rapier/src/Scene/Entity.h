@@ -2,11 +2,9 @@
 #include "entt.hpp"
 
 #include "Scene/Scene.h"
+#include "Scene/Components.h"
 
 namespace Rapier {
-
-	class Scene;
-	struct NativeScriptComponent;
 
 	class Entity {
 	public:
@@ -28,6 +26,10 @@ namespace Rapier {
 			return m_Scene->m_Registry.get<T>(m_EntityHandle);
 		}
 
+		uint64_t GetUUID() {
+			return GetComponent<UUIDComponent>().Id;
+		}
+
 		template<typename T>
 		bool HasComponent() {
 			return m_Scene->m_Registry.all_of<T>(m_EntityHandle);
@@ -36,13 +38,14 @@ namespace Rapier {
 		template<typename T>
 		void RemoveComponent() {
 			RAPIER_CORE_ASSERT(HasComponent<T>(), "Entity already does not have component!");
-
-			// Do this better ?? ////////////////////////////
-			if(typeid(T) == typeid(NativeScriptComponent))
-				DestroyScript();
-			// Do this better ?? ////////////////////////////
-
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
+		}
+
+		template<>
+		void RemoveComponent<NativeScriptComponent>() {
+			RAPIER_CORE_ASSERT(HasComponent<NativeScriptComponent>(), "Entity already does not have component!");
+			DestroyScript();
+			m_Scene->m_Registry.remove<NativeScriptComponent>(m_EntityHandle);
 		}
 
 		template<typename T, typename... Args>

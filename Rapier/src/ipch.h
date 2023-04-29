@@ -15,6 +15,8 @@
 #include <chrono>
 #include <filesystem>
 
+#include <typeinfo>
+
 #define NOMINMAX
 #include <Windows.h>
 

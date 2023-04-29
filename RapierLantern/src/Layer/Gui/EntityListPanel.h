@@ -4,7 +4,7 @@
 
 namespace Rapier {
 
-	class EntityListPanel : Panel {
+	class EntityListPanel : public Panel {
 	public:
 		EntityListPanel(Ref<Scene> scene)
 			: Panel(scene) {}

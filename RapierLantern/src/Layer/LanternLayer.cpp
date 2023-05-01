@@ -3,6 +3,8 @@
 #include "Serializer/SceneSerializer.h"
 #include "Assets/Script/Script.h"
 
+#include "Gizmo/LanternGizmo.h"
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "imgui.h"
@@ -13,7 +15,7 @@ namespace Rapier {
 
 	void LanternLayer::OnAttach() {
 
-		m_ActiveScene = Application::Get().m_ActiveScene;
+		m_ActiveScene = std::make_shared<Scene>();
 		m_SceneState = SceneState::Edit;
 
 		m_EntityListPanel = std::make_shared<EntityListPanel>(m_ActiveScene);
@@ -39,12 +41,10 @@ namespace Rapier {
 			m_Framebuffer->Resize((uint32_t)m_ViewportPanelSize.x, (uint32_t)m_ViewportPanelSize.y);
 			m_LanternCamera.SetViewportSize((uint32_t)m_ViewportPanelSize.x, (uint32_t)m_ViewportPanelSize.y);
 
-			// LanternCamera SetViewportSize doesn't recalculate viiewproj matrix
+			// LanternCamera SetViewportSize doesn't recalculate viewproj matrix
 			// LanternCamera OnUpdate does
 		}
 		
-
-
 		m_Framebuffer->Bind(); 
 		RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 		RenderCommand::Clear();
@@ -52,41 +52,32 @@ namespace Rapier {
 
 		CalculateMousePos();
 
+
 		switch (m_SceneState) {
 		case SceneState::Edit:
 		{
 			m_LanternCamera.OnUpdate(dt, m_SceneMousePos);
 			m_ActiveScene->OnUpdateEdit(dt, m_LanternCamera.GetViewProjection());
+			OnUpdateGizmos(dt);
+			SelectEntity();
+			
 			break;
 		}
 		case SceneState::Pause:
 		{
 			m_LanternCamera.OnUpdate(dt, m_SceneMousePos);
 			m_RuntimeScene->OnUpdateEdit(dt, m_LanternCamera.GetViewProjection());
+
 			break;
 		}
 		case SceneState::Runtime:
 		{
 			m_RuntimeScene->OnUpdateRuntime(dt); 
+
 			break;
 		}
 		}
 			
-		// Selecting entity
-		if (m_ViewportMousePos.x >= 0 && m_ViewportMousePos.y >= 0 && m_ViewportMousePos.x < m_ViewportPanelSize.x && m_ViewportMousePos.y <= m_ViewportPanelSize.y) {
-			int entityId = m_Framebuffer->ReadPixel(1, m_ViewportMousePos.x, m_ViewportMousePos.y);
-
-			if (Input::IsMouseButtonPressed(RapierKey_MouseLeft)) {
-				if (entityId == -1)
-					m_ActiveScene->ClearSelectedEntities();
-				else {
-					Entity entity{ (entt::entity)(uint32_t)entityId, m_ActiveScene.get() };
-					if(!Input::IsKeyPressed(RapierKey_LeftShift))
-						m_ActiveScene->ClearSelectedEntities();
-					m_ActiveScene->AddSelectedEntities(entity);
-				}
-			}
-		}
         
 		m_Framebuffer->Unbind();
 	}
@@ -94,41 +85,27 @@ namespace Rapier {
 
 	void LanternLayer::OnImGuiRender() {
 
-
-        static bool p_open = true;
-        static bool opt_fullscreen = true;
-        static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+		// Dockspace
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-        if (opt_fullscreen)
-        {
-            const ImGuiViewport* viewport = ImGui::GetMainViewport();
-            ImGui::SetNextWindowPos(viewport->WorkPos);
-            ImGui::SetNextWindowSize(viewport->WorkSize);
-            ImGui::SetNextWindowViewport(viewport->ID);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-            window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-            window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-        }
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        
+        ImGui::Begin("DockSpace Demo", (bool*)0, window_flags);
+        ImGui::PopStyleVar(3);
 
-        if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-            window_flags |= ImGuiWindowFlags_NoBackground;
-
-
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::Begin("DockSpace Demo", &p_open, window_flags);
-        ImGui::PopStyleVar();
-
-        if (opt_fullscreen)
-            ImGui::PopStyleVar(2);
-
-        // Submit the DockSpace
         ImGuiIO& io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
         {
             ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
         }
 
 		// Menu Bar
@@ -183,7 +160,10 @@ namespace Rapier {
 
 
 		// Main viewport
+		if (m_SceneState == SceneState::Runtime)
+			ImGui::SetNextWindowFocus();
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
+
 	    ImGui::Begin("Viewport");
 		m_MainViewportFocused = ImGui::IsWindowFocused();
 		m_MainViewportHovered = ImGui::IsWindowHovered();
@@ -226,37 +206,53 @@ namespace Rapier {
 		m_AssetPanel->OnImGuiRender();
 	}
 
-	void LanternLayer::NewScene() {
-		m_ActiveScene = std::make_shared<Scene>();
-		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportPanelSize.x, (uint32_t)m_ViewportPanelSize.y);
-		m_EntityListPanel->SetScene(m_ActiveScene);
-		m_AssetPanel->SetScene(m_ActiveScene);
-	}
+	void LanternLayer::OnUpdateGizmos(DeltaTime dt) {
+		if (LanternGizmo::s_GizmoEntities.empty())
+			return;
 
-	void LanternLayer::SaveScene() {
-		std::string filepath = FileSystem::SceneSaveFileDialog();
+		TIME_FUNCTION_INTERNAL(LanternLayer::OnUpdateGizmos);
 
-		if (!filepath.empty()) {
-			SceneSerializer serializer(m_ActiveScene);
-			serializer.Serialize(filepath);
+		Renderer2D::BeginEditorRender(m_LanternCamera.GetViewProjection());
+
+
+		switch (LanternGizmo::s_GizmoState) {
+		case GizmoState::Translation:
+		{
+			auto data = LanternGizmo::GetRenderDataTranslation();
+			Renderer2D::DrawTexture(data.TransformXQuad, nullptr, data.ColorX, -2);
+			Renderer2D::DrawCircle(data.TransformXCircleEdge, nullptr, data.ColorX, -2);
+			Renderer2D::DrawTexture(data.TransformYQuad, nullptr, data.ColorY, -3);
+			Renderer2D::DrawCircle(data.TransformYCircleEdge, nullptr, data.ColorY, -3);
+			Renderer2D::DrawCircle(data.TransformMidCircle, nullptr, data.ColorMidCircle, -4);
+
+			break;
 		}
-	}
-
-	void LanternLayer::LoadScene() {
-		std::string filepath = FileSystem::SceneOpenFileDialog();
-
-		if (!filepath.empty()) {
-			Ref<Scene> newScene = std::make_shared<Scene>();
-
-			SceneSerializer serializer(newScene);
-			if (serializer.Deserialize(filepath)) {
-				m_ActiveScene = newScene;
-				m_ActiveScene->OnViewportResize((uint32_t)m_ViewportPanelSize.x, (uint32_t)m_ViewportPanelSize.y);
-				m_EntityListPanel->SetScene(m_ActiveScene);
-				m_AssetPanel->SetScene(m_ActiveScene);
-			}
+		case GizmoState::Rotation:
+		{
+			auto data = LanternGizmo::GetRenderDataRotation();
+			Renderer2D::DrawCircle(data.Transform, nullptr, data.Color, -2, 0.7f);
+			break;
 		}
+		case GizmoState::Scale:
+		{
+			auto data = LanternGizmo::GetRenderDataScale();
+			Renderer2D::DrawTexture(data.TransformXQuad, nullptr, data.ColorX, -2);
+			Renderer2D::DrawTexture(data.TransformXQuadEdge, nullptr, data.ColorX, -2);
+			Renderer2D::DrawTexture(data.TransformYQuad, nullptr, data.ColorY, -3);
+			Renderer2D::DrawTexture(data.TransformYQuadEdge, nullptr, data.ColorY, -3);
+			Renderer2D::DrawTexture(data.TransformMidQuad, nullptr, data.ColorMidQuad, -4);
+			break;
+		}
+		}
+
+
+		Renderer2D::EndEditorRender();
+
+
+		LanternGizmo::OnUpdate(dt, m_LanternCamera, m_SceneMousePos, m_HoveredEntityId);
+
 	}
+
 
 
 	void LanternLayer::CalculateMousePos() {
@@ -278,7 +274,7 @@ namespace Rapier {
 
 			auto primaryCamera = m_ActiveScene->GetPrimaryCamera();
 			// if primary camera exists
-			if ((uint32_t)primaryCamera != 0xffffffff) {
+			if ((entt::entity)primaryCamera != entt::null) {
 				auto primaryCameraTransform = primaryCamera.GetComponent<TransformComponent>();
 				auto primaryCameraProjection = primaryCamera.GetComponent<CameraComponent>().Camera;
 				vector = { primaryCameraProjection.GetSize() * primaryCameraProjection.GetAspectRatio() *
@@ -317,7 +313,81 @@ namespace Rapier {
 		}
 
 		m_SceneMousePos = vector;
+		
+	}
 
+	void LanternLayer::SelectEntity() {
+
+		if (Input::IsKeyPressed(RapierKey_Escape)) {
+			m_ActiveScene->ClearSelectedEntities();
+		}
+
+		if (m_ViewportMousePos.x >= 0 && m_ViewportMousePos.y >= 0 && m_ViewportMousePos.x < m_ViewportPanelSize.x && m_ViewportMousePos.y <= m_ViewportPanelSize.y)
+		{
+			m_HoveredEntityId = m_Framebuffer->ReadPixel(1, m_ViewportMousePos.x, m_ViewportMousePos.y);
+
+			if (Input::IsMouseButtonPressed(RapierKey_MouseLeft) && !Input::IsMouseButtonRepeat(RapierKey_MouseLeft))
+			{
+				if (m_HoveredEntityId < 0)
+				{
+					if (m_HoveredEntityId == -1)
+					{
+						LanternGizmo::ClearGizmo();
+						m_ActiveScene->ClearSelectedEntities();
+					}
+				}
+				else
+				{
+					Entity entity{ (entt::entity)m_HoveredEntityId, m_ActiveScene.get() };
+					if (!Input::IsKeyPressed(RapierKey_LeftShift)) {
+						LanternGizmo::ClearGizmo();
+						m_ActiveScene->ClearSelectedEntities();
+					}
+
+					if (!m_ActiveScene->IsEntitySelected(entity)) 
+					{
+						LanternGizmo::CreateGizmo(entity);
+						m_ActiveScene->AddSelectedEntities(entity);
+					}
+				}
+
+			}
+		}
+	}
+
+
+
+	void LanternLayer::NewScene() {
+		m_ActiveScene = std::make_shared<Scene>();
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportPanelSize.x, (uint32_t)m_ViewportPanelSize.y);
+		m_EntityListPanel->SetScene(m_ActiveScene);
+		m_AssetPanel->SetScene(m_ActiveScene);
+	}
+
+	void LanternLayer::SaveScene() {
+		std::string filepath = FileSystem::SceneSaveFileDialog();
+
+		if (!filepath.empty()) {
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Serialize(filepath);
+		}
+	}
+
+	void LanternLayer::LoadScene() {
+		std::string filepath = FileSystem::SceneOpenFileDialog();
+
+		if (!filepath.empty()) {
+			Ref<Scene> newScene = std::make_shared<Scene>();
+
+			SceneSerializer serializer(newScene);
+			if (serializer.Deserialize(filepath)) {
+				m_ActiveScene = newScene;
+				m_ActiveScene->OnViewportResize((uint32_t)m_ViewportPanelSize.x, (uint32_t)m_ViewportPanelSize.y);
+				m_EntityListPanel->SetScene(m_ActiveScene);
+				m_AssetPanel->SetScene(m_ActiveScene);
+				LanternGizmo::ClearGizmo();
+			}
+		}
 	}
 
 
@@ -370,6 +440,7 @@ namespace Rapier {
 
 	bool LanternLayer::OnKeyReleasedEvent(KeyReleasedEvent& e) {
 		if (!m_MainViewportFocused) return true;
+		LanternGizmo::OnKeyReleasedEvent(e);
 		return false;
 	}
 

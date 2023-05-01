@@ -23,7 +23,7 @@ namespace Rapier {
 		void SetPrimaryCamera(Entity& entity);
 		Entity GetPrimaryCamera();
 
-		const std::unordered_set<uint64_t>& GetSelectedEntities() const { return m_SelectedEntities; }
+		const std::unordered_set<uint32_t>& GetSelectedEntities() const { return m_SelectedEntities; }
 		void AddSelectedEntities(Entity& entity);
 		void ClearSelectedEntities();
 		void RemoveSelectedEntities(Entity& entity);
@@ -38,6 +38,6 @@ namespace Rapier {
 		void RenderScene(const glm::mat4& camera);
 
 		entt::registry m_Registry;
-		std::unordered_set<uint64_t> m_SelectedEntities;
+		std::unordered_set<uint32_t> m_SelectedEntities;
 	};
 }

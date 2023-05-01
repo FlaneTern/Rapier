@@ -11,10 +11,12 @@ namespace Rapier {
 		inline static void Clear() { s_RendererAPI->Clear(); }
 
 
-		inline static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray) 
-			{ s_RendererAPI->DrawIndexed(vertexArray); }
+		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray)
+		{ 
+			s_RendererAPI->DrawIndexed(vertexArray); 
+		}
 
-		inline static void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray, uint32_t count)
+		inline static void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t count)
 		{
 			s_RendererAPI->DrawIndexed(vertexArray, count);
 		}
@@ -22,6 +24,16 @@ namespace Rapier {
 		inline static void Init()
 		{
 			s_RendererAPI->Init();
+		}
+
+		inline static void DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
+		{
+			s_RendererAPI->DrawLines(vertexArray, vertexCount);
+		}
+
+		inline static void SetLineWidth(float width)
+		{
+			s_RendererAPI->SetLineWidth(width);
 		}
 
 	private:

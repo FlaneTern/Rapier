@@ -35,6 +35,20 @@ namespace Rapier {
 
 	private:
 
+		void NewScene();
+		void SaveScene();
+		void LoadScene();
+
+		void CalculateMousePos();
+		void SelectEntity();
+
+		void PlayScene();
+		void PauseScene();
+		void StopScene();
+
+		void OnUpdateGizmos(DeltaTime dt);
+
+
 		virtual bool OnMouseButtonPressedEvent(Rapier::MouseButtonPressedEvent& e) override;
 		virtual bool OnMouseButtonReleasedEvent(Rapier::MouseButtonReleasedEvent& e) override;
 		virtual bool OnMouseMovedEvent(Rapier::MouseMovedEvent& e) override;
@@ -43,6 +57,7 @@ namespace Rapier {
 		virtual bool OnKeyReleasedEvent(Rapier::KeyReleasedEvent& e) override;
 		virtual bool OnKeyTypedEvent(Rapier::KeyTypedEvent& e) override;
 		virtual bool OnWindowResizeEvent(Rapier::WindowResizeEvent& e) override;
+
 
 		Ref<Framebuffer> m_Framebuffer;
 
@@ -62,12 +77,9 @@ namespace Rapier {
 
 		LanternCamera m_LanternCamera;
 
+		int m_HoveredEntityId = -1;
 
-		void NewScene();
-		void SaveScene();
-		void LoadScene();
 
-		void CalculateMousePos();
 
 		enum class SceneState {
 			Edit,
@@ -75,9 +87,6 @@ namespace Rapier {
 			Runtime
 		};
 
-		void PlayScene();
-		void PauseScene();
-		void StopScene();
 
 		SceneState m_SceneState;
 	};

@@ -103,7 +103,7 @@ namespace Rapier {
 		ImGui::Separator();
 		bool fd_node_open = ImGui::TreeNodeEx("Frame Stats", base_flags, "Frame Stats");
 		if (fd_node_open) {
-			auto& frameData = PerformanceStats::GetFrameData();
+			auto& frameData = PerformanceStats::s_CurrentFrameData;
 			ImGui::Separator();
 			for (const auto& funcTime : frameData.FunctionTime) {
 				ImGui::Text("%s : %f ms", funcTime.FunctionName.c_str(), funcTime.FunctionTimeMS);
@@ -115,10 +115,12 @@ namespace Rapier {
 
 		bool rd_node_open = ImGui::TreeNodeEx("Renderer Stats", base_flags, "Renderer Stats");
 		if (rd_node_open) {
-			auto& rendererData = PerformanceStats::GetRendererData();
+			auto& rendererData = PerformanceStats::s_CurrentRendererData;
 			ImGui::Separator();
 			ImGui::Text("Draw Calls : %u", rendererData.DrawCallCount);
 			ImGui::Text("Quad Count : %u", rendererData.QuadCount);
+			ImGui::Text("Circle Count : %u", rendererData.CircleCount);
+			ImGui::Text("Line Count : %u", rendererData.LineCount);
 			ImGui::Text("Texture Count : %u", rendererData.TextureCount);
 			ImGui::TreePop();
 		}

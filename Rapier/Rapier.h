@@ -28,6 +28,7 @@
 #include "src/Keycode/RapierKeycode.h"
 
 #include "src/Time/DeltaTime.h"
+#include "src/PerformanceStats.h"
 
 #include "src/Scene/Components.h"
 #include "src/Scene/Entity.h"

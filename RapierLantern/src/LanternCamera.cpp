@@ -26,26 +26,19 @@ namespace Rapier {
 		return false;
 	}
 
-	void LanternCamera::SetViewportSize(uint32_t width, uint32_t height) {
-		m_Size *= (float)height / (float)m_Height;
-		m_Height = height;
-		m_AspectRatio = (float)width / (float)height;
-
-	}
-
 
 	void LanternCamera::OnUpdate(DeltaTime dt, glm::vec2 mousePos) {
 		static glm::vec2 initialMousePos;
 		static bool dragStarted = false;
 
 		if (!dragStarted) {
-			if (Input::IsMouseButtonPressed(RapierKey_MouseLeft)) {
+			if (Input::IsMouseButtonPressed(RapierKey_MouseRight)) {
 				dragStarted = true;
 				initialMousePos = mousePos;
 			}
 		}
 		else {
-			if (Input::IsMouseButtonPressed(RapierKey_MouseLeft)) {
+			if (Input::IsMouseButtonPressed(RapierKey_MouseRight)) {
 				glm::vec2 delta = (mousePos - initialMousePos);
 				m_Translation -= glm::vec3{ delta, 0.0f };
 			}

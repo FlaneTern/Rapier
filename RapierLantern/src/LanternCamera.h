@@ -15,12 +15,15 @@ namespace Rapier {
 
 		bool OnMouseScrolledEvent(MouseScrolledEvent& e);
 
-		void SetViewportSize(uint32_t width, uint32_t height);
 		void CalculateViewProjection();
 
 		void OnUpdate(DeltaTime dt, glm::vec2 mousePos);
 
 		glm::mat4 GetViewProjection() { return m_ViewProjectionMatrix; }
+
+		glm::vec3 GetTranslation() { return m_Translation; }
+		glm::vec3 GetRotation() { return m_Rotation; }
+		glm::vec3 GetScale() { return { m_Size * m_AspectRatio, m_Size, 1.0f }; }
 
 	private:
 		friend class LanternLayer;

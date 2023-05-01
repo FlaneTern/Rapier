@@ -147,23 +147,6 @@ namespace Rapier {
 	void Scene::OnUpdateEdit(DeltaTime dt, glm::mat4 camera) {
 		TIME_FUNCTION_INTERNAL(Scene::OnUpdateEdit);
 
-#if 0
-		// Update Camera
-		glm::mat4 CameraViewProjection = glm::mat4(1.0f);
-		{
-			auto view = m_Registry.view<TransformComponent, CameraComponent>();
-			for (auto entity : view) {
-				auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
-
-				if (camera.Primary) {
-					CameraViewProjection = camera.Camera.GetProjection() * glm::inverse(transform.GetTransform());
-					break;
-				}
-			}
-		}
-#endif
-
-
 		RenderScene(camera);
 	}
 
@@ -192,9 +175,7 @@ namespace Rapier {
 			}
 		}
 
-		// No Camera
-		// Implement better default?
-		return Entity{ (entt::entity)0xffffffff, this };
+		return Entity{ entt::null, this };
 	}
 
 	void Scene::SetPrimaryCamera(Entity& entity) {
@@ -215,6 +196,7 @@ namespace Rapier {
 		TIME_FUNCTION_INTERNAL(Scene::RenderScene);
 		Renderer2D::BeginScene(camera);
 
+
 		{
 			auto view = m_Registry.view<TransformComponent, SpriteRendererComponent>();
 			for (auto entity : view) {
@@ -226,12 +208,14 @@ namespace Rapier {
 
 		}
 
+		//Renderer2D::DrawLine({ -1.0f, -1.0f, 0.0f }, { 1.0f, 1.0f, 0.0f }, { 0.8f, 0.8f, 0.8f, 1.0f });
+
 		Renderer2D::EndScene();
 	}
 
 
 	void Scene::AddSelectedEntities(Entity& entity) { 
-		m_SelectedEntities.insert(entity.GetUUID()); 
+		m_SelectedEntities.insert((uint32_t)entity); 
 	}
 
 	void Scene::ClearSelectedEntities() { 
@@ -239,13 +223,13 @@ namespace Rapier {
 	}
 
 	void Scene::RemoveSelectedEntities(Entity& entity) {
-		auto it = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), entity.GetUUID());
+		auto it = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), (uint32_t)entity);
 		if (it != m_SelectedEntities.end())
 			m_SelectedEntities.erase(it);
 	}
 
 	bool Scene::IsEntitySelected(Entity& entity) {
-		auto it = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), entity.GetUUID());
+		auto it = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), (uint32_t)entity);
 		return it != m_SelectedEntities.end();
 	}
 }

@@ -17,16 +17,4 @@ namespace Rapier {
 		s_CurrentFrameData.FunctionTime.push_back(data);
 	}
 
-	void PerformanceStats::AddQuadCount() {
-		s_CurrentRendererData.QuadCount++;
-	}
-
-	void PerformanceStats::AddTextureCount() {
-		// existing textures get recounted after flush !!!!!!!!!
-		s_CurrentRendererData.TextureCount++;
-	}
-
-	void PerformanceStats::AddDrawCallCount() {
-		s_CurrentRendererData.DrawCallCount++;
-	}
 }

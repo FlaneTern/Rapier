@@ -38,8 +38,6 @@ namespace Rapier {
 		virtual void OnUpdate(DeltaTime dt);
 		virtual void PostUpdate();
 
-		Ref<Scene> m_ActiveScene;
-
 
 	protected:
 

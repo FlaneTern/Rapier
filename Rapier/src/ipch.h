@@ -17,6 +17,8 @@
 
 #include <typeinfo>
 
+#include <thread>
+
 #define NOMINMAX
 #include <Windows.h>
 

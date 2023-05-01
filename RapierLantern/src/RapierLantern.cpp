@@ -14,8 +14,6 @@ namespace Rapier {
 
 	RapierLantern::RapierLantern() {
 
-		m_ActiveScene = std::make_shared<Scene>();
-
 		PushLayer(new LanternLayer());
 
 		RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });

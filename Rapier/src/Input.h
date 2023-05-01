@@ -5,8 +5,13 @@
 namespace Rapier {
 	class RAPIER_API Input {
 	public:
+
+		static void OnUpdate();
+
 		static bool IsKeyPressed(int keycode);
+		static bool IsKeyRepeat(int keycode);
 		static bool IsMouseButtonPressed(int button);
+		static bool IsMouseButtonRepeat(int button);
 		static glm::vec2 GetMousePos();
 
 		static void SetBlockKeyInput(bool enable);

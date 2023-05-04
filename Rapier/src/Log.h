@@ -14,8 +14,9 @@ namespace Rapier {
 	public:
 		static void Init();
 
-		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
-		inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
+		static std::shared_ptr<spdlog::logger>& GetCoreLogger();
+		static std::shared_ptr<spdlog::logger>& GetClientLogger();
+
 	};
 }
 
@@ -25,8 +26,9 @@ namespace Rapier {
 #define RAPIER_CORE_ERROR(...) ::Rapier::Log::GetCoreLogger()->error(__VA_ARGS__)
 #define RAPIER_CORE_FATAL(...) ::Rapier::Log::GetCoreLogger()->fatal(__VA_ARGS__)
 
-#define Rapier_TRACE(...) ::Rapier::Log::GetClientLogger()->trace(__VA_ARGS__)
-#define Rapier_INFO(...)  ::Rapier::Log::GetClientLogger()->info(__VA_ARGS__)
-#define Rapier_WARN(...)  ::Rapier::Log::GetClientLogger()->warn(__VA_ARGS__)
+
+#define RAPIER_TRACE(...) ::Rapier::Log::GetClientLogger()->trace(__VA_ARGS__)
+#define RAPIER_INFO(...)  ::Rapier::Log::GetClientLogger()->info(__VA_ARGS__)
+#define RAPIER_WARN(...)  ::Rapier::Log::GetClientLogger()->warn(__VA_ARGS__)
 #define RAPIER_ERROR(...) ::Rapier::Log::GetClientLogger()->error(__VA_ARGS__)
-#define Rapier_FATAL(...) ::Rapier::Log::GetClientLogger()->fatal(__VA_ARGS__)
+#define RAPIER_FATAL(...) ::Rapier::Log::GetClientLogger()->fatal(__VA_ARGS__)

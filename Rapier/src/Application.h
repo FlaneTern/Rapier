@@ -18,7 +18,11 @@
 
 
 
+
+struct ImGuiContext;
+
 namespace Rapier {
+
 
 	class RAPIER_API Application
 	{
@@ -38,6 +42,7 @@ namespace Rapier {
 		virtual void OnUpdate(DeltaTime dt);
 		virtual void PostUpdate();
 
+		ImGuiContext* m_ImGuiContext = nullptr;
 
 	protected:
 
@@ -54,6 +59,7 @@ namespace Rapier {
 		static Application* s_Instance;
 
 		std::chrono::high_resolution_clock::time_point m_PrevTime = std::chrono::high_resolution_clock::now();
+
 	};
 
 	Application* CreateApplication();

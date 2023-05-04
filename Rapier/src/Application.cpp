@@ -11,6 +11,10 @@
 
 #include "PerformanceStats.h"
 
+///////////
+#include "Assets/Script/DefaultScript.h"
+///////////
+
 
 namespace Rapier {
 
@@ -28,6 +32,9 @@ namespace Rapier {
 		FileSystem::Init();
 		AssetManager::Init();
 		Renderer2D::Init();
+
+
+
 
 		m_ImGuiLayer = new ImGuiLayer;
 		PushOverlay(m_ImGuiLayer);

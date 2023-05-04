@@ -18,7 +18,7 @@ namespace Rapier {
 		uint32_t Channels;
 	};
 
-	class FileSystem {
+	class RAPIER_API FileSystem {
 
 	public:
 
@@ -34,16 +34,22 @@ namespace Rapier {
 		static bool IsTexture(const std::string& name);
 		static bool IsShader(const std::string& name);
 
-		//static void SerializeScene(const std::string& filename, const char* data);
-		//static std::string DeserializeScene(const std::string& filename);
 
-		static std::string SceneOpenFileDialog();
-		static std::string SceneSaveFileDialog();
+		// Platform dependent //////////////////
+		static std::string OpenFileDialog(const std::string& filter);
+		static std::string SaveFileDialog(const std::string& filter);
+
+		static void* LoadDLL(const std::string& filename);
+		static void* LoadDLLFunction(void* DLLHandle, const std::string& functionName);
+		static bool UnloadDLL(void* handle);
 
 
 	private:
 		static std::vector<std::string> s_TextureDirectoryEntries;
 		static std::vector<std::string> s_ShaderDirectoryEntries;
+
+		static void* s_ScriptHandle;
+
 		friend class AssetManager;
 		friend class AssetPanel;
 	};

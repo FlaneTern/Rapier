@@ -4,7 +4,7 @@
 
 namespace Rapier {
 
-	class SceneSerializer {
+	class RAPIER_API SceneSerializer {
 	public:
 		SceneSerializer(const Ref<Scene>& scene);
 

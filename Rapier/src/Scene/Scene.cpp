@@ -2,8 +2,8 @@
 #include "entt.hpp"
 #include "Time/DeltaTime.h"
 #include "Scene/Components.h"
-#include "Scene/EntityScript.h"
 #include "Assets/Script/Script.h"
+#include "Scene/Entity.h"
 #include "Scene/Scene.h"
 #include "Time/Timer.h"
 
@@ -23,37 +23,21 @@ namespace Rapier {
 			}(), ...);
 	}
 
-	template<typename ...Args>
+
 	static void CopyNativeScriptComponent(Entity& src, Entity& dst) {
-		if (src.HasComponent<NativeScriptComponent>()) {
-			auto& srcComponent = src.GetComponent<NativeScriptComponent>();
-			auto& dstComponent = dst.AddComponent<NativeScriptComponent>();
-			bool isDone = false;
+		if (!src.HasComponent<NativeScriptComponent>())
+			return;
 
-			([&] {
-				if (isDone)
-					return;
+		auto& srcComponent = src.GetComponent<NativeScriptComponent>();
+		dst.AddComponent<NativeScriptComponent>(srcComponent.Instance->Clone());
+	}
 
-				Args script;
-				bool instantiateScript = false;
-				if (!srcComponent.Instance) {
-					srcComponent.Instance = srcComponent.InstantiateScript();;
-					instantiateScript = true;
-				}
+	static void CopyRigidBody2DComponent(Entity& src, Entity& dst) {
+		if (!src.HasComponent<RigidBody2DComponent>())
+			return;
 
-				if (srcComponent.Instance->GetName() == script.GetName()) {
-					dstComponent.Bind<Args>();
-					dstComponent.EnableOnUpdate = srcComponent.EnableOnUpdate;
-					isDone = true;
-				}
-
-				if (instantiateScript) {
-					srcComponent.DestroyScript(&srcComponent);
-				}
-
-				}(), ...);
-
-		}
+		auto& srcComponent = src.GetComponent<RigidBody2DComponent>();
+		dst.AddComponent<RigidBody2DComponent>(srcComponent);
 	}
 
 
@@ -63,20 +47,26 @@ namespace Rapier {
 
 		Ref<Scene> newScene = std::make_shared<Scene>();
 
-		auto otherView = other->m_Registry.view<UUIDComponent>();
-		for (auto otherEntity : otherView) {
-			Entity rOtherEntity{ otherEntity, other.get()};
-			UUID uuid = rOtherEntity.GetUUID();
-			std::string name = rOtherEntity.GetComponent<TagComponent>().Tag;
-			auto transform = rOtherEntity.GetComponent<TransformComponent>();
+		newScene->m_PhysicsWorld = PhysicsWorld2D({0.0f, -9.8f});
 
-			Entity newEntity = newScene->LoadEntity(uuid, name);
-			auto& newEntityTransform = newEntity.GetComponent<TransformComponent>();
-			newEntityTransform = transform;
+		other->m_Registry.each(
+			[&](auto entity) {
+				Entity rOtherEntity{ entity, other.get() };
+				UUID uuid = rOtherEntity.GetUUID();
+				std::string name = rOtherEntity.GetComponent<TagComponent>().Tag;
+				auto transform = rOtherEntity.GetComponent<TransformComponent>();
 
-			CopyComponents<COMPONENTS_LIST>(rOtherEntity, newEntity);
-			CopyNativeScriptComponent<ALL_ENTITY_SCRIPTS>(rOtherEntity, newEntity);
-		}
+				Entity newEntity = newScene->LoadEntity(uuid, name);
+				auto& newEntityTransform = newEntity.GetComponent<TransformComponent>();
+				newEntityTransform = transform;
+
+				CopyComponents<COMPONENTS_LIST>(rOtherEntity, newEntity);
+				CopyNativeScriptComponent(rOtherEntity, newEntity);
+				CopyRigidBody2DComponent(rOtherEntity, newEntity);
+			}
+		);
+
+
 
 		return newScene;
 	}
@@ -98,7 +88,11 @@ namespace Rapier {
 	}
 
 	void Scene::DestroyEntity(Entity& entity) {
-		entity.DestroyScript();
+		if (entity.HasComponent<NativeScriptComponent>())
+		{
+			auto& script = entity.GetComponent<NativeScriptComponent>();
+			script.Instance->OnDestroy();
+		}
 		m_Registry.destroy(entity);
 	}
 
@@ -110,19 +104,33 @@ namespace Rapier {
 		// Run Entity Updates
 		{
 			auto view = m_Registry.view<NativeScriptComponent>();
-			for (auto entity : view) {
+			for (auto& entity : view) {
 				auto& script = view.get<NativeScriptComponent>(entity);
 
-				if (!script.Instance) {
-					script.Instance = script.InstantiateScript();
-					script.Instance->m_Entity = Entity{ entity, this };
+				if (!script.IsCreated) {
 					script.Instance->OnCreate();
 				}
 
-				if(script.EnableOnUpdate) script.Instance->OnUpdate(dt);
+				if(script.EnableOnUpdate) 
+					script.Instance->OnUpdate(dt);
 			}
 		}
 
+
+		// Physics
+		{
+			m_PhysicsWorld.OnUpdate(dt);
+			auto view = m_Registry.view<TransformComponent, RigidBody2DComponent>();
+
+			for (auto entity : view) {
+				auto [transform, rigidBody] = view.get<TransformComponent, RigidBody2DComponent>(entity);
+
+				transform.Translation.x = rigidBody.RigidBody->GetPosition().x;
+				transform.Translation.y = rigidBody.RigidBody->GetPosition().y;
+
+
+			}
+		}
 
 		// Update Camera
 		glm::mat4 CameraViewProjection = glm::mat4(1.0f);
@@ -208,14 +216,12 @@ namespace Rapier {
 
 		}
 
-		//Renderer2D::DrawLine({ -1.0f, -1.0f, 0.0f }, { 1.0f, 1.0f, 0.0f }, { 0.8f, 0.8f, 0.8f, 1.0f });
-
 		Renderer2D::EndScene();
 	}
 
 
 	void Scene::AddSelectedEntities(Entity& entity) { 
-		m_SelectedEntities.insert((uint32_t)entity); 
+		m_SelectedEntities.insert(entity.GetUUID()); 
 	}
 
 	void Scene::ClearSelectedEntities() { 
@@ -223,13 +229,17 @@ namespace Rapier {
 	}
 
 	void Scene::RemoveSelectedEntities(Entity& entity) {
-		auto it = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), (uint32_t)entity);
+		auto it = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), entity.GetUUID());
 		if (it != m_SelectedEntities.end())
 			m_SelectedEntities.erase(it);
 	}
 
 	bool Scene::IsEntitySelected(Entity& entity) {
-		auto it = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), (uint32_t)entity);
+		auto it = std::find(m_SelectedEntities.begin(), m_SelectedEntities.end(), entity.GetUUID());
 		return it != m_SelectedEntities.end();
+	}
+
+	Ref<RigidBody2D> Scene::CreateRigidBody(RigidBody2DData data, RigidBody2DProperties properties) {
+		 return m_PhysicsWorld.CreateRigidBody(data, properties);
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace Rapier {
 
-	class Timer {
+	class RAPIER_API Timer {
 	public:
 		Timer(const std::string& name = "Unknown Function Name");
 

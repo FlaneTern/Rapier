@@ -7,6 +7,8 @@ namespace Rapier {
 	std::vector<std::string> FileSystem::s_TextureDirectoryEntries;
 	std::vector<std::string> FileSystem::s_ShaderDirectoryEntries;
 
+	void* FileSystem::s_ScriptHandle;
+
 	void FileSystem::Init() {
 		// Implement recursive on Init !!!!!!!!!!!//////////
 		// Implement recursive on Init !!!!!!!!!!!//////////
@@ -99,21 +101,5 @@ namespace Rapier {
 			s_ShaderDirectoryEntries.push_back(entry.path().filename().string());
 		}
 	}
-#if 0
-	void FileSystem::SerializeScene(const std::string& filename, const char* data) {
-		std::ofstream stream("../Rapier/res/Serialized Scene/" + filename);
-		stream << data;
-	}
 
-	std::string FileSystem::DeserializeScene(const std::string& filename) {
-		std::ifstream stream("../Rapier/res/Serialized Scene/" + filename);
-		std::stringstream stringStream;
-		stringStream << stream.rdbuf();
-
-		
-		// Return ref instead of copy !!!!
-		return stringStream.str();
-	}
-
-#endif
 }

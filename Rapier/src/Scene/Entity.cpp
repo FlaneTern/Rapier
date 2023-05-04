@@ -13,15 +13,6 @@ namespace Rapier {
 
 	}
 
-	void Entity::DestroyScript() {
-		if (HasComponent<NativeScriptComponent>()) {
-			auto& script = GetComponent<NativeScriptComponent>();
-			if (script.Instance)
-				script.DestroyScript(&script);
-		}
-	}
-
-
 
 
 }

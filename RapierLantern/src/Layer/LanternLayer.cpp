@@ -2,6 +2,7 @@
 #include "RapierLantern.h"
 #include "Serializer/SceneSerializer.h"
 #include "Assets/Script/Script.h"
+#include "Assets/Script/DefaultScript.h"
 
 #include "Gizmo/LanternGizmo.h"
 
@@ -13,7 +14,14 @@
 
 namespace Rapier {
 
+	static constexpr const char* l_ScriptFunctionName = "EntityScriptFactory";
+
+
 	void LanternLayer::OnAttach() {
+
+		ImGui::SetCurrentContext(Application::Get().m_ImGuiContext);
+
+		LoadScript();
 
 		m_ActiveScene = std::make_shared<Scene>();
 		m_SceneState = SceneState::Edit;
@@ -125,6 +133,17 @@ namespace Rapier {
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("Script"))
+			{
+				if (ImGui::MenuItem("Reload Script"))
+					LoadScript();
+
+				if (ImGui::MenuItem("Set Script Path"))
+					SetScriptPath();
+
+				ImGui::EndMenu();
+			}
+
 			if (ImGui::BeginMenu("Editor"))
 			{
 				if (ImGui::MenuItem("Scene Editor"))
@@ -160,11 +179,9 @@ namespace Rapier {
 
 
 		// Main viewport
-		if (m_SceneState == SceneState::Runtime)
-			ImGui::SetNextWindowFocus();
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0f, 0.0f });
 
-	    ImGui::Begin("Viewport");
+	    ImGui::Begin("Main Viewport");
 		m_MainViewportFocused = ImGui::IsWindowFocused();
 		m_MainViewportHovered = ImGui::IsWindowHovered();
 
@@ -365,7 +382,7 @@ namespace Rapier {
 	}
 
 	void LanternLayer::SaveScene() {
-		std::string filepath = FileSystem::SceneSaveFileDialog();
+		std::string filepath = FileSystem::SaveFileDialog(".scene");
 
 		if (!filepath.empty()) {
 			SceneSerializer serializer(m_ActiveScene);
@@ -374,7 +391,7 @@ namespace Rapier {
 	}
 
 	void LanternLayer::LoadScene() {
-		std::string filepath = FileSystem::SceneOpenFileDialog();
+		std::string filepath = FileSystem::OpenFileDialog(".scene");
 
 		if (!filepath.empty()) {
 			Ref<Scene> newScene = std::make_shared<Scene>();
@@ -398,6 +415,9 @@ namespace Rapier {
 		m_EntityListPanel->SetScene(m_RuntimeScene);
 		m_AssetPanel->SetScene(m_RuntimeScene);
 		m_SceneState = SceneState::Runtime;
+
+
+		ImGui::SetWindowFocus("Main Viewport");
 	}
 
 	void LanternLayer::PauseScene() {
@@ -409,6 +429,35 @@ namespace Rapier {
 		m_AssetPanel->SetScene(m_ActiveScene);
 		m_RuntimeScene = nullptr;
 		m_SceneState = SceneState::Edit;
+	}
+
+
+	void LanternLayer::LoadScript() {
+		void* handle = FileSystem::LoadDLL(m_ScriptPath);
+		RAPIER_CORE_ASSERT(handle, "Cant load script !");
+		EntityScriptContainer(*func)() = (EntityScriptContainer(*)())FileSystem::LoadDLLFunction(handle, l_ScriptFunctionName);
+
+		EntityScriptContainer::s_EntityScriptContainer.m_Scripts.clear();
+
+		auto temp = func();
+		for (auto& script : temp.m_Scripts) {
+			EntityScriptContainer::s_EntityScriptContainer.m_Scripts.push_back(script->Clone());
+		}
+
+		EntityScriptContainer::s_EntityScriptContainer.m_Scripts.push_back(std::make_shared<DefaultEntityScript>());
+		EntityScriptContainer::s_EntityScriptContainer.m_Scripts.push_back(std::make_shared<CameraController>());
+		EntityScriptContainer::s_EntityScriptContainer.m_Scripts.push_back(std::make_shared<TextureControl>());
+		EntityScriptContainer::s_EntityScriptContainer.m_Scripts.push_back(std::make_shared<SquareControlX>());
+		EntityScriptContainer::s_EntityScriptContainer.m_Scripts.push_back(std::make_shared<SquareControlY>());
+	}
+
+	void LanternLayer::SetScriptPath() {
+		std::string path = FileSystem::OpenFileDialog(".dll");
+
+  		if (!path.empty()) {
+			m_ScriptPath = path;
+			LoadScript();
+		}
 	}
 
 

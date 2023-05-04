@@ -38,7 +38,7 @@ namespace Rapier {
 	};
 
 
-	class Framebuffer {
+	class RAPIER_API Framebuffer {
 	public:
 		virtual ~Framebuffer() = default;
 

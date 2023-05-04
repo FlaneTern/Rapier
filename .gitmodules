@@ -1,18 +1,18 @@
 [submodule "Rapier/vendor/spdlog"]
 	path = Rapier/vendor/spdlog
-	url = https://github.com/luciennezzz/spdlog.git
+	url = https://github.com/FlaneTern/spdlog.git
 [submodule "Rapier/vendor/GLFW"]
 	path = Rapier/vendor/GLFW
-	url = https://github.com/luciennezzz/glfw.git
+	url = https://github.com/FlaneTern/glfw.git
 [submodule "Rapier/vendor/ImGui"]
 	path = Rapier/vendor/ImGui
-	url = https://github.com/luciennezzz/imgui.git
+	url = https://github.com/FlaneTern/imgui.git
 	branch = docking
 [submodule "Rapier/vendor/glm"]
 	path = Rapier/vendor/glm
-	url = https://github.com/luciennezzz/glm.git
+	url = https://github.com/FlaneTern/glm.git
 [submodule "Rapier/Vendor/ImGui"]
 	branch = docking
 [submodule "Rapier/vendor/yaml-cpp"]
 	path = Rapier/vendor/yaml-cpp
-	url = https://github.com/luciennezzz/yaml-cpp.git
+	url = https://github.com/FlaneTern/yaml-cpp.git

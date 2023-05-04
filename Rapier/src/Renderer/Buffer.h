@@ -104,7 +104,7 @@ namespace Rapier {
 	
 
 
-	class VertexBuffer {
+	class RAPIER_API VertexBuffer {
 
 	public:
 		virtual ~VertexBuffer() {}
@@ -121,7 +121,7 @@ namespace Rapier {
 	};
 
 
-	class IndexBuffer {
+	class RAPIER_API IndexBuffer {
 
 	public:
 		virtual ~IndexBuffer() {}

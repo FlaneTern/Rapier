@@ -16,7 +16,7 @@ namespace Rapier {
 	};
 
 
-	class Renderer {
+	class RAPIER_API Renderer {
 	public:
 		static void BeginScene(const glm::mat4& camera);
 
@@ -40,7 +40,7 @@ namespace Rapier {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-	class Renderer2D {
+	class RAPIER_API Renderer2D {
 	public:
 		static void BeginScene(const glm::mat4& camera);
 		static void EndScene();

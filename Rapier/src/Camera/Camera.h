@@ -4,7 +4,7 @@
 
 
 namespace Rapier {
-	class Camera {
+	class RAPIER_API Camera {
 	public:
 		Camera() = default;
 

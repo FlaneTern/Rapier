@@ -34,7 +34,7 @@ namespace Rapier {
 	void ImGuiLayer::OnAttach() {
 		IMGUI_CHECKVERSION();
 		RAPIER_CORE_INFO("{0}", glfwGetVersionString());
-		ImGui::CreateContext();
+		Application::Get().m_ImGuiContext = ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;

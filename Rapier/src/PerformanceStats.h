@@ -23,7 +23,7 @@ namespace Rapier {
 		uint32_t DrawCallCount = 0;
 	};
 
-	class PerformanceStats {
+	class RAPIER_API PerformanceStats {
 	public:
 		static void BeginFrame();
 

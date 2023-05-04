@@ -6,7 +6,7 @@
 
 namespace Rapier {
 
-	class AssetManager {
+	class RAPIER_API AssetManager {
 
 	public:
 		static void Init();

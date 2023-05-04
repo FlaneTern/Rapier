@@ -3,7 +3,7 @@
 #include "glm/glm.hpp"
 
 namespace Rapier {
-	class Shader {
+	class RAPIER_API Shader {
 	public:
 
 		virtual void Bind() const = 0;

@@ -2,7 +2,7 @@
 
 namespace Rapier {
 	
-	class Texture {
+	class RAPIER_API Texture {
 	public:
 		virtual ~Texture() = default;
 

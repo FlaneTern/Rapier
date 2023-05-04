@@ -1,14 +1,21 @@
 #pragma once
 
+#include <memory>
+#include <vector>
 
-#ifdef RAPIER_DLL
+#pragma warning(disable : 4251)
+
+
 #ifdef RAPIER_BUILD_DLL
 	#define RAPIER_API __declspec(dllexport)
 #else
 	#define RAPIER_API __declspec(dllimport)
 #endif
+
+#ifdef RAPIER_BUILD_SCRIPT
+#define RAPIER_SCRIPT_API __declspec(dllexport)
 #else
-#define RAPIER_API
+#define RAPIER_SCRIPT_API __declspec(dllimport)
 #endif
 
 

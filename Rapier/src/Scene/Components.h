@@ -9,8 +9,13 @@
 
 #include "Random/UUID.h"
 
-namespace Rapier {
+#include "Physics/RigidBody2D.h"
 
+
+
+namespace Rapier {
+	
+	class Entity;
 	class EntityScript;
 
 	struct UUIDComponent {
@@ -40,14 +45,9 @@ namespace Rapier {
 	};
 
 	struct TransformComponent {
-		//glm::mat4 Transform{ 1.0f };
-		//TransformComponent(const glm::mat4& transform)
-		//	: Transform(transform) {}
-
 		glm::vec3 Translation = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 Rotation = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
-
 
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent& other) = default;
@@ -91,19 +91,13 @@ namespace Rapier {
 		static constexpr std::string_view RemoveName = "Remove Sprite Renderer Component\0";
 	};
 
-
-	struct NativeScriptComponent {
-		EntityScript* Instance = nullptr;
+	class EntityScript;
+	struct RAPIER_API NativeScriptComponent {
+		Ref<EntityScript> Instance = nullptr;
 		bool EnableOnUpdate = true;
+		bool IsCreated = false;
 
-		EntityScript* (*InstantiateScript)();
-		void (*DestroyScript)(NativeScriptComponent*);
-
-		template<typename T>
-		void Bind() {
-			InstantiateScript = []() { return static_cast<EntityScript*>(new T()); };
-			DestroyScript = [](NativeScriptComponent* nsc) { delete nsc->Instance; nsc->Instance = nullptr; };
-		}
+		void Bind(Ref<EntityScript> script, Entity& entity);
 
 		static constexpr std::string_view AddName = "Add Native Script Component\0";
 		static constexpr std::string_view RemoveName = "Remove Native Script Component\0";
@@ -126,7 +120,19 @@ namespace Rapier {
 	};
 
 
+	struct RigidBody2DComponent {
+		Ref<RigidBody2D> RigidBody;
 
+		RigidBody2DComponent() = default;
+		RigidBody2DComponent(const RigidBody2DComponent& other) = default;
+		RigidBody2DComponent(Ref<RigidBody2D> rigidBody)
+			: RigidBody(rigidBody) {}
+		RigidBody2DComponent(RigidBody2DData data, RigidBody2DProperties properties) 
+			: RigidBody(std::make_shared<RigidBody2D>(data, properties)) {}
+
+		static constexpr std::string_view AddName = "Add Rigid Body 2D Component\0";
+		static constexpr std::string_view RemoveName = "Remove Rigid Body 2D Component\0";
+	};
 
 #define COMPONENTS_LIST CameraComponent, SpriteRendererComponent
 }

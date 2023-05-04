@@ -11,19 +11,31 @@ namespace Rapier {
 	static Ref<Scene>  l_ActiveScene = nullptr;
 	static char l_Newname[64] = "";
 
-	template<typename... Args>
-	static void DrawAddRemoveNativeScriptComponent(Entity& entity) {
+	static void DrawChangeNativeScriptComponent(Entity& entity) {
 
-		([&] {
-
-			Args script;
-			if (ImGui::Button(script.GetName().c_str())) {
-				entity.ResetComponent<NativeScriptComponent>().Bind<Args>();
+		for (auto& script : EntityScriptContainer::s_EntityScriptContainer.m_Scripts)
+		{
+			if (ImGui::Button(script->GetName().c_str())) {
+				entity.ResetComponent<NativeScriptComponent>(script->Clone());
 				ImGui::CloseCurrentPopup();
 			}
+		}
+	}
 
-		}(), ...);
 
+	static bool DrawAddRemoveNativeScriptComponent(Entity& entity) {
+		bool hasComponent = entity.HasComponent<NativeScriptComponent>();
+		if (hasComponent && ImGui::Button(NativeScriptComponent::RemoveName.data())) {
+			entity.RemoveComponent<NativeScriptComponent>();
+			return true;
+		}
+
+		if (!hasComponent && ImGui::Button(NativeScriptComponent::AddName.data())) {
+			auto& script = entity.AddComponent<NativeScriptComponent>(EntityScriptContainer::s_EntityScriptContainer.m_Scripts[0]->Clone());
+			return true;
+		}
+
+		return false;
 	}
 
 	static void DrawUUIDComponentUI(Entity& entity) {
@@ -80,7 +92,7 @@ namespace Rapier {
 		ImGui::Text("Native Script Component");
 		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
 
-
+		// Runtime test?
 		ImGui::Checkbox("Script Enable OnUpdate", &nativeScriptComponent.EnableOnUpdate);
 
 
@@ -88,7 +100,7 @@ namespace Rapier {
 			ImGui::OpenPopup("Change Script"); 
 
 		if (ImGui::BeginPopupModal("Change Script", NULL, ImGuiWindowFlags_MenuBar)) {
-			DrawAddRemoveNativeScriptComponent<ALL_ENTITY_SCRIPTS>(entity);
+			DrawChangeNativeScriptComponent(entity);
 
 			if (ImGui::Button("Cancel")) {
 				ImGui::CloseCurrentPopup();
@@ -145,7 +157,31 @@ namespace Rapier {
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
 	}
 
+	static void DrawRigidBody2DComponentUI(Entity& entity) {
+		auto& rigidBody = entity.GetComponent<RigidBody2DComponent>().RigidBody;
+		bool* type = (bool*)&rigidBody->m_Properties.Type;
+		float* mass = (float*)&rigidBody->m_Properties.Mass;
+		float* restitution = (float*)&rigidBody->m_Properties.Restitution;
+		float* frictionCoefficient = (float*)&rigidBody->m_Properties.FrictionCoefficient;
+		bool* fixedRotation = (bool*)&rigidBody->m_Properties.FixedRotation;
 
+
+		ImGui::Text("Transform Component");
+		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
+		ImGui::SetNextItemWidth(150);
+		ImGui::SliderFloat("Mass", mass, -5.0f, 5.0f);
+		ImGui::SetNextItemWidth(150);
+		ImGui::SliderFloat("Restitution", restitution, 0.0f, 360.0f);
+		ImGui::SetNextItemWidth(150);
+		ImGui::SliderFloat("Friction Coefficient", frictionCoefficient, 0.0f, 5.0f);
+		ImGui::SetNextItemWidth(150);
+		ImGui::Checkbox("Rigid Body Dynamic", type);
+		ImGui::SetNextItemWidth(150);
+		ImGui::Checkbox("Fixed Rotation", fixedRotation);
+		ImGui::Unindent();
+		ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+	}
 
 
 
@@ -171,24 +207,26 @@ namespace Rapier {
 	}
 
 
-	// Combine with other components ? ////////////////////
-	// Implement script chooser
-	static bool DrawAddRemoveNativeScriptComponentPopup(Entity& entity) {
-		bool hasComponent = entity.HasComponent<NativeScriptComponent>();
-		if (hasComponent && ImGui::Button(NativeScriptComponent::RemoveName.data())) {
-			entity.RemoveComponent<NativeScriptComponent>();
+	static bool DrawAddRemoveRigidBody2DComponent(Entity& entity) {
+		bool hasComponent = entity.HasComponent<RigidBody2DComponent>();
+		if (hasComponent && ImGui::Button(RigidBody2DComponent::RemoveName.data())) {
+			entity.RemoveComponent<RigidBody2DComponent>();
 			return true;
 		}
 
-		if (!hasComponent && ImGui::Button(NativeScriptComponent::AddName.data())) {
-			auto& script = entity.AddComponent<NativeScriptComponent>();
-			script.Bind<EntityScript>(); 
-			//script.Instance = script.InstantiateScript();
+		if (!hasComponent && ImGui::Button(RigidBody2DComponent::AddName.data())) {
+			auto& transformComponent = entity.GetComponent<TransformComponent>();
+			RigidBody2DData data;
+			data.Position = transformComponent.Translation;
+			data.Rotation = transformComponent.Rotation.z;
+			data.HalfScale = transformComponent.Scale;
+			entity.AddComponent<RigidBody2DComponent>(data, RigidBody2DProperties());
 			return true;
 		}
 
 		return false;
 	}
+
 
 
 
@@ -221,7 +259,7 @@ namespace Rapier {
 			l_ActiveScene->AddSelectedEntities(entity);
 		}
 
-		if (ImGui::BeginPopupContextItem()) {
+		if (ImGui::BeginPopupContextItem(tag.Tag.c_str())) {
 			if (!Input::IsKeyPressed(RapierKey_LeftShift))
 				l_ActiveScene->ClearSelectedEntities();
 			l_ActiveScene->AddSelectedEntities(entity);
@@ -236,7 +274,8 @@ namespace Rapier {
 			if (ImGui::BeginPopup("Add/Remove Components")) {
 
 				modifiedComponent |= DrawAddRemoveComponents<COMPONENTS_LIST>(entity);
-				modifiedComponent |= DrawAddRemoveNativeScriptComponentPopup(entity);
+				modifiedComponent |= DrawAddRemoveRigidBody2DComponent(entity);
+				modifiedComponent |= DrawAddRemoveNativeScriptComponent(entity);
 
 				ImGui::EndPopup();
 			}
@@ -286,6 +325,8 @@ namespace Rapier {
 				DrawSpriteRendererComponentUI(entity);
 			if (entity.HasComponent<NativeScriptComponent>()) 
 				DrawNativeScriptComponentUI(entity);
+			if (entity.HasComponent<RigidBody2DComponent>())
+				DrawRigidBody2DComponentUI(entity);
 
 			ImGui::TreePop();
 		}

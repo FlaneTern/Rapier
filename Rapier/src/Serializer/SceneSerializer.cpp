@@ -56,21 +56,19 @@ namespace YAML {
 
 namespace Rapier {
 
-	template<typename... Args>
-	static void ParseNativeScriptComponent(NativeScriptComponent& nativeScriptComponent, const std::string& scriptName) {
-		bool isDone = false;
-		([&] {
-			if (isDone) 
-				return;
 
-			Args script;
-			if (script.GetName() == scriptName) {
-				nativeScriptComponent.Bind<Args>();
-				isDone = true;
+	static void ParseNativeScriptComponent(Entity& entity, const std::string& scriptName, bool enableOnUpdate) {
+
+		for (auto& script : EntityScriptContainer::s_EntityScriptContainer.m_Scripts)
+		{
+			if (script->GetName() == scriptName)
+			{
+				entity.AddComponent<NativeScriptComponent>(script->Clone());
+				break;
 			}
-
-			}(), ...);
+		}
 	}
+
 
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& vec3) {
 		out << YAML::Flow;
@@ -146,14 +144,10 @@ namespace Rapier {
 			out << YAML::BeginMap;
 			auto& nativeScriptComponent = entity.GetComponent<NativeScriptComponent>();
 
-			if (!nativeScriptComponent.Instance) {
-				nativeScriptComponent.Instance = nativeScriptComponent.InstantiateScript();
-				out << YAML::Key << "ScriptName" << YAML::Value << nativeScriptComponent.Instance->GetName();
-				nativeScriptComponent.DestroyScript(&nativeScriptComponent);
-			}
-			else {
-				out << YAML::Key << "ScriptName" << YAML::Value << nativeScriptComponent.Instance->GetName();
-			}
+
+			
+			out << YAML::Key << "ScriptName" << YAML::Value << nativeScriptComponent.Instance->GetName();
+			
 
 			out << YAML::Key << "EnableOnUpdate" << YAML::Value << nativeScriptComponent.EnableOnUpdate;
 			out << YAML::EndMap;
@@ -249,11 +243,10 @@ namespace Rapier {
 
 				auto nativeScriptComponent = entity["NativeScriptComponent"];
 				if (nativeScriptComponent) {
-					auto& eNativeScriptComponent = deserializedEntity.AddComponent<NativeScriptComponent>();
 					std::string scriptName = nativeScriptComponent["ScriptName"].as<std::string>();
-					ParseNativeScriptComponent<ALL_ENTITY_SCRIPTS>(eNativeScriptComponent, scriptName);
+					//ParseNativeScriptComponent<ALL_ENTITY_SCRIPTS>(eNativeScriptComponent, scriptName);
 					bool enableOnUpdate = nativeScriptComponent["EnableOnUpdate"].as<bool>();
-					eNativeScriptComponent.EnableOnUpdate = enableOnUpdate;
+					ParseNativeScriptComponent(deserializedEntity, scriptName, enableOnUpdate);
 				}
 			}
 

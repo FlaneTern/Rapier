@@ -44,7 +44,7 @@ namespace Rapier {
 	};
 
 
-	class EventDispatcher {
+	class RAPIER_API EventDispatcher {
 		template<typename T>
 		using EventFn = std::function<bool(T&)>;
 	public:

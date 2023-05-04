@@ -5,7 +5,7 @@
 
 
 namespace Rapier {
-	class VertexArray {
+	class RAPIER_API VertexArray {
 
 	public:
 		virtual ~VertexArray() {}

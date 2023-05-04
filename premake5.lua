@@ -26,10 +26,10 @@ include "Rapier/vendor/yaml-cpp"
 
 project "Rapier"
 	location "Rapier"
-	kind "StaticLib"
+	kind "SharedLib"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "on"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-itm/" .. outputdir .. "/%{prj.name}")
@@ -69,6 +69,11 @@ project "Rapier"
 		"yaml-cpp"
 	}
 
+	postbuildcommands
+        {
+            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/RapierLantern")
+        }
+
 
 	systemversion "latest"
 	defines{
@@ -97,10 +102,10 @@ project "Rapier"
 
 project "Forehead"
 	location "Forehead"
-	kind "ConsoleApp"
+	kind "SharedLib"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "On"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-itm/" .. outputdir .. "/%{prj.name}")
@@ -120,13 +125,20 @@ project "Forehead"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.entt}"
 	}
-	 
+
 	links{
-		"Rapier"
+		"Rapier",
+		"RapierLantern"
 	}
 
+	defines "RAPIER_BUILD_SCRIPT"
 
 	systemversion "latest"
+
+	postbuildcommands
+        {
+            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/RapierLantern")
+        }
 
 	filter "configurations:Debug"
 		defines "RAPIER_DEBUG"
@@ -145,12 +157,13 @@ project "Forehead"
 
 
 
+
 project "RapierLantern"
 	location "RapierLantern"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "On"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-itm/" .. outputdir .. "/%{prj.name}")
@@ -172,7 +185,8 @@ project "RapierLantern"
 	}
 	 
 	links{
-		"Rapier"
+		"Rapier",
+		"ImGui"
 	}
 
 

@@ -10,7 +10,7 @@ namespace Rapier {
 	class LanternLayer : public Layer {
 	public:
 		LanternLayer()
-			: Layer("Lantern") {}
+			: Layer("Lantern"), m_ScriptPath("D:\\C++\\PersonalProjects\\Rapier\\bin\\Debug-x86_64\\RapierLantern\\Forehead.dll") {}
 
 		void OnUpdate(DeltaTime dt) override;
 		void OnAttach() override;
@@ -48,6 +48,8 @@ namespace Rapier {
 
 		void OnUpdateGizmos(DeltaTime dt);
 
+		void LoadScript();
+		void SetScriptPath();
 
 		virtual bool OnMouseButtonPressedEvent(Rapier::MouseButtonPressedEvent& e) override;
 		virtual bool OnMouseButtonReleasedEvent(Rapier::MouseButtonReleasedEvent& e) override;
@@ -79,6 +81,7 @@ namespace Rapier {
 
 		int m_HoveredEntityId = -1;
 
+		std::string m_ScriptPath;
 
 
 		enum class SceneState {

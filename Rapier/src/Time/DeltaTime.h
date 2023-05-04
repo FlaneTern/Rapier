@@ -3,7 +3,7 @@
 
 namespace Rapier {
 
-	class DeltaTime {
+	class RAPIER_API DeltaTime {
 	public:
 		DeltaTime(std::chrono::high_resolution_clock::time_point prevTime);
 

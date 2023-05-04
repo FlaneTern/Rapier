@@ -1,15 +1,19 @@
 #pragma once
 
 #include "Time/DeltaTime.h"
+#include "Random/UUID.h"
+#include "Physics/PhysicsWorld2D.h"
 
 #include "glm/glm.hpp"
 #include "entt.hpp"
+
+
 
 namespace Rapier {
 	class Entity;
 	class SceneSerializer;
 
-	class Scene {
+	class RAPIER_API Scene {
 	public:
 		Entity CreateEntity(const std::string& name = "UnknownEntity");
 		Entity LoadEntity(uint64_t uuid, const std::string& name = "UnknownEntity");
@@ -23,13 +27,16 @@ namespace Rapier {
 		void SetPrimaryCamera(Entity& entity);
 		Entity GetPrimaryCamera();
 
-		const std::unordered_set<uint32_t>& GetSelectedEntities() const { return m_SelectedEntities; }
+		const std::unordered_set<uint64_t>& GetSelectedEntities() const { return m_SelectedEntities; }
 		void AddSelectedEntities(Entity& entity);
 		void ClearSelectedEntities();
 		void RemoveSelectedEntities(Entity& entity);
 		bool IsEntitySelected(Entity& entity);
 		
 		static Ref<Scene> Copy(Ref<Scene> other);
+
+		Ref<RigidBody2D> CreateRigidBody(RigidBody2DData data, RigidBody2DProperties properties);
+
 	private:
 		friend class Entity;
 		friend class EntityListPanel;
@@ -38,6 +45,8 @@ namespace Rapier {
 		void RenderScene(const glm::mat4& camera);
 
 		entt::registry m_Registry;
-		std::unordered_set<uint32_t> m_SelectedEntities;
+		std::unordered_set<uint64_t> m_SelectedEntities;
+
+		PhysicsWorld2D m_PhysicsWorld;
 	};
 }

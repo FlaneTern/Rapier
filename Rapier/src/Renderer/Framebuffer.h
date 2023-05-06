@@ -1,7 +1,8 @@
 #pragma once
 
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	enum class FramebufferTextureFormat
 	{
@@ -29,7 +30,8 @@ namespace Rapier {
 		// TODO: filtering/wrap
 	};
 	
-	struct FramebufferSpecification {
+	struct FramebufferSpecification
+	{
 		uint32_t Width = 0, Height = 0;
 		std::vector<FramebufferTextureSpecification> Attachments;
 		uint32_t Samples = 1;
@@ -38,7 +40,8 @@ namespace Rapier {
 	};
 
 
-	class RAPIER_API Framebuffer {
+	class RAPIER_API Framebuffer 
+	{
 	public:
 		virtual ~Framebuffer() = default;
 

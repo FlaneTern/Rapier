@@ -4,7 +4,8 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	class RAPIER_API Log
 	{

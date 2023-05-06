@@ -2,8 +2,10 @@
 #include "ipch.h"
 #include "glm/glm.hpp"
 
-namespace Rapier {
-	class RAPIER_API Input {
+namespace Rapier
+{
+	class RAPIER_API Input
+	{
 	public:
 
 		static void OnUpdate();

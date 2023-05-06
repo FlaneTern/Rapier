@@ -5,8 +5,10 @@
 
 #include "glad/glad.h"
 
-namespace Rapier {
-	OpenGLTexture2D::OpenGLTexture2D() {
+namespace Rapier 
+{
+	OpenGLTexture2D::OpenGLTexture2D() 
+	{
 		m_Filepath = "White Texture";
 
 		m_Width = 1;
@@ -45,7 +47,8 @@ namespace Rapier {
 
 		// temp //////////////////////////////////////////////////////////////////////////////////////
 		int channels;
-		switch (data->Channels) {
+		switch (data->Channels) 
+		{
 		case 1: channels = GL_ALPHA; break;
 		case 2: channels = GL_RG; break;
 		case 3: channels = GL_RGB; break;
@@ -63,11 +66,13 @@ namespace Rapier {
 		///////////////////////////////////////////
 	}
 
-	OpenGLTexture2D::~OpenGLTexture2D() {
+	OpenGLTexture2D::~OpenGLTexture2D() 
+	{
 		glDeleteTextures(1, &m_RendererId);
 	}
 
-	void OpenGLTexture2D::Bind(uint32_t slot) const {
+	void OpenGLTexture2D::Bind(uint32_t slot) const 
+	{
 		glBindTextureUnit(slot, m_RendererId);
 	}
 }

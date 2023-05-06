@@ -8,8 +8,8 @@
 #include <GLFW/glfw3native.h>
 
 #include <windows.h>
-namespace Rapier {
 
+namespace Rapier {
 
 	std::string FileSystem::OpenFileDialog(const std::string& filter)
 	{
@@ -60,8 +60,10 @@ namespace Rapier {
 	}
 
 
-	void* FileSystem::LoadDLL(const std::string& filename) {
-		if (s_ScriptHandle) {
+	void* FileSystem::LoadDLL(const std::string& filename) 
+	{
+		if (s_ScriptHandle) 
+		{
 			UnloadDLL(s_ScriptHandle);
 			s_ScriptHandle = nullptr;
 		}
@@ -74,14 +76,16 @@ namespace Rapier {
 		return handle;
 	}
 
-	void* FileSystem::LoadDLLFunction(void* DLLHandle, const std::string& functionName) {
+	void* FileSystem::LoadDLLFunction(void* DLLHandle, const std::string& functionName)
+	{
 
 		void* func = (void*)GetProcAddress((HMODULE)DLLHandle, functionName.c_str());
 
 		return func;
 	}
 
-	bool FileSystem::UnloadDLL(void* handle) {
+	bool FileSystem::UnloadDLL(void* handle) 
+	{
 		bool success = FreeLibrary((HMODULE)handle);
 		if (success)
 			s_ScriptHandle = nullptr;

@@ -1,8 +1,10 @@
 #pragma once
 
-namespace Rapier {
+namespace Rapier 
+{
 
-	enum class EventType {
+	enum class EventType 
+	{
 		None = 0,
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
 		AppTick, AppUpdate, AppRender,
@@ -10,7 +12,8 @@ namespace Rapier {
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
 
-	enum EventCategory {
+	enum EventCategory 
+	{
 		None = 0,
 		EventCategoryApplication =	BIT(0),
 		EventCategoryInput =		BIT(1),
@@ -36,7 +39,8 @@ namespace Rapier {
 		virtual int GetCategoryFlags() const = 0;
 		virtual std::string ToString() const { return GetName(); }
 
-		inline bool IsInCategory(EventCategory category) {
+		inline bool IsInCategory(EventCategory category) 
+		{
 			return GetCategoryFlags() & category;
 		}
 
@@ -44,7 +48,8 @@ namespace Rapier {
 	};
 
 
-	class RAPIER_API EventDispatcher {
+	class RAPIER_API EventDispatcher 
+	{
 		template<typename T>
 		using EventFn = std::function<bool(T&)>;
 	public:
@@ -53,8 +58,10 @@ namespace Rapier {
 
 
 		template<typename T>
-		bool Dispatch(EventFn<T> func) {
-			if (m_Event.GetEventType() == T::GetStaticType()) {
+		bool Dispatch(EventFn<T> func) 
+		{
+			if (m_Event.GetEventType() == T::GetStaticType()) 
+			{
 				m_Event.m_Handled = func(*(T*)&m_Event);
 				return true;
 			}
@@ -65,7 +72,8 @@ namespace Rapier {
 		Event& m_Event;
 	};
 
-	inline std::ostream& operator<<(std::ostream& os, const Event& e) {
+	inline std::ostream& operator<<(std::ostream& os, const Event& e) 
+	{
 		return os << e.ToString();
 	}
 }

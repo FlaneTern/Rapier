@@ -2,8 +2,10 @@
 
 #include "Assets/Texture/Texture.h"
 
-namespace Rapier {
-	class OpenGLTexture2D : public Texture2D {
+namespace Rapier 
+{
+	class OpenGLTexture2D : public Texture2D 
+	{
 	public:
 		OpenGLTexture2D(); // White Texture
 		OpenGLTexture2D(const std::string& path);

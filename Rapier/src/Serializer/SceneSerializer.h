@@ -2,9 +2,11 @@
 
 #include "Scene/Scene.h"
 
-namespace Rapier {
+namespace Rapier
+{
 
-	class RAPIER_API SceneSerializer {
+	class RAPIER_API SceneSerializer
+	{
 	public:
 		SceneSerializer(const Ref<Scene>& scene);
 

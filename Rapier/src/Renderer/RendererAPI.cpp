@@ -2,6 +2,7 @@
 
 #include "Renderer/RendererAPI.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 	RendererAPI::API RendererAPI::s_API = RendererAPI::API::OpenGL;
 }

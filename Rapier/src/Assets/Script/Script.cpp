@@ -5,107 +5,134 @@
 #include "Keycode/RapierKeycode.h"
 #include "Scene/Entity.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 	EntityScriptContainer EntityScriptContainer::s_EntityScriptContainer;
 
-	uint64_t EntityScript::GetUUID() const {
+	uint64_t EntityScript::GetUUID() const 
+	{
 		return m_Entity->GetUUID();
 	}
 
-	std::string EntityScript::GetTag() const {
+	std::string EntityScript::GetTag() const 
+	{
 		return m_Entity->GetComponent<TagComponent>().Tag;
 	}
 
-	glm::vec3 EntityScript::GetTranslation() const {
+	glm::vec3 EntityScript::GetTranslation() const 
+	{
 		RAPIER_CORE_ASSERT(m_Entity->HasComponent<TransformComponent>(), "Entity doesn't have Transform Component !");
 		return m_Entity->GetComponent<TransformComponent>().Translation;
 	}
 
-	glm::vec3 EntityScript::GetRotation() const {
+	glm::vec3 EntityScript::GetRotation() const 
+	{
 		RAPIER_CORE_ASSERT(m_Entity->HasComponent<TransformComponent>(), "Entity doesn't have Transform Component !");
 		return m_Entity->GetComponent<TransformComponent>().Rotation;
 	}
 
-	glm::vec3 EntityScript::GetScale() const {
+	glm::vec3 EntityScript::GetScale() const 
+	{
 		RAPIER_CORE_ASSERT(m_Entity->HasComponent<TransformComponent>(), "Entity doesn't have Transform Component !");
 		return m_Entity->GetComponent<TransformComponent>().Scale;
 	}
 
-	glm::vec4 EntityScript::GetColor() const {
+	glm::vec4 EntityScript::GetColor() const 
+	{
 		RAPIER_CORE_ASSERT(m_Entity->HasComponent<SpriteRendererComponent>(), "Entity doesn't have Sprite Renderer Component !");
 		return m_Entity->GetComponent<SpriteRendererComponent>().Color;
 	}
 
-	Ref<Texture2D> EntityScript::GetTexture() const {
+	Ref<Texture2D> EntityScript::GetTexture() const 
+	{
 		RAPIER_CORE_ASSERT(m_Entity->HasComponent<SpriteRendererComponent>(), "Entity doesn't have Sprite Renderer Component !");
 		return m_Entity->GetComponent<SpriteRendererComponent>().Texture;
 	}
 
-	glm::mat4 EntityScript::GetCameraProjection() const {
+	glm::mat4 EntityScript::GetCameraProjection() const 
+	{
 		RAPIER_CORE_ASSERT(m_Entity->HasComponent<CameraComponent>(), "Entity doesn't have Camera Component !");
 		return m_Entity->GetComponent<CameraComponent>().Camera.GetProjection();
 	}
 
+	Scene* EntityScript::GetScene() const 
+	{
+		return m_Entity->GetScene();
+	}
 
-	void EntityScript::SetTranslation(const glm::vec3& translation) {
+
+
+	void EntityScript::SetTranslation(const glm::vec3& translation) 
+	{
 		RAPIER_CORE_ASSERT(m_Entity->HasComponent<TransformComponent>(), "Entity doesn't have Transform Component !");
 		auto& transform = m_Entity->GetComponent<TransformComponent>();
 		transform.Translation = translation;
 	}
 
-	void EntityScript::SetRotation(const glm::vec3& rotation) {
+	void EntityScript::SetRotation(const glm::vec3& rotation) 
+	{
 		RAPIER_CORE_ASSERT(m_Entity->HasComponent<TransformComponent>(), "Entity doesn't have Transform Component !");
 		auto& transform = m_Entity->GetComponent<TransformComponent>();
 		transform.Rotation = rotation;
 	}
 
-	void EntityScript::SetScale(const glm::vec3& scale) {
+	void EntityScript::SetScale(const glm::vec3& scale) 
+	{
 		RAPIER_CORE_ASSERT(m_Entity->HasComponent<TransformComponent>(), "Entity doesn't have Transform Component !");
 		auto& transform = m_Entity->GetComponent<TransformComponent>();
 		transform.Scale = scale;
 	}
 
-	void EntityScript::SetColor(const glm::vec4& color) {
+	void EntityScript::SetColor(const glm::vec4& color) 
+	{
 		RAPIER_CORE_ASSERT(m_Entity->HasComponent<SpriteRendererComponent>(), "Entity doesn't have Sprite Renderer Component !");
 		auto& src = m_Entity->GetComponent<SpriteRendererComponent>();
 		src.Color = color;
 	}
 
-	void EntityScript::SetTexture(Ref<Texture2D> texture) {
+	void EntityScript::SetTexture(Ref<Texture2D> texture) 
+	{
 		RAPIER_CORE_ASSERT(m_Entity->HasComponent<SpriteRendererComponent>(), "Entity doesn't have Sprite Renderer Component !");
 		auto& src = m_Entity->GetComponent<SpriteRendererComponent>();
 		src.Texture = texture;
 	}
 
-	void EntityScript::SetCameraFixedAspectRatio(bool fixed) {
+	void EntityScript::SetCameraFixedAspectRatio(bool fixed) 
+	{
 		RAPIER_CORE_ASSERT(m_Entity->HasComponent<CameraComponent>(), "Entity doesn't have Camera Component !");
 		auto& src = m_Entity->GetComponent<CameraComponent>();
 		src.FixedAspectRatio = fixed;
 	}
 
-	void EntityScript::SetCameraAsPrimary() {
+	void EntityScript::SetCameraAsPrimary() 
+	{
 		// TODO
 	}
 
 
-	void EntityScript::OnUpdate(DeltaTime dt) {
+	void EntityScript::OnUpdate(DeltaTime dt) 
+	{
 
 	}
 
-	void EntityScript::OnDestroy() {
+	void EntityScript::OnDestroy() 
+	{
 
 	}
 
-	void EntityScript::OnCreate() {
+	void EntityScript::OnCreate() 
+	{
 
 	}
 
 
-	Ref<EntityScript> EntityScript::Clone() const {
+	Ref<EntityScript> EntityScript::Clone() const 
+	{
 		return std::make_shared<EntityScript>(*this);
 	}
 
-	std::string EntityScript::GetName() const {
+	std::string EntityScript::GetName() const 
+	{
 		return "Entity Script";
 	}
 
@@ -113,11 +140,13 @@ namespace Rapier {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	template<typename T>
-	T& DefaultEntityScript::GetComponent() {
+	T& DefaultEntityScript::GetComponent() 
+	{
 		return m_Entity->GetComponent<T>();
 	}
 
-	Ref<EntityScript> DefaultEntityScript::Clone() const {
+	Ref<EntityScript> DefaultEntityScript::Clone() const 
+	{
 		return std::make_shared<DefaultEntityScript>(*this);
 	}
 
@@ -130,14 +159,16 @@ namespace Rapier {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	Ref<EntityScript> CameraController::Clone() const {
+	Ref<EntityScript> CameraController::Clone() const 
+	{
 		return std::make_shared<CameraController>(*this);
 	}
 
 	void CameraController::OnCreate() {}
 	void CameraController::OnDestroy() {}
 
-	void CameraController::OnUpdate(DeltaTime dt) {
+	void CameraController::OnUpdate(DeltaTime dt) 
+	{
 		auto& transformComponent = GetComponent<TransformComponent>();
 		auto& projectionComponent = GetComponent<CameraComponent>().Camera;
 		float projectionSize = projectionComponent.GetSize();
@@ -160,14 +191,16 @@ namespace Rapier {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	Ref<EntityScript> TextureControl::Clone() const {
+	Ref<EntityScript> TextureControl::Clone() const 
+	{
 		return std::make_shared<TextureControl>(*this);
 	}
 
 	void TextureControl::OnCreate() {}
 	void TextureControl::OnDestroy() {}
 
-	void TextureControl::OnUpdate(DeltaTime dt) {
+	void TextureControl::OnUpdate(DeltaTime dt) 
+	{
 
 		auto& transform = GetComponent<TransformComponent>();
 
@@ -187,14 +220,16 @@ namespace Rapier {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	Ref<EntityScript> SquareControlX::Clone() const {
+	Ref<EntityScript> SquareControlX::Clone() const 
+	{
 		return std::make_shared<SquareControlX>(*this);
 	}
 
 	void SquareControlX::OnCreate() {}
 	void SquareControlX::OnDestroy() {}
 
-	void SquareControlX::OnUpdate(DeltaTime dt) {
+	void SquareControlX::OnUpdate(DeltaTime dt) 
+	{
 		auto& transform = GetComponent<TransformComponent>();
 		float& x = transform.Translation.x;
 
@@ -216,14 +251,16 @@ namespace Rapier {
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	Ref<EntityScript> SquareControlY::Clone() const {
+	Ref<EntityScript> SquareControlY::Clone() const 
+	{
 		return std::make_shared<SquareControlY>(*this);
 	}
 
 	void SquareControlY::OnCreate() {}
 	void SquareControlY::OnDestroy() {}
 
-	void SquareControlY::OnUpdate(DeltaTime dt) {
+	void SquareControlY::OnUpdate(DeltaTime dt) 
+	{
 		auto& transform = GetComponent<TransformComponent>();
 		float& y = transform.Translation.y;
 

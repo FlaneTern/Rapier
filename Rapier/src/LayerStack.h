@@ -1,7 +1,8 @@
 #pragma once
 #include "Layer.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	class RAPIER_API LayerStack
 	{

@@ -8,7 +8,8 @@
 
 #include "glm/glm.hpp"
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	struct NativeScriptComponent;
 	class Scene;
@@ -16,7 +17,8 @@ namespace Rapier {
 
 
 	
-	class RAPIER_API EntityScript {
+	class RAPIER_API EntityScript 
+	{
 	public:
 		virtual Ref<EntityScript> Clone() const;
 		virtual std::string GetName() const;
@@ -43,6 +45,7 @@ namespace Rapier {
 		virtual Ref<Texture2D> GetTexture() const final;
 		virtual glm::mat4 GetCameraProjection() const final;
 		
+		virtual Scene* GetScene() const final;
 
 		virtual void SetTranslation(const glm::vec3& translation) final;
 		virtual void SetRotation(const glm::vec3& rotation) final;
@@ -52,12 +55,15 @@ namespace Rapier {
 		virtual void SetCameraFixedAspectRatio(bool fixed) final;
 		virtual void SetCameraAsPrimary() final;
 
+
 		Ref<Entity> m_Entity;
+
 	private:
 	};
 	
 
-	class RAPIER_API EntityScriptContainer {
+	class RAPIER_API EntityScriptContainer 
+	{
 	public:
 		static EntityScriptContainer s_EntityScriptContainer;
 		std::vector<Ref<EntityScript>> m_Scripts;

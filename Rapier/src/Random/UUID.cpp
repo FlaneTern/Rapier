@@ -2,7 +2,8 @@
 #include "Random/UUID.h"
 #include "Random/Randomizer.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 	UUID::UUID()
 		: m_UUID(Randomizer::RandomUINT64())
 	{
@@ -14,11 +15,13 @@ namespace Rapier {
 	}
 }
 
-namespace std {
+namespace std 
+{
 	template<>
 	class std::hash<Rapier::UUID>
 	{
-		size_t operator()(const Rapier::UUID& uuid) const {
+		size_t operator()(const Rapier::UUID& uuid) const 
+		{
 			return std::hash<uint64_t>()((uint64_t)uuid);
 		}
 	};

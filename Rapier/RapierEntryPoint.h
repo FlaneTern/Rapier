@@ -5,7 +5,8 @@
 extern Rapier::Application* Rapier::CreateApplication();
 
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
 	Rapier::Log::Init();
 	RAPIER_CORE_INFO("Initializing Rapier");
 

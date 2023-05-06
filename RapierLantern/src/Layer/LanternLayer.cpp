@@ -10,14 +10,16 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "imgui.h"
 
+#include "Renderer/DebugRenderer.h"
 
-
-namespace Rapier {
+namespace Rapier 
+{
 
 	static constexpr const char* l_ScriptFunctionName = "EntityScriptFactory";
 
 
-	void LanternLayer::OnAttach() {
+	void LanternLayer::OnAttach() 
+	{
 
 		ImGui::SetCurrentContext(Application::Get().m_ImGuiContext);
 
@@ -37,7 +39,8 @@ namespace Rapier {
 
 	}
 
-	void LanternLayer::OnUpdate(DeltaTime dt) {
+	void LanternLayer::OnUpdate(DeltaTime dt) 
+	{
 
 		if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
 			m_ViewportPanelSize.x > 0.0f && m_ViewportPanelSize.y > 0.0f && // zero sized framebuffer is invalid
@@ -61,7 +64,8 @@ namespace Rapier {
 		CalculateMousePos();
 
 
-		switch (m_SceneState) {
+		switch (m_SceneState) 
+		{
 		case SceneState::Edit:
 		{
 			m_LanternCamera.OnUpdate(dt, m_SceneMousePos);
@@ -91,7 +95,8 @@ namespace Rapier {
 	}
 
 
-	void LanternLayer::OnImGuiRender() {
+	void LanternLayer::OnImGuiRender()
+	{
 
 		// Dockspace
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -158,13 +163,15 @@ namespace Rapier {
 
 			if (ImGui::BeginMenu("Scene"))
 			{
-				if (m_SceneState == SceneState::Runtime) {
+				if (m_SceneState == SceneState::Runtime) 
+				{
 					if (ImGui::MenuItem("Pause Scene"))
 						PauseScene();
 					if (ImGui::MenuItem("Stop Scene"))
 						StopScene();
 				}
-				else {
+				else 
+				{
 					if (ImGui::MenuItem("Play Scene"))
 						PlayScene();
 				}
@@ -223,47 +230,49 @@ namespace Rapier {
 		m_AssetPanel->OnImGuiRender();
 	}
 
-	void LanternLayer::OnUpdateGizmos(DeltaTime dt) {
+	void LanternLayer::OnUpdateGizmos(DeltaTime dt) 
+	{
 		if (LanternGizmo::s_GizmoEntities.empty())
 			return;
 
 		TIME_FUNCTION_INTERNAL(LanternLayer::OnUpdateGizmos);
 
-		Renderer2D::BeginEditorRender(m_LanternCamera.GetViewProjection());
 
+		RenderCommand::SetLineWidth(2.0f);
 
-		switch (LanternGizmo::s_GizmoState) {
+		switch (LanternGizmo::s_GizmoState) 
+		{
 		case GizmoState::Translation:
 		{
 			auto data = LanternGizmo::GetRenderDataTranslation();
-			Renderer2D::DrawTexture(data.TransformXQuad, nullptr, data.ColorX, -2);
-			Renderer2D::DrawCircle(data.TransformXCircleEdge, nullptr, data.ColorX, -2);
-			Renderer2D::DrawTexture(data.TransformYQuad, nullptr, data.ColorY, -3);
-			Renderer2D::DrawCircle(data.TransformYCircleEdge, nullptr, data.ColorY, -3);
-			Renderer2D::DrawCircle(data.TransformMidCircle, nullptr, data.ColorMidCircle, -4);
+			DebugRenderer::GizmoDrawBox(m_ActiveScene.get(), data.TransformXQuad, data.ColorX, -2);
+			DebugRenderer::GizmoDrawCircle(m_ActiveScene.get(), data.TransformXCircleEdge, data.ColorX, -2);
+			DebugRenderer::GizmoDrawBox(m_ActiveScene.get(), data.TransformYQuad, data.ColorY, -3);
+			DebugRenderer::GizmoDrawCircle(m_ActiveScene.get(), data.TransformYCircleEdge, data.ColorY, -3);
+			DebugRenderer::GizmoDrawCircle(m_ActiveScene.get(), data.TransformMidCircle, data.ColorMidCircle, -4);
+			
 
 			break;
 		}
 		case GizmoState::Rotation:
 		{
 			auto data = LanternGizmo::GetRenderDataRotation();
-			Renderer2D::DrawCircle(data.Transform, nullptr, data.Color, -2, 0.7f);
+			DebugRenderer::GizmoDrawCircle(m_ActiveScene.get(), data.Transform, data.Color, -2, 0.7f);
 			break;
 		}
 		case GizmoState::Scale:
 		{
 			auto data = LanternGizmo::GetRenderDataScale();
-			Renderer2D::DrawTexture(data.TransformXQuad, nullptr, data.ColorX, -2);
-			Renderer2D::DrawTexture(data.TransformXQuadEdge, nullptr, data.ColorX, -2);
-			Renderer2D::DrawTexture(data.TransformYQuad, nullptr, data.ColorY, -3);
-			Renderer2D::DrawTexture(data.TransformYQuadEdge, nullptr, data.ColorY, -3);
-			Renderer2D::DrawTexture(data.TransformMidQuad, nullptr, data.ColorMidQuad, -4);
+			DebugRenderer::GizmoDrawBox(m_ActiveScene.get(), data.TransformXQuad, data.ColorX, -2);
+			DebugRenderer::GizmoDrawBox(m_ActiveScene.get(), data.TransformXQuadEdge, data.ColorX, -2);
+			DebugRenderer::GizmoDrawBox(m_ActiveScene.get(), data.TransformYQuad, data.ColorY, -3);
+			DebugRenderer::GizmoDrawBox(m_ActiveScene.get(), data.TransformYQuadEdge, data.ColorY, -3);
+			DebugRenderer::GizmoDrawBox(m_ActiveScene.get(), data.TransformMidQuad, data.ColorMidQuad, -4);
 			break;
 		}
 		}
 
 
-		Renderer2D::EndEditorRender();
 
 
 		LanternGizmo::OnUpdate(dt, m_LanternCamera, m_SceneMousePos, m_HoveredEntityId);
@@ -272,7 +281,8 @@ namespace Rapier {
 
 
 
-	void LanternLayer::CalculateMousePos() {
+	void LanternLayer::CalculateMousePos() 
+	{
 
 		auto [mx, my] = ImGui::GetMousePos();
 		mx -= m_ViewportMinBound.x;
@@ -287,11 +297,13 @@ namespace Rapier {
 		glm::vec2 vector = { 0.0f, 0.0f };
 		glm::mat2x2 rot;
 
-		if (m_SceneState == SceneState::Runtime) {
+		if (m_SceneState == SceneState::Runtime)
+		{
 
 			auto primaryCamera = m_ActiveScene->GetPrimaryCamera();
 			// if primary camera exists
-			if ((entt::entity)primaryCamera != entt::null) {
+			if ((entt::entity)primaryCamera != entt::null) 
+			{
 				auto primaryCameraTransform = primaryCamera.GetComponent<TransformComponent>();
 				auto primaryCameraProjection = primaryCamera.GetComponent<CameraComponent>().Camera;
 				vector = { primaryCameraProjection.GetSize() * primaryCameraProjection.GetAspectRatio() *
@@ -311,17 +323,19 @@ namespace Rapier {
 
 			}
 		}
-		else {
-			vector = { m_LanternCamera.GetSize() * m_LanternCamera.GetAspectRatio() *
-				(m_ViewportMousePos.x / m_ViewportPanelSize.x - 0.5f),
-				m_LanternCamera.GetSize() *
-				(m_ViewportMousePos.y / m_ViewportPanelSize.y - 0.5f)
+		else 
+		{
+			vector = 
+			{ 
+				m_LanternCamera.GetSize() * m_LanternCamera.GetAspectRatio() * (m_ViewportMousePos.x / m_ViewportPanelSize.x - 0.5f),
+				m_LanternCamera.GetSize() *                                    (m_ViewportMousePos.y / m_ViewportPanelSize.y - 0.5f)
 			};
 
-			rot = { {glm::cos(glm::radians(m_LanternCamera.m_Rotation.z)),
-					 glm::sin(glm::radians(m_LanternCamera.m_Rotation.z))},
-					{-glm::sin(glm::radians(m_LanternCamera.m_Rotation.z)),
-					 glm::cos(glm::radians(m_LanternCamera.m_Rotation.z))} };
+			rot = 
+			{ 
+				{  glm::cos(glm::radians(m_LanternCamera.m_Rotation.z)) , glm::sin(glm::radians(m_LanternCamera.m_Rotation.z)) },
+				{ -glm::sin(glm::radians(m_LanternCamera.m_Rotation.z)) , glm::cos(glm::radians(m_LanternCamera.m_Rotation.z)) } 
+			};
 
 			vector = rot * vector;
 			vector.x += m_LanternCamera.m_Translation.x;
@@ -333,9 +347,11 @@ namespace Rapier {
 		
 	}
 
-	void LanternLayer::SelectEntity() {
+	void LanternLayer::SelectEntity() 
+	{
 
-		if (Input::IsKeyPressed(RapierKey_Escape)) {
+		if (Input::IsKeyPressed(RapierKey_Escape))
+		{
 			m_ActiveScene->ClearSelectedEntities();
 		}
 
@@ -374,30 +390,36 @@ namespace Rapier {
 
 
 
-	void LanternLayer::NewScene() {
+	void LanternLayer::NewScene() 
+	{
 		m_ActiveScene = std::make_shared<Scene>();
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportPanelSize.x, (uint32_t)m_ViewportPanelSize.y);
 		m_EntityListPanel->SetScene(m_ActiveScene);
 		m_AssetPanel->SetScene(m_ActiveScene);
 	}
 
-	void LanternLayer::SaveScene() {
+	void LanternLayer::SaveScene() 
+	{
 		std::string filepath = FileSystem::SaveFileDialog(".scene");
 
-		if (!filepath.empty()) {
+		if (!filepath.empty()) 
+		{
 			SceneSerializer serializer(m_ActiveScene);
 			serializer.Serialize(filepath);
 		}
 	}
 
-	void LanternLayer::LoadScene() {
+	void LanternLayer::LoadScene() 
+	{
 		std::string filepath = FileSystem::OpenFileDialog(".scene");
 
-		if (!filepath.empty()) {
+		if (!filepath.empty()) 
+		{
 			Ref<Scene> newScene = std::make_shared<Scene>();
 
 			SceneSerializer serializer(newScene);
-			if (serializer.Deserialize(filepath)) {
+			if (serializer.Deserialize(filepath))
+			{
 				m_ActiveScene = newScene;
 				m_ActiveScene->OnViewportResize((uint32_t)m_ViewportPanelSize.x, (uint32_t)m_ViewportPanelSize.y);
 				m_EntityListPanel->SetScene(m_ActiveScene);
@@ -408,7 +430,8 @@ namespace Rapier {
 	}
 
 
-	void LanternLayer::PlayScene() {
+	void LanternLayer::PlayScene()
+	{
 		if(!m_RuntimeScene)
 			m_RuntimeScene = Scene::Copy(m_ActiveScene);
 		
@@ -420,11 +443,13 @@ namespace Rapier {
 		ImGui::SetWindowFocus("Main Viewport");
 	}
 
-	void LanternLayer::PauseScene() {
+	void LanternLayer::PauseScene() 
+	{
 		m_SceneState = SceneState::Pause;
 	}
 
-	void LanternLayer::StopScene() {
+	void LanternLayer::StopScene() 
+	{
 		m_EntityListPanel->SetScene(m_ActiveScene);
 		m_AssetPanel->SetScene(m_ActiveScene);
 		m_RuntimeScene = nullptr;
@@ -432,7 +457,8 @@ namespace Rapier {
 	}
 
 
-	void LanternLayer::LoadScript() {
+	void LanternLayer::LoadScript()
+	{
 		void* handle = FileSystem::LoadDLL(m_ScriptPath);
 		RAPIER_CORE_ASSERT(handle, "Cant load script !");
 		EntityScriptContainer(*func)() = (EntityScriptContainer(*)())FileSystem::LoadDLLFunction(handle, l_ScriptFunctionName);
@@ -440,7 +466,8 @@ namespace Rapier {
 		EntityScriptContainer::s_EntityScriptContainer.m_Scripts.clear();
 
 		auto temp = func();
-		for (auto& script : temp.m_Scripts) {
+		for (auto& script : temp.m_Scripts)
+		{
 			EntityScriptContainer::s_EntityScriptContainer.m_Scripts.push_back(script->Clone());
 		}
 
@@ -451,54 +478,71 @@ namespace Rapier {
 		EntityScriptContainer::s_EntityScriptContainer.m_Scripts.push_back(std::make_shared<SquareControlY>());
 	}
 
-	void LanternLayer::SetScriptPath() {
+	void LanternLayer::SetScriptPath() 
+	{
 		std::string path = FileSystem::OpenFileDialog(".dll");
 
-  		if (!path.empty()) {
+  		if (!path.empty()) 
+		{
 			m_ScriptPath = path;
 			LoadScript();
 		}
 	}
 
 
-	bool LanternLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& e) {
-		if (!m_MainViewportHovered) return true;
+	bool LanternLayer::OnMouseButtonPressedEvent(MouseButtonPressedEvent& e)
+	{
+		if (!m_MainViewportHovered)
+			return true;
 		return false;
 	}
 
-	bool LanternLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& e) {
-		if (!m_MainViewportHovered) return true;
+	bool LanternLayer::OnMouseButtonReleasedEvent(MouseButtonReleasedEvent& e)
+	{
+		if (!m_MainViewportHovered) 
+			return true;
 		return false;
 	}
 
-	bool LanternLayer::OnMouseMovedEvent(MouseMovedEvent& e) {
-		if (!m_MainViewportHovered)  return true;
+	bool LanternLayer::OnMouseMovedEvent(MouseMovedEvent& e) 
+	{
+		if (!m_MainViewportHovered)  
+			return true;
 		return false;
 	}
 
-	bool LanternLayer::OnMouseScrolledEvent(MouseScrolledEvent& e) {
-		if (!m_MainViewportHovered)  return true;
+	bool LanternLayer::OnMouseScrolledEvent(MouseScrolledEvent& e)
+	{
+		if (!m_MainViewportHovered)  
+			return true;
 		m_LanternCamera.OnMouseScrolledEvent(e);
 		return false;
 	}
 
-	bool LanternLayer::OnKeyPressedEvent(KeyPressedEvent& e) {
-		if (!m_MainViewportFocused)  return true;	
+	bool LanternLayer::OnKeyPressedEvent(KeyPressedEvent& e) 
+	{
+		if (!m_MainViewportFocused)  
+			return true;	
 		return false;
 	}
 
-	bool LanternLayer::OnKeyReleasedEvent(KeyReleasedEvent& e) {
-		if (!m_MainViewportFocused) return true;
+	bool LanternLayer::OnKeyReleasedEvent(KeyReleasedEvent& e)
+	{
+		if (!m_MainViewportFocused) 
+			return true;
 		LanternGizmo::OnKeyReleasedEvent(e);
 		return false;
 	}
 
-	bool LanternLayer::OnKeyTypedEvent(KeyTypedEvent& e) {
-		if (!m_MainViewportFocused) return true;
+	bool LanternLayer::OnKeyTypedEvent(KeyTypedEvent& e)
+	{
+		if (!m_MainViewportFocused)
+			return true;
 		return false;
 	}
 
-	bool LanternLayer::OnWindowResizeEvent(WindowResizeEvent& e) {
+	bool LanternLayer::OnWindowResizeEvent(WindowResizeEvent& e) 
+	{
 		return false;
 	}
 

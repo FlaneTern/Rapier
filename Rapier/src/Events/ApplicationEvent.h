@@ -2,9 +2,11 @@
 
 #include "Event.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
-	class RAPIER_API WindowResizeEvent : public Event {
+	class RAPIER_API WindowResizeEvent : public Event 
+	{
 	public:
 		WindowResizeEvent(unsigned int width, unsigned int height)
 			: m_Width(width), m_Height(height) {}
@@ -12,7 +14,8 @@ namespace Rapier {
 		inline unsigned int GetWidth() const { return m_Width; }
 		inline unsigned int GetHeight() const { return m_Height; }
 
-		std::string ToString() const override {
+		std::string ToString() const override 
+		{
 			std::stringstream ss;
 			ss << "WindowResizeEvent: " << m_Width << ", " << m_Height;
 			return ss.str();
@@ -27,7 +30,8 @@ namespace Rapier {
 
 
 
-	class RAPIER_API WindowCloseEvent : public Event {
+	class RAPIER_API WindowCloseEvent : public Event 
+	{
 	public:
 		WindowCloseEvent() {}
 
@@ -39,7 +43,8 @@ namespace Rapier {
 
 
 
-	class RAPIER_API AppTickEvent : public Event {
+	class RAPIER_API AppTickEvent : public Event 
+	{
 	public:
 		AppTickEvent() {}
 
@@ -47,7 +52,8 @@ namespace Rapier {
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-	class RAPIER_API AppUpdateEvent : public Event {
+	class RAPIER_API AppUpdateEvent : public Event 
+	{
 	public:
 		AppUpdateEvent() {}
 
@@ -55,7 +61,8 @@ namespace Rapier {
 			EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	};
 
-	class RAPIER_API AppRenderEvent : public Event {
+	class RAPIER_API AppRenderEvent : public Event 
+	{
 	public:
 		AppRenderEvent() {}
 

@@ -2,9 +2,11 @@
 
 #include "Layer/Gui/Panel.h"
 
-namespace Rapier {
+namespace Rapier
+{
 
-	class EntityListPanel : public Panel {
+	class EntityListPanel : public Panel 
+	{
 	public:
 		EntityListPanel(Ref<Scene> scene)
 			: Panel(scene) {}

@@ -2,9 +2,11 @@
 
 #include "Layer/Gui/Panel.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
-	class AssetPanel : public Panel {
+	class AssetPanel : public Panel 
+	{
 	public:
 		AssetPanel(Ref<Scene> scene)
 			: Panel(scene) {}

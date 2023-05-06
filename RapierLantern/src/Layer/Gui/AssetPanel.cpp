@@ -7,17 +7,20 @@
 
 #include "imgui.h"
 
-namespace Rapier {
+namespace Rapier
+{
 
 
-	void AssetPanel::OnImGuiRender() {
+	void AssetPanel::OnImGuiRender() 
+	{
 
 		DrawTexturePanel();
 		DrawShaderPanel();
 
 	}
 
-	void AssetPanel::DrawTexturePanel() {
+	void AssetPanel::DrawTexturePanel()
+	{
 
 		ImGui::Begin("Textures", (bool*)0, ImGuiWindowFlags_MenuBar);
 
@@ -26,11 +29,13 @@ namespace Rapier {
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Refresh")) {
+				if (ImGui::MenuItem("Refresh")) 
+				{
 					FileSystem::RefreshTextureDirectory();
 					AssetManager::LoadAllTexture2Ds();
 				}
-				if (ImGui::MenuItem("Delete textures")) {
+				if (ImGui::MenuItem("Delete textures")) 
+				{
 					AssetManager::UnloadAllTexture2Ds();
 				}
 				ImGui::EndMenu();
@@ -51,12 +56,14 @@ namespace Rapier {
 
 
 		ImGui::PushItemWidth(150);
-		for (auto& entry : FileSystem::s_TextureDirectoryEntries) {
+		for (auto& entry : FileSystem::s_TextureDirectoryEntries)
+		{
 
 			ImGui::BeginGroup();
 
 			Ref<Texture> texture = AssetManager::GetTexture2D(entry);
-			if (texture) {
+			if (texture) 
+			{
 				ImGui::ImageButton((void*)texture->GetRendererId(), ImVec2{ 128, 128 }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
@@ -70,7 +77,8 @@ namespace Rapier {
 					ImGui::EndDragDropSource();
 				}
 			}
-			else {
+			else
+			{
 				ImGui::Text("Texture not loaded!");
 			}
 
@@ -92,7 +100,8 @@ namespace Rapier {
 		ImGui::End();
 	}
 
-	void AssetPanel::DrawShaderPanel() {
+	void AssetPanel::DrawShaderPanel() 
+	{
 		ImGui::Begin("Shaders", (bool*)0, ImGuiWindowFlags_MenuBar);
 
 		// Menu Bar
@@ -108,7 +117,8 @@ namespace Rapier {
 		}
 
 
-		for (auto& entry : FileSystem::s_ShaderDirectoryEntries) {
+		for (auto& entry : FileSystem::s_ShaderDirectoryEntries)
+		{
 			ImGui::Text(entry.c_str());
 		}
 

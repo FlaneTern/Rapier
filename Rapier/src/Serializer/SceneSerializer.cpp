@@ -7,57 +7,36 @@
 
 #include "yaml-cpp/yaml.h"
 
+namespace Rapier
+{
 
-namespace YAML {
-	template<>
-	struct convert<glm::vec3> {
-		static Node encode(const glm::vec3& vec3) {
-			Node node;
-			node.push_back(vec3.x);
-			node.push_back(vec3.y);
-			node.push_back(vec3.z);
-			return node;
+	static std::string RigidBodyTypeToString(RigidBodyType type) 
+	{
+		switch (type)
+		{
+		case RigidBodyType::Static: return "Static";
+		case RigidBodyType::Dynamic: return "Dynamic";
 		}
 
-		static bool decode(const Node& node, glm::vec3& vec3) {
-			if (!node.IsSequence() || node.size() != 3)
-				return false;
-			
-			vec3.x = node[0].as<float>();
-			vec3.y = node[1].as<float>();
-			vec3.z = node[2].as<float>();
-			return true;
-		}
-	};
+		RAPIER_CORE_ASSERT(false, "Unknown Rigid Body Type!");
+		return "";
+	}
 
-	template<>
-	struct convert<glm::vec4> {
-		static Node encode(const glm::vec4& vec4) {
-			Node node;
-			node.push_back(vec4.x);
-			node.push_back(vec4.y);
-			node.push_back(vec4.z);
-			node.push_back(vec4.w);
-			return node;
-		}
+	static RigidBodyType StringToRigidBodyType(std::string type) 
+	{
+		if (type == "Static")
+			return RigidBodyType::Static;
 
-		static bool decode(const Node& node, glm::vec4& vec4) {
-			if (!node.IsSequence() || node.size() != 4)
-				return false;
+		if (type == "Dynamic")
+			return RigidBodyType::Dynamic;
 
-			vec4.x = node[0].as<float>();
-			vec4.y = node[1].as<float>();
-			vec4.z = node[2].as<float>();
-			vec4.w = node[3].as<float>();
-			return true;
-		}
-	};
-}
-
-namespace Rapier {
+		RAPIER_CORE_ASSERT(false, "Unknown Rigid Body Type!");
+		return  RigidBodyType::Static;
+	}
 
 
-	static void ParseNativeScriptComponent(Entity& entity, const std::string& scriptName, bool enableOnUpdate) {
+	static void ParseNativeScriptComponent(Entity& entity, const std::string& scriptName, bool enableOnUpdate)
+	{
 
 		for (auto& script : EntityScriptContainer::s_EntityScriptContainer.m_Scripts)
 		{
@@ -69,26 +48,124 @@ namespace Rapier {
 		}
 	}
 
+	YAML::Emitter& operator<<(YAML::Emitter& out, const RigidBodyType& type) 
+	{
+		out << RigidBodyTypeToString(type);
+		return out;
+	}
 
-	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& vec3) {
+	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& vec2) 
+	{
+		out << YAML::Flow;
+		out << YAML::BeginSeq << vec2.x << vec2.y << YAML::EndSeq;
+		return out;
+	}
+
+	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& vec3) 
+	{
 		out << YAML::Flow;
 		out << YAML::BeginSeq << vec3.x << vec3.y << vec3.z << YAML::EndSeq;
 		return out;
 	}
 
-	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& vec4) {
+	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& vec4) 
+	{
 		out << YAML::Flow;
 		out << YAML::BeginSeq << vec4.x << vec4.y << vec4.z << vec4.w << YAML::EndSeq;
 		return out;
 	}
 
 
+}
 
-	static void SerializeEntity(YAML::Emitter& out, Entity entity) {
+namespace YAML 
+{
+
+	template<>
+	struct convert<glm::vec2> 
+	{
+		static Node encode(const glm::vec2& vec2)
+		{
+			Node node;
+			node.push_back(vec2.x);
+			node.push_back(vec2.y);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec2& vec2) 
+		{
+			if (!node.IsSequence() || node.size() != 2)
+				return false;
+
+			vec2.x = node[0].as<float>();
+			vec2.y = node[1].as<float>();
+			return true;
+		}
+	};
+
+	template<>
+	struct convert<glm::vec3> 
+	{
+
+		static Node encode(const glm::vec3& vec3)
+		{
+			Node node;
+			node.push_back(vec3.x);
+			node.push_back(vec3.y);
+			node.push_back(vec3.z);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec3& vec3)
+		{
+			if (!node.IsSequence() || node.size() != 3)
+				return false;
+			
+			vec3.x = node[0].as<float>();
+			vec3.y = node[1].as<float>();
+			vec3.z = node[2].as<float>();
+			return true;
+		}
+	};
+
+	template<>
+	struct convert<glm::vec4>
+	{
+		static Node encode(const glm::vec4& vec4) 
+		{
+			Node node;
+			node.push_back(vec4.x);
+			node.push_back(vec4.y);
+			node.push_back(vec4.z);
+			node.push_back(vec4.w);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec4& vec4) 
+		{
+			if (!node.IsSequence() || node.size() != 4)
+				return false;
+
+			vec4.x = node[0].as<float>();
+			vec4.y = node[1].as<float>();
+			vec4.z = node[2].as<float>();
+			vec4.w = node[3].as<float>();
+			return true;
+		}
+	};
+
+}
+
+namespace Rapier
+{
+
+	static void SerializeEntity(YAML::Emitter& out, Entity entity) 
+	{
 		out << YAML::BeginMap;
 		out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();
 
-		if (entity.HasComponent<TagComponent>()) {
+		if (entity.HasComponent<TagComponent>()) 
+		{
 			out << YAML::Key << "TagComponent";
 
 			out << YAML::BeginMap;
@@ -97,7 +174,8 @@ namespace Rapier {
 			out << YAML::EndMap;
 		}
 
-		if (entity.HasComponent<TransformComponent>()) {
+		if (entity.HasComponent<TransformComponent>()) 
+		{
 			out << YAML::Key << "TransformComponent";
 
 			out << YAML::BeginMap;
@@ -108,7 +186,8 @@ namespace Rapier {
 			out << YAML::EndMap;
 		}
 
-		if (entity.HasComponent<CameraComponent>()) {
+		if (entity.HasComponent<CameraComponent>())
+		{
 			out << YAML::Key << "CameraComponent";
 
 			out << YAML::BeginMap;
@@ -128,7 +207,8 @@ namespace Rapier {
 			out << YAML::EndMap;
 		}
 
-		if (entity.HasComponent<SpriteRendererComponent>()) {
+		if (entity.HasComponent<SpriteRendererComponent>()) 
+		{
 			out << YAML::Key << "SpriteRendererComponent";
 
 			out << YAML::BeginMap;
@@ -138,18 +218,46 @@ namespace Rapier {
 			out << YAML::EndMap;
 		}
 
-		if (entity.HasComponent<NativeScriptComponent>()) {
+		if (entity.HasComponent<NativeScriptComponent>())
+		{
 			out << YAML::Key << "NativeScriptComponent";
 
 			out << YAML::BeginMap;
 			auto& nativeScriptComponent = entity.GetComponent<NativeScriptComponent>();
 
-
-			
 			out << YAML::Key << "ScriptName" << YAML::Value << nativeScriptComponent.Instance->GetName();
-			
 
 			out << YAML::Key << "EnableOnUpdate" << YAML::Value << nativeScriptComponent.EnableOnUpdate;
+			out << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<RigidBody2DComponent>())
+		{
+			out << YAML::Key << "RigidBody2DComponent";
+
+			out << YAML::BeginMap;
+			auto& rigidBody2DComponent = entity.GetComponent<RigidBody2DComponent>();
+			RigidBody2DData data = rigidBody2DComponent.RigidBody->GetData();
+			RigidBody2DProperties props = rigidBody2DComponent.RigidBody->GetProperties();
+
+			out << YAML::Key << "Data";
+			out << YAML::BeginMap;
+			out << YAML::Key << "Position" << YAML::Value << data.Position;
+			out << YAML::Key << "Rotation" << YAML::Value << data.Rotation;
+			out << YAML::Key << "HalfScale" << YAML::Value << data.HalfScale;
+			out << YAML::Key << "Velocity" << YAML::Value << data.Velocity;
+			out << YAML::Key << "Acceleration" << YAML::Value << data.Acceleration;
+			out << YAML::EndMap;
+
+			out << YAML::Key << "Properties";
+			out << YAML::BeginMap;
+			out << YAML::Key << "FixedRotation" << YAML::Value << props.FixedRotation;
+			out << YAML::Key << "Mass" << YAML::Value << props.Mass;
+			out << YAML::Key << "Restitution" << YAML::Value << props.Restitution;
+			out << YAML::Key << "FrictionCoefficient" << YAML::Value << props.FrictionCoefficient;
+			out << YAML::Key << "Type" << YAML::Value << props.Type;
+			out << YAML::EndMap;
+
 			out << YAML::EndMap;
 		}
 
@@ -163,7 +271,8 @@ namespace Rapier {
 
 	}
 
-	void SceneSerializer::Serialize(const std::string& filename) {
+	void SceneSerializer::Serialize(const std::string& filename) 
+	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
 		out << YAML::Key << "Scene" << YAML::Value << "SceneTitle";
@@ -182,8 +291,8 @@ namespace Rapier {
 		stream << out.c_str();
 	}
 
-	bool SceneSerializer::Deserialize(const std::string& filepath) {
-
+	bool SceneSerializer::Deserialize(const std::string& filepath)
+	{
 
 		YAML::Node data = YAML::LoadFile(filepath);
 		
@@ -193,8 +302,10 @@ namespace Rapier {
 		std::string sceneName = data["Scene"].as<std::string>();
 
 		auto entities = data["Entities"];
-		if (entities) {
-			for (auto entity : entities) {
+		if (entities) 
+		{
+			for (auto entity : entities) 
+			{
 				uint64_t uuid = entity["Entity"].as<uint64_t>();
 
 				std::string name;
@@ -207,7 +318,8 @@ namespace Rapier {
 				RAPIER_CORE_INFO("Deserializing Entity '{0}' with UUID : {1}", name, deserializedEntity.GetComponent<UUIDComponent>().Id);
 
 				auto transformComponent = entity["TransformComponent"];
-				if (transformComponent) {
+				if (transformComponent) 
+				{
 					auto& eTransformComponent = deserializedEntity.GetComponent<TransformComponent>();
 					eTransformComponent.Translation = transformComponent["Translation"].as<glm::vec3>();
 					eTransformComponent.Rotation = transformComponent["Rotation"].as<glm::vec3>();
@@ -216,7 +328,8 @@ namespace Rapier {
 
 
 				auto cameraComponent = entity["CameraComponent"];
-				if (cameraComponent) {
+				if (cameraComponent)
+				{
 					auto& eCameraComponent = deserializedEntity.AddComponent<CameraComponent>();
 					eCameraComponent.Primary = cameraComponent["Primary"].as<bool>();
 					eCameraComponent.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
@@ -231,7 +344,8 @@ namespace Rapier {
 				}
 
 				auto spriteRendererComponent = entity["SpriteRendererComponent"];
-				if (spriteRendererComponent) {
+				if (spriteRendererComponent)
+				{
 					auto& eSpriteRendererComponent = deserializedEntity.AddComponent<SpriteRendererComponent>();
 					eSpriteRendererComponent.Color = spriteRendererComponent["Color"].as<glm::vec4>();
 					std::string spriteRendererComponentFilename = spriteRendererComponent["Filename"].as<std::string>();
@@ -242,11 +356,34 @@ namespace Rapier {
 				}
 
 				auto nativeScriptComponent = entity["NativeScriptComponent"];
-				if (nativeScriptComponent) {
+				if (nativeScriptComponent)
+				{
 					std::string scriptName = nativeScriptComponent["ScriptName"].as<std::string>();
-					//ParseNativeScriptComponent<ALL_ENTITY_SCRIPTS>(eNativeScriptComponent, scriptName);
 					bool enableOnUpdate = nativeScriptComponent["EnableOnUpdate"].as<bool>();
 					ParseNativeScriptComponent(deserializedEntity, scriptName, enableOnUpdate);
+				}
+
+				auto rigidBody2DComponent = entity["RigidBody2DComponent"];
+				if (rigidBody2DComponent) 
+				{
+					RigidBody2DData data;
+					RigidBody2DProperties props;
+
+					auto dataMap = rigidBody2DComponent["Data"];
+					data.Position = dataMap["Position"].as<glm::vec2>();
+					data.Rotation = dataMap["Rotation"].as<float>();
+					data.Velocity = dataMap["Velocity"].as<glm::vec2>();
+					data.Acceleration = dataMap["Acceleration"].as<glm::vec2>();
+					data.HalfScale = dataMap["HalfScale"].as<glm::vec2>();
+
+					auto propsMap = rigidBody2DComponent["Properties"];
+					props.FixedRotation = propsMap["FixedRotation"].as<bool>();
+					props.Mass = propsMap["Mass"].as<float>();
+					props.Restitution = propsMap["Restitution"].as<float>();
+					props.FrictionCoefficient = propsMap["FrictionCoefficient"].as<float>();
+					props.Type = StringToRigidBodyType(propsMap["Type"].as<std::string>());
+
+					deserializedEntity.AddComponent<RigidBody2DComponent>(data, props);
 				}
 			}
 

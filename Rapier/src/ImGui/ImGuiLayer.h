@@ -2,7 +2,8 @@
 #include "Layer.h"
 
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	class ImGuiLayer : public Layer
 	{

@@ -4,37 +4,28 @@
 #include "Application.h"
 #include "Input.h"
 
-#include "Renderer/Renderer.h"
-
 #include "FileSystem/FileSystem.h"
 #include "Assets/AssetManager.h"
 
 #include "PerformanceStats.h"
 
-///////////
-#include "Assets/Script/DefaultScript.h"
-///////////
 
 
-namespace Rapier {
+namespace Rapier
+{
 
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application() {
+	Application::Application() 
+	{
 
 		RAPIER_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
-
-
 
 		m_Window = Scope<Window>(Window::Create());
 		m_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 		FileSystem::Init();
 		AssetManager::Init();
-		Renderer2D::Init();
-
-
-
 
 		m_ImGuiLayer = new ImGuiLayer;
 		PushOverlay(m_ImGuiLayer);
@@ -43,27 +34,32 @@ namespace Rapier {
 
 
 
-	Application::~Application() {
+	Application::~Application() 
+	{
 
 	}
 
 
-	void Application::PushLayer(Layer* layer) {
+	void Application::PushLayer(Layer* layer) 
+	{
 		m_LayerStack.PushLayer(layer);
 		layer->OnAttach();
 	}
 
-	void Application::PushOverlay(Layer* overlay) {
+	void Application::PushOverlay(Layer* overlay) 
+	{
 		m_LayerStack.PushOverlay(overlay);
 		overlay->OnAttach();
 	}
 
-	void Application::OnEvent(Event& e) {
+	void Application::OnEvent(Event& e) 
+	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
 
 
-		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
+		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
+		{
 			(*--it)->OnEvent(e);
 			if (e.m_Handled)
 				break;
@@ -71,31 +67,37 @@ namespace Rapier {
 
 	}
 
-	void Application::OnUpdate(DeltaTime dt) {
+	void Application::OnUpdate(DeltaTime dt) 
+	{
 		RAPIER_CORE_ASSERT(false, "OnUpdate() hasn't been set!");
 	}
 
-	void Application::PostUpdate() {
+	void Application::PostUpdate()
+	{
 		RAPIER_CORE_ASSERT(false, "PostUpdate() hasn't been set!");
 	}
 
-	void Application::Run() {
+	void Application::Run() 
+	{
 
-		while (m_Running) {
+		while (m_Running) 
+		{
 			DeltaTime dt = DeltaTime(m_PrevTime);
 			m_PrevTime = std::chrono::high_resolution_clock::now();
 			PerformanceStats::BeginFrame();
 
 			OnUpdate(dt);
 
-			for (Layer* layer : m_LayerStack) {
+			for (Layer* layer : m_LayerStack)
+			{
 				layer->OnUpdate(dt);
 			}
 
 			m_ImGuiLayer->Begin();
 			{
 
-				for (Layer* layer : m_LayerStack) {
+				for (Layer* layer : m_LayerStack)
+				{
 					layer->OnImGuiRender();
 				}
 			}
@@ -110,7 +112,8 @@ namespace Rapier {
 	}
 
 
-	bool Application::OnWindowClose(WindowCloseEvent& e) {
+	bool Application::OnWindowClose(WindowCloseEvent& e) 
+	{
 		m_Running = false;
 		return true;
 	}

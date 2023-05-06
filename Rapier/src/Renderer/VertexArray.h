@@ -4,8 +4,10 @@
 #include "Renderer/Buffer.h"
 
 
-namespace Rapier {
-	class RAPIER_API VertexArray {
+namespace Rapier 
+{
+	class RAPIER_API VertexArray 
+	{
 
 	public:
 		virtual ~VertexArray() {}

@@ -1,17 +1,20 @@
 #include "ipch.h"
 #include "Buffer.h"
 
-#include "Renderer/Renderer.h"
+#include "Renderer/RendererAPI.h"
 #include "Platform/OpenGL/OpenGLBuffer.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	////////////////////////////////////////////////////////////////////////
 	// Should buffer creation go through asset manager? ////////////////////
 	////////////////////////////////////////////////////////////////////////
 
-	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size) {
-		switch (Renderer::GetAPI()) {
+	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size) 
+	{
+		switch (RendererAPI::GetAPI()) 
+		{
 		case RendererAPI::API::None:       RAPIER_CORE_ASSERT(false, "RendererAPI::None is not supported!");  return nullptr;
 		case RendererAPI::API::OpenGL:     return std::make_shared<OpenGLVertexBuffer>(vertices, size);
 		}
@@ -20,8 +23,10 @@ namespace Rapier {
 		return nullptr;
 	}
 
-	Ref<VertexBuffer> VertexBuffer::Create(uint32_t size) {
-		switch (Renderer::GetAPI()) {
+	Ref<VertexBuffer> VertexBuffer::Create(uint32_t size)
+	{
+		switch (RendererAPI::GetAPI()) 
+		{
 		case RendererAPI::API::None:       RAPIER_CORE_ASSERT(false, "RendererAPI::None is not supported!");  return nullptr;
 		case RendererAPI::API::OpenGL:     return std::make_shared<OpenGLVertexBuffer>(size);
 		}
@@ -30,8 +35,10 @@ namespace Rapier {
 		return nullptr;
 	}
 
-	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count) {
-		switch (Renderer::GetAPI()) {
+	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
+	{
+		switch (RendererAPI::GetAPI())
+		{
 		case RendererAPI::API::None:       RAPIER_CORE_ASSERT(false, "RendererAPI::None is not supported!");  return nullptr;
 		case RendererAPI::API::OpenGL:     return std::make_shared<OpenGLIndexBuffer>(indices, count);
 		}

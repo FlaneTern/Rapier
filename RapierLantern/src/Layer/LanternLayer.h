@@ -5,9 +5,11 @@
 #include "Layer/Gui/AssetPanel.h"
 #include "LanternCamera.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
-	class LanternLayer : public Layer {
+	class LanternLayer : public Layer
+	{
 	public:
 		LanternLayer()
 			: Layer("Lantern"), m_ScriptPath("D:\\C++\\PersonalProjects\\Rapier\\bin\\Debug-x86_64\\RapierLantern\\Forehead.dll") {}
@@ -17,7 +19,8 @@ namespace Rapier {
 		void OnImGuiRender() override;
 
 
-		void OnEvent(Rapier::Event& event) override {
+		void OnEvent(Rapier::Event& event) override 
+		{
 			Rapier::EventDispatcher dispatcher(event);
 
 
@@ -84,7 +87,8 @@ namespace Rapier {
 		std::string m_ScriptPath;
 
 
-		enum class SceneState {
+		enum class SceneState
+		{
 			Edit,
 			Pause,
 			Runtime

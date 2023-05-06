@@ -5,8 +5,10 @@
 
 #include "Platform/OpenGL/OpenGLShader.h"
 
-namespace Rapier {
-	Ref<Shader> Shader::Create(const std::string& filename) {
+namespace Rapier 
+{
+	Ref<Shader> Shader::Create(const std::string& filename) 
+	{
 		return AssetManager::LoadShader(filename);
 	}
 }

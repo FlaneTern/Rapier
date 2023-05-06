@@ -6,7 +6,8 @@
 #include "glm/gtx/vector_angle.hpp"
 
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// TODO: Disable depth test on gizmo instead of using z coords ? //////////////////////////////
@@ -62,7 +63,8 @@ namespace Rapier {
 		}
 	}
 
-	void LanternGizmo::OnUpdate(DeltaTime dt, LanternCamera camera, glm::vec2 mousePos, int entityId) {
+	void LanternGizmo::OnUpdate(DeltaTime dt, LanternCamera camera, glm::vec2 mousePos, int entityId)
+	{
 		TIME_FUNCTION_INTERNAL(LanternGizmo::OnUpdate);
 
 		static glm::vec2 initialMousePos;
@@ -194,7 +196,8 @@ namespace Rapier {
 
 	}
 
-	GizmoRenderDataTranslation LanternGizmo::GetRenderDataTranslation() {
+	GizmoRenderDataTranslation LanternGizmo::GetRenderDataTranslation()
+	{
 		TIME_FUNCTION_INTERNAL(LanternGizmo::GetRenderDataTranslation);
 
 
@@ -216,14 +219,10 @@ namespace Rapier {
 			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation.z), { 0, 0 ,1 });
 
 
-		translation.z += 2.0f;
-
 		data.TransformMidCircle =
 			glm::translate(glm::mat4(1.0f), translation)
 			* rotationMat
 			* glm::scale(glm::mat4(1.0f), ScaleEdgeQuad);
-
-		translation.z -= 1.0f;
 
 
 		data.TransformXCircleEdge =
@@ -267,7 +266,8 @@ namespace Rapier {
 
 	}
 
-	GizmoRenderDataRotation LanternGizmo::GetRenderDataRotation() {
+	GizmoRenderDataRotation LanternGizmo::GetRenderDataRotation() 
+	{
 		TIME_FUNCTION_INTERNAL(LanternGizmo::GetRenderDataRotation);
 
 		GizmoRenderDataRotation data;
@@ -279,15 +279,14 @@ namespace Rapier {
 		data.Transform =  glm::translate(glm::mat4(1.0f), transform.Translation)
 						* glm::scale(glm::mat4(1.0f), { height, height, 1.0f });
 
-		data.Transform[3][2] += 1.0f;
-
 		if (s_HoveredX)
 			data.Color = { 1.0f, 0.0f, 0.0f, 1.0f };
 
 		return data;
 	}
 
-	GizmoRenderDataScale LanternGizmo::GetRenderDataScale() {
+	GizmoRenderDataScale LanternGizmo::GetRenderDataScale() 
+	{
 		TIME_FUNCTION_INTERNAL(LanternGizmo::GetRenderDataScale);
 
 		GizmoRenderDataScale data;
@@ -306,16 +305,10 @@ namespace Rapier {
 			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation.y), { 0, 1 ,0 })
 			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation.z), { 0, 0 ,1 });
 
-
-		translation.z += 2.0f;
-
 		data.TransformMidQuad = 
 			glm::translate(glm::mat4(1.0f), translation)
 			* rotationMat
 			* glm::scale(glm::mat4(1.0f), ScaleEdgeQuad);
-
-		translation.z -= 1.0f;
-
 
 		data.TransformXQuadEdge = 
 			  glm::translate(glm::mat4(1.0f), translation)
@@ -360,11 +353,13 @@ namespace Rapier {
 	}
 
 
-	void LanternGizmo::CreateGizmo(Entity& entity) {
+	void LanternGizmo::CreateGizmo(Entity& entity) 
+	{
 		s_GizmoEntities.push_back(entity);
 	}
 
-	void LanternGizmo::ClearGizmo() {
+	void LanternGizmo::ClearGizmo() 
+	{
 		s_GizmoEntities.clear();
 	}
 }

@@ -4,7 +4,8 @@
 
 #include "Physics/RigidBody2D.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	RigidBody2D::RigidBody2D(RigidBody2DData data)
 		: m_Position(data.Position), m_Rotation(data.Rotation), m_Velocity(data.Velocity),
@@ -17,7 +18,8 @@ namespace Rapier {
 		: m_Position(data.Position), m_Rotation(data.Rotation), m_Velocity(data.Velocity),
 		m_Acceleration(data.Acceleration), m_HalfScale(data.HalfScale), m_Properties(props) {}
 
-	void RigidBody2D::OnUpdate(DeltaTime dt, const glm::vec2& gravity) {
+	void RigidBody2D::OnUpdate(DeltaTime dt, const glm::vec2& gravity) 
+	{
 		if (m_Properties.Type == RigidBodyType::Static)
 			return;
 
@@ -28,8 +30,10 @@ namespace Rapier {
 		m_Acceleration = { 0.0f, 0.0f };
 	}
 
-	void RigidBody2D::ApplyForce(const glm::vec2& force) {
-		if (m_Properties.Type == RigidBodyType::Static) {
+	void RigidBody2D::ApplyForce(const glm::vec2& force) 
+	{
+		if (m_Properties.Type == RigidBodyType::Static) 
+		{
 			RAPIER_CORE_ASSERT(false, "Rigid Body is static !");
 			return;
 		}

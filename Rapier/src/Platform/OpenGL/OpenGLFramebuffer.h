@@ -2,9 +2,11 @@
 
 #include "Renderer/Framebuffer.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 	
-	class OpenGLFramebuffer : public Framebuffer {
+	class OpenGLFramebuffer : public Framebuffer 
+	{
 	public:
 		OpenGLFramebuffer(const FramebufferSpecification& spec);
 		virtual ~OpenGLFramebuffer();

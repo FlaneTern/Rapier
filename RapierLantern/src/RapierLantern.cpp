@@ -6,13 +6,15 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "entt.hpp"
 
-namespace Rapier {
+namespace Rapier 
+{
 
 
 	glm::vec2 s_CameraVelocity = { 0, 0 };
 	float s_CameraRotationVelocity = 0;
 
-	RapierLantern::RapierLantern() {
+	RapierLantern::RapierLantern()
+	{
 
 		PushLayer(new LanternLayer());
 
@@ -20,19 +22,23 @@ namespace Rapier {
 
 	}
 
-	RapierLantern::~RapierLantern() {
+	RapierLantern::~RapierLantern() 
+	{
 
 	}
 
-	void RapierLantern::OnUpdate(DeltaTime dt) {
+	void RapierLantern::OnUpdate(DeltaTime dt) 
+	{
 
 	}
 
-	void RapierLantern::PostUpdate() {
+	void RapierLantern::PostUpdate()
+	{
 
 	}
 }
 
-Rapier::Application* Rapier::CreateApplication() {
+Rapier::Application* Rapier::CreateApplication()
+{
 	return new Rapier::RapierLantern();
 }

@@ -3,9 +3,11 @@
 #include "ipch.h"
 #include "Events/Event.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 	
-	struct WindowProps {
+	struct WindowProps
+	{
 		std::string Title;
 		unsigned int Width;
 		unsigned int Height;
@@ -13,11 +15,13 @@ namespace Rapier {
 		WindowProps(const std::string& title = "Rapier",
 					unsigned int width = 1366,
 					unsigned int height = 768)
-			: Title(title), Width(width), Height(height) {}
+			: Title(title), Width(width), Height(height) 
+		{}
 
 	};
 
-	class RAPIER_API Window {
+	class RAPIER_API Window 
+	{
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;
 

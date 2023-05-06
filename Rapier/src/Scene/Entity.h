@@ -6,9 +6,11 @@
 
 #include "Assets/Script/Script.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
-	class RAPIER_API Entity {
+	class RAPIER_API Entity 
+	{
 	public:
 		Entity() = default;
 		Entity(entt::entity handle, Scene* scene);
@@ -16,35 +18,41 @@ namespace Rapier {
 
 
 		template<typename T, typename... Args>
-		T& AddComponent(Args&&... args) {
+		T& AddComponent(Args&&... args) 
+		{
 			RAPIER_CORE_ASSERT(!HasComponent<T>(), "Entity already has component!");
 			return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
 		}
 
 
 		template<typename T>
-		T& GetComponent() {
+		T& GetComponent() 
+		{
 			RAPIER_CORE_ASSERT(HasComponent<T>(), "Entity already does not have component!");
 			return m_Scene->m_Registry.get<T>(m_EntityHandle);
 		}
 
-		uint64_t GetUUID() {
+		uint64_t GetUUID()
+		{
 			return GetComponent<UUIDComponent>().Id;
 		}
 
 		template<typename T>
-		bool HasComponent() {
+		bool HasComponent() 
+		{
 			return m_Scene->m_Registry.all_of<T>(m_EntityHandle);
 		}
 
 		template<typename T>
-		void RemoveComponent() {
+		void RemoveComponent() 
+		{
 			RAPIER_CORE_ASSERT(HasComponent<T>(), "Entity already does not have component!");
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
 
 		template<typename T, typename... Args>
-		T& ResetComponent(Args&&... args) {
+		T& ResetComponent(Args&&... args) 
+		{
 			RemoveComponent<T>();
 			return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
 		}
@@ -52,7 +60,8 @@ namespace Rapier {
 
 		// Args is not needed. Is there a better way to specialize this?
 		template<typename ...Args>
-		NativeScriptComponent& AddComponent(Ref<EntityScript> script) {
+		NativeScriptComponent& AddComponent(Ref<EntityScript> script) 
+		{
 			RAPIER_CORE_ASSERT(!HasComponent<NativeScriptComponent>(), "Entity already has component!");
 			auto& component = m_Scene->m_Registry.emplace<NativeScriptComponent>(m_EntityHandle);
 			component.Bind(script, *this);
@@ -61,7 +70,8 @@ namespace Rapier {
 		}
 
 		template<>
-		void RemoveComponent<NativeScriptComponent>() {
+		void RemoveComponent<NativeScriptComponent>() 
+		{
 			RAPIER_CORE_ASSERT(HasComponent<NativeScriptComponent>(), "Entity already does not have component!");
 			auto& component = GetComponent<NativeScriptComponent>();
 			component.Instance->OnDestroy();
@@ -69,14 +79,16 @@ namespace Rapier {
 		}
 
 		template<typename... Args>
-		NativeScriptComponent& ResetComponent(Ref<EntityScript> script) {
+		NativeScriptComponent& ResetComponent(Ref<EntityScript> script) 
+		{
 			RemoveComponent<NativeScriptComponent>();
 			return AddComponent<NativeScriptComponent>(script);
 		}
 
 
 		template<typename ...Args>
-		RigidBody2DComponent& AddComponent(RigidBody2DData data, RigidBody2DProperties properties) {
+		RigidBody2DComponent& AddComponent(RigidBody2DData data, RigidBody2DProperties properties) 
+		{
 			RAPIER_CORE_ASSERT(!HasComponent<RigidBody2DComponent>(), "Entity already has component!");
 			auto rigidBody = m_Scene->CreateRigidBody(data, properties);
 			auto& component = m_Scene->m_Registry.emplace<RigidBody2DComponent>(m_EntityHandle, rigidBody);
@@ -84,7 +96,8 @@ namespace Rapier {
 		}
 
 		template<typename ...Args>
-		RigidBody2DComponent& AddComponent(RigidBody2DComponent& other) {
+		RigidBody2DComponent& AddComponent(RigidBody2DComponent& other) 
+		{
 			RAPIER_CORE_ASSERT(!HasComponent<RigidBody2DComponent>(), "Entity already has component!")
 			auto rigidBody = m_Scene->CreateRigidBody(other.RigidBody->GetData(), other.RigidBody->GetProperties());
 			auto& component = m_Scene->m_Registry.emplace<RigidBody2DComponent>(m_EntityHandle, rigidBody);

@@ -1,5 +1,6 @@
 #include "ipch.h"
-#include "Renderer.h"
+#include "Renderer/Renderer.h"
+#include "Renderer/SceneRenderer.h"
 #include "Camera/Camera.h"
 #include "Assets/Shader/Shader.h"
 #include "PerformanceStats.h"
@@ -7,136 +8,31 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
-namespace Rapier {
+namespace Rapier
+{
 
-	static Scope<SceneData> l_SceneData;
-	static bool l_StartedScene = false;
-
-	
-
-	void Renderer::EndScene() {
-		l_StartedScene = false;
+	Renderer2D::Renderer2D() 
+	{
+		Init();
 	}
 
-	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::mat4& transform) {
-		shader->Bind();
-		shader->UploadUniformMat4("u_ViewProjection", l_SceneData->ViewProjectionMatrix);
-		shader->UploadUniformMat4("u_Transform", transform);
-
-		vertexArray->Bind();
-		RenderCommand::DrawIndexed(vertexArray);
+	Renderer2D::~Renderer2D()
+	{
+		Shutdown();
 	}
-
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	/// Quads //////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-
-	struct QuadVertex {
-		glm::vec3 Position;
-		glm::vec4 Color;
-		glm::vec2 TexCoords;
-		int TexIndex;
-		int EntityId;
-	};
-
-
-
-	static constexpr uint32_t l_MaxQuadCount = 10000;
-	static constexpr uint32_t l_MaxQuadVertices = 4 * l_MaxQuadCount;
-	static constexpr uint32_t l_MaxQuadIndices = 6 * l_MaxQuadCount;
-
-
-	static QuadVertex* l_QuadVertexBufferBasePtr = nullptr;
-	static QuadVertex* l_QuadVertexBufferCurrentPtr = nullptr;
-
-	static uint32_t l_CurrentQuadCount = 0;
-	static Ref<VertexBuffer> l_QuadVertexBuffer = nullptr;
-
-
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	/// Circles ////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-
-
-	struct CircleVertex {
-		glm::vec3 Position;
-		glm::vec4 Color;
-		glm::vec2 TexCoords;
-		int TexIndex;
-		int EntityId;
-		glm::vec2 LocalPosition;
-		float MinimumRadius;
-	};
-
-
-
-	static constexpr uint32_t l_MaxCircleCount = 10000;
-	static constexpr uint32_t l_MaxCircleVertices = 4 * l_MaxCircleCount;
-	static constexpr uint32_t l_MaxCircleIndices = 6 * l_MaxCircleCount;
-
-
-	static CircleVertex* l_CircleVertexBufferBasePtr = nullptr;
-	static CircleVertex* l_CircleVertexBufferCurrentPtr = nullptr;
-
-	static uint32_t l_CurrentCircleCount = 0;
-	static Ref<VertexBuffer> l_CircleVertexBuffer = nullptr;
-
-
-
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	/// Lines //////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////
-
-
-	struct LineVertex {
-		glm::vec3 Position;
-		glm::vec4 Color;
-		int EntityId;
-	};
-
-
-
-	static constexpr uint32_t l_MaxLineCount = 10000;
-	static constexpr uint32_t l_MaxLineVertices = 2 * l_MaxLineCount;
-	static constexpr uint32_t l_MaxLineIndices = 2 * l_MaxLineCount;
-
-
-	static LineVertex* l_LineVertexBufferBasePtr = nullptr;
-	static LineVertex* l_LineVertexBufferCurrentPtr = nullptr;
-
-	static uint32_t l_CurrentLineCount = 0;
-	static Ref<VertexBuffer> l_LineVertexBuffer = nullptr;
-
-
-
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
 
 	static constexpr uint32_t l_MaxTextureCount = 32;
 
-	static constexpr glm::vec4 l_QuadVertexPosition[] = {
+	static constexpr glm::vec4 l_QuadVertexPosition[] = 
+	{
 		{ -0.5f, -0.5f, 0.0f, 1.0f, },
 		{  0.5f, -0.5f, 0.0f, 1.0f, },
 		{  0.5f,  0.5f, 0.0f, 1.0f, },
 		{ -0.5f,  0.5f, 0.0f, 1.0f  }
 	};
 
-	static constexpr glm::vec2 l_TextureCoords[] = {
+	static constexpr glm::vec2 l_TextureCoords[] =
+	{
 		{ 0.0f, 0.0f, },
 		{ 1.0f, 0.0f, },
 		{ 1.0f, 1.0f, },
@@ -148,180 +44,172 @@ namespace Rapier {
 	static std::vector<Ref<Texture2D>> l_TextureSlots;
 
 
-	static Scope<SceneData> l_SceneData2D = nullptr;
-	bool l_StartedScene2D = false;
-	static std::unordered_map<std::string, Ref<VertexArray>> l_VertexArrays;
-
-
-
-
-	void Renderer2D::Init() {
+	void Renderer2D::Init() 
+	{
 		RenderCommand::Init();
 		RenderCommand::SetLineWidth(5.0f);
 		CreateVertexArrays();
+
+		m_QuadBuffer.Shader = AssetManager::GetShader("Texture.rshader");
+		m_CircleBuffer.Shader = AssetManager::GetShader("Circle.rshader");
+		m_LineBuffer.Shader = AssetManager::GetShader("Line.rshader");
 	}
 	
-	void Renderer2D::Shutdown() {
-		delete[] l_QuadVertexBufferBasePtr;
+	void Renderer2D::Shutdown() 
+	{
+		delete[] m_QuadBuffer.VertexBufferBasePtr;
+		delete[] m_CircleBuffer.VertexBufferBasePtr;
+		delete[] m_LineBuffer.VertexBufferBasePtr;
 	}
 
-	void Renderer2D::BeginScene(const glm::mat4& camera) {
-		RAPIER_CORE_ASSERT(!l_StartedScene2D, "Scene has already started!");
+	void Renderer2D::BeginScene()
+	{
 
-		l_StartedScene2D = true;
-		l_SceneData2D.reset(new SceneData(camera));
+		auto sceneData = m_SceneData.lock();
 
-		Ref<Shader> shaderQ = AssetManager::GetShader("Texture.rshader");
-		shaderQ->Bind();
-		shaderQ->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
+		m_QuadBuffer.Shader->Bind();
+		m_QuadBuffer.Shader->UploadUniformMat4("u_ViewProjection", sceneData->ViewProjectionMatrix);
 
-
-		Ref<Shader> shaderC = AssetManager::GetShader("Circle.rshader");
-		shaderC->Bind();
-		shaderC->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
+		m_CircleBuffer.Shader->Bind();
+		m_CircleBuffer.Shader->UploadUniformMat4("u_ViewProjection", sceneData->ViewProjectionMatrix);
 		
-
-		Ref<Shader> shaderL = AssetManager::GetShader("Line.rshader");
-		shaderL->Bind();
-		shaderL->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
+		m_LineBuffer.Shader->Bind();
+		m_LineBuffer.Shader->UploadUniformMat4("u_ViewProjection", sceneData->ViewProjectionMatrix);
 
 
-		l_QuadVertexBufferCurrentPtr = l_QuadVertexBufferBasePtr;
-		l_CircleVertexBufferCurrentPtr = l_CircleVertexBufferCurrentPtr;
-		l_LineVertexBufferCurrentPtr = l_LineVertexBufferCurrentPtr;
+		m_QuadBuffer.VertexBufferCurrentPtr = m_QuadBuffer.VertexBufferBasePtr;
+		m_LineBuffer.VertexBufferCurrentPtr = m_LineBuffer.VertexBufferBasePtr;
+		m_CircleBuffer.VertexBufferCurrentPtr = m_CircleBuffer.VertexBufferBasePtr;
 	}
 
-	void Renderer2D::EndScene() {
+	void Renderer2D::EndScene()
+	{
 		Renderer2D::Flush();
-		l_StartedScene2D = false;
 	}
 
-	void Renderer2D::BeginEditorRender(const glm::mat4& camera) {
-		RAPIER_CORE_ASSERT(!l_StartedScene2D, "Scene has already started!");
 
-		l_StartedScene2D = true;
-		l_SceneData2D.reset(new SceneData(camera));
+	void Renderer2D::DebugFlush(Ref<SceneData> data)
+	{
+		// TODO: Implement resolver if debug renderer buffer is full /////////////
 
-		Ref<Shader> shaderQ = AssetManager::GetShader("Texture.rshader");
-		shaderQ->Bind();
-		shaderQ->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
+		DepthFunction prevDepthFunction = RenderCommand::GetDepthFunction();
+		RenderCommand::SetDepthFunction(DepthFunction::Always);
+		SetSceneData(data);
+		
+		auto sceneData = m_SceneData.lock();
 
+		m_QuadBuffer.Shader->Bind();
+		m_QuadBuffer.Shader->UploadUniformMat4("u_ViewProjection", sceneData->ViewProjectionMatrix);
 
-		Ref<Shader> shaderC = AssetManager::GetShader("Circle.rshader");
-		shaderC->Bind();
-		shaderC->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
+		m_CircleBuffer.Shader->Bind();
+		m_CircleBuffer.Shader->UploadUniformMat4("u_ViewProjection", sceneData->ViewProjectionMatrix);
 
+		m_LineBuffer.Shader->Bind();
+		m_LineBuffer.Shader->UploadUniformMat4("u_ViewProjection", sceneData->ViewProjectionMatrix);
 
-		Ref<Shader> shaderL = AssetManager::GetShader("Line.rshader");
-		shaderL->Bind();
-		shaderL->UploadUniformMat4("u_ViewProjection", l_SceneData2D->ViewProjectionMatrix);
-
-
-		l_QuadVertexBufferCurrentPtr = l_QuadVertexBufferBasePtr;
-		l_CircleVertexBufferCurrentPtr = l_CircleVertexBufferCurrentPtr;
-		l_LineVertexBufferCurrentPtr = l_LineVertexBufferCurrentPtr;
-	}
-
-	void Renderer2D::EndEditorRender() {
 		Renderer2D::Flush();
-		l_StartedScene2D = false;
+		
+		RenderCommand::SetDepthFunction(prevDepthFunction);
 	}
 
-
-
-	void Renderer2D::Flush() {
+	void Renderer2D::Flush()
+	{
 		int samplers[l_MaxTextureCount];
-		for (uint32_t i = 0; i < l_CurrentTextureCount; i++) {
+		for (uint32_t i = 0; i < l_CurrentTextureCount; i++)
+		{
 			l_TextureSlots[i]->Bind(i);
 			samplers[i] = i;
 		}
 
-		if (l_QuadVertexBufferCurrentPtr != l_QuadVertexBufferBasePtr)
+		if (m_QuadBuffer.VertexBufferCurrentPtr != m_QuadBuffer.VertexBufferBasePtr)
 		{
 			PerformanceStats::s_CurrentRendererData.DrawCallCount++;
 
-			uint32_t dataSize = (uint32_t)((uint8_t*)l_QuadVertexBufferCurrentPtr - (uint8_t*)l_QuadVertexBufferBasePtr);
-			l_QuadVertexBuffer->SetData(l_QuadVertexBufferBasePtr, dataSize);
+			uint32_t dataSize = (uint32_t)((uint8_t*)m_QuadBuffer.VertexBufferCurrentPtr - (uint8_t*)m_QuadBuffer.VertexBufferBasePtr);
+			m_QuadBuffer.VertexBuffer->SetData(m_QuadBuffer.VertexBufferBasePtr, dataSize);
 
+			m_QuadBuffer.Shader->Bind();
+			m_QuadBuffer.Shader->UploadUniformIntArray("u_Texture", samplers, l_CurrentTextureCount);
+			RenderCommand::DrawIndexed(m_QuadBuffer.VertexArray, m_QuadBuffer.CurrentQuadCount * 6);
 
-			Ref<Shader> shader = AssetManager::GetShader("Texture.rshader");
-			shader->Bind();
-			shader->UploadUniformIntArray("u_Texture", samplers, l_CurrentTextureCount);
-			RenderCommand::DrawIndexed(l_VertexArrays["Texture"], l_CurrentQuadCount * 6);
-
-			l_QuadVertexBufferCurrentPtr = l_QuadVertexBufferBasePtr;
+			m_QuadBuffer.VertexBufferCurrentPtr = m_QuadBuffer.VertexBufferBasePtr;
 		
-			l_CurrentQuadCount = 0;
+			m_QuadBuffer.CurrentQuadCount = 0;
 		}
 
-		if (l_CircleVertexBufferCurrentPtr != l_CircleVertexBufferBasePtr)
+		if (m_CircleBuffer.VertexBufferCurrentPtr != m_CircleBuffer.VertexBufferBasePtr)
 		{
 
 			PerformanceStats::s_CurrentRendererData.DrawCallCount++;
 
-			uint32_t dataSize = (uint32_t)((uint8_t*)l_CircleVertexBufferCurrentPtr - (uint8_t*)l_CircleVertexBufferBasePtr);
-			l_CircleVertexBuffer->SetData(l_CircleVertexBufferBasePtr, dataSize);
+			uint32_t dataSize = (uint32_t)((uint8_t*)m_CircleBuffer.VertexBufferCurrentPtr - (uint8_t*)m_CircleBuffer.VertexBufferBasePtr);
+			m_CircleBuffer.VertexBuffer->SetData(m_CircleBuffer.VertexBufferBasePtr, dataSize);
 
-			Ref<Shader> shader = AssetManager::GetShader("Circle.rshader");
-			shader->Bind();
-			shader->UploadUniformIntArray("u_Texture", samplers, l_CurrentTextureCount);
-			RenderCommand::DrawIndexed(l_VertexArrays["Circle"], l_CurrentCircleCount * 6);
+			m_CircleBuffer.Shader->Bind();
+			m_CircleBuffer.Shader->UploadUniformIntArray("u_Texture", samplers, l_CurrentTextureCount);
+			RenderCommand::DrawIndexed(m_CircleBuffer.VertexArray, m_CircleBuffer.CurrentCircleCount * 6);
 
-			l_CircleVertexBufferCurrentPtr = l_CircleVertexBufferBasePtr;
-			l_CurrentCircleCount = 0;
+			m_CircleBuffer.VertexBufferCurrentPtr = m_CircleBuffer.VertexBufferBasePtr;
+			m_CircleBuffer.CurrentCircleCount = 0;
 		}
 
-		if (l_LineVertexBufferCurrentPtr != l_LineVertexBufferBasePtr)
+		if (m_LineBuffer.VertexBufferCurrentPtr != m_LineBuffer.VertexBufferBasePtr)
 		{
 			PerformanceStats::s_CurrentRendererData.DrawCallCount++;
 
-			uint32_t dataSize = (uint32_t)((uint8_t*)l_LineVertexBufferCurrentPtr - (uint8_t*)l_LineVertexBufferBasePtr);
-			l_LineVertexBuffer->SetData(l_LineVertexBufferBasePtr, dataSize);
+			uint32_t dataSize = (uint32_t)((uint8_t*)m_LineBuffer.VertexBufferCurrentPtr - (uint8_t*)m_LineBuffer.VertexBufferBasePtr);
+			m_LineBuffer.VertexBuffer->SetData(m_LineBuffer.VertexBufferBasePtr, dataSize);
 
+			m_LineBuffer.Shader->Bind();
+			m_LineBuffer.Shader->UploadUniformIntArray("u_Texture", samplers, l_CurrentTextureCount);
+			RenderCommand::DrawLines(m_LineBuffer.VertexArray, m_LineBuffer.CurrentLineCount * 2);
 
-			Ref<Shader> shader = AssetManager::GetShader("Line.rshader");
-			shader->Bind();
-			shader->UploadUniformIntArray("u_Texture", samplers, l_CurrentTextureCount);
-			RenderCommand::DrawLines(l_VertexArrays["Line"], l_CurrentLineCount * 2);
+			m_LineBuffer.VertexBufferCurrentPtr = m_LineBuffer.VertexBufferBasePtr;
 
-			l_LineVertexBufferCurrentPtr = l_LineVertexBufferBasePtr;
-
-			l_CurrentLineCount = 0;
+			m_LineBuffer.CurrentLineCount = 0;
 		}
 
 
-		for (uint32_t i = 1; i < l_MaxTextureCount; i++) {
+		for (uint32_t i = 1; i < l_MaxTextureCount; i++) 
+		{
 			l_TextureSlots[i] = nullptr;
 		}
 		l_CurrentTextureCount = 1;
 	}
 
-	void Renderer2D::DrawTexture(const glm::mat4& transform, Ref<Texture2D> texture, const glm::vec4& color, int entityId) {
+	void Renderer2D::DrawTexture(const glm::mat4& transform, Ref<Texture2D> texture, const glm::vec4& color, int entityId) 
+	{
 		PerformanceStats::s_CurrentRendererData.QuadCount++;
 
 		bool isWhiteTexture;
-		if (!texture) {
+		if (!texture) 
+		{
 			texture = AssetManager::GetWhiteTexture();
 			isWhiteTexture = true;
 		}
-		else {
+		else 
+		{
 			isWhiteTexture = texture == AssetManager::GetWhiteTexture();
 		}
 
 		uint32_t textureSlot = 0;
 
-		if (l_CurrentQuadCount == l_MaxQuadCount) {
+		if (m_QuadBuffer.CurrentQuadCount == m_QuadBuffer.c_MaxQuadCount)
+		{
 			Flush();
 		}
 
-		for (uint32_t i = 0; i < l_MaxTextureCount; i++) {
-			if (texture == l_TextureSlots[i]) {
+		for (uint32_t i = 0; i < l_MaxTextureCount; i++)
+		{
+			if (texture == l_TextureSlots[i]) 
+			{
 				textureSlot = i;
 				break;
 			}
 		}
 
-		if (textureSlot == 0 && !isWhiteTexture) {
+		if (textureSlot == 0 && !isWhiteTexture) 
+		{
 			if (l_CurrentTextureCount >= l_MaxTextureCount) 
 				Flush();
 
@@ -335,21 +223,21 @@ namespace Rapier {
 		}
 
 		static glm::vec4 temp;
-		for (uint32_t i = 0; i < 4; i++) {
+		for (uint32_t i = 0; i < 4; i++) 
+		{
 			// Position.x is scaled according to texture aspect ratio
 			temp = l_QuadVertexPosition[i];
 			temp.x *= (float)texture->GetWidth() / (float)texture->GetHeight();
 
-
-			l_QuadVertexBufferCurrentPtr->Position = transform * temp;
-			l_QuadVertexBufferCurrentPtr->Color = color;
-			l_QuadVertexBufferCurrentPtr->TexCoords = l_TextureCoords[i];
-			l_QuadVertexBufferCurrentPtr->TexIndex = textureSlot;
-			l_QuadVertexBufferCurrentPtr->EntityId = entityId;
-			l_QuadVertexBufferCurrentPtr++;
+			m_QuadBuffer.VertexBufferCurrentPtr->Position = transform * temp;
+			m_QuadBuffer.VertexBufferCurrentPtr->Color = color;
+			m_QuadBuffer.VertexBufferCurrentPtr->TexCoords = l_TextureCoords[i];
+			m_QuadBuffer.VertexBufferCurrentPtr->TexIndex = textureSlot;
+			m_QuadBuffer.VertexBufferCurrentPtr->EntityId = entityId;
+			m_QuadBuffer.VertexBufferCurrentPtr++;
 		}
 
-		l_CurrentQuadCount++;
+		m_QuadBuffer.CurrentQuadCount++;
 	}
 
 
@@ -371,32 +259,39 @@ namespace Rapier {
 
 
 
-	void Renderer2D::DrawCircle(const glm::mat4& transform, Ref<Texture2D> texture, const glm::vec4& color, int entityId, float minimumRadius) {
+	void Renderer2D::DrawCircle(const glm::mat4& transform, Ref<Texture2D> texture, const glm::vec4& color, int entityId, float minimumRadius) 
+	{
 		PerformanceStats::s_CurrentRendererData.CircleCount++;
 
 		bool isWhiteTexture;
-		if (!texture) {
+		if (!texture)
+		{
 			texture = AssetManager::GetWhiteTexture();
 			isWhiteTexture = true;
 		}
-		else {
+		else
+		{
 			isWhiteTexture = texture == AssetManager::GetWhiteTexture();
 		}
 
 		uint32_t textureSlot = 0;
 
-		if (l_CurrentCircleCount == l_MaxCircleCount) {
+		if (m_CircleBuffer.CurrentCircleCount == m_CircleBuffer.c_MaxCircleCount)
+		{
 			Flush();
 		}
 
-		for (uint32_t i = 0; i < l_MaxTextureCount; i++) {
-			if (texture == l_TextureSlots[i]) {
+		for (uint32_t i = 0; i < l_MaxTextureCount; i++) 
+		{
+			if (texture == l_TextureSlots[i])
+			{
 				textureSlot = i;
 				break;
 			}
 		}
 
-		if (textureSlot == 0 && !isWhiteTexture) {
+		if (textureSlot == 0 && !isWhiteTexture) 
+		{
 			if (l_CurrentTextureCount >= l_MaxTextureCount)
 				Flush();
 
@@ -409,23 +304,24 @@ namespace Rapier {
 		}
 
 		static glm::vec4 temp;
-		for (uint32_t i = 0; i < 4; i++) {
+		for (uint32_t i = 0; i < 4; i++)
+		{
 			// Position.x is scaled according to texture aspect ratio
 			temp = l_QuadVertexPosition[i];
 			temp.x *= (float)texture->GetWidth() / (float)texture->GetHeight();
 
 
-			l_CircleVertexBufferCurrentPtr->Position = transform * temp;
-			l_CircleVertexBufferCurrentPtr->Color = color;
-			l_CircleVertexBufferCurrentPtr->TexCoords = l_TextureCoords[i];
-			l_CircleVertexBufferCurrentPtr->TexIndex = textureSlot;
-			l_CircleVertexBufferCurrentPtr->EntityId = entityId;
-			l_CircleVertexBufferCurrentPtr->LocalPosition = l_QuadVertexPosition[i] * 2.0f;
-			l_CircleVertexBufferCurrentPtr->MinimumRadius = minimumRadius;
-			l_CircleVertexBufferCurrentPtr++;
+			m_CircleBuffer.VertexBufferCurrentPtr->Position = transform * temp;
+			m_CircleBuffer.VertexBufferCurrentPtr->Color = color;
+			m_CircleBuffer.VertexBufferCurrentPtr->TexCoords = l_TextureCoords[i];
+			m_CircleBuffer.VertexBufferCurrentPtr->TexIndex = textureSlot;
+			m_CircleBuffer.VertexBufferCurrentPtr->EntityId = entityId;
+			m_CircleBuffer.VertexBufferCurrentPtr->LocalPosition = l_QuadVertexPosition[i] * 2.0f;
+			m_CircleBuffer.VertexBufferCurrentPtr->MinimumRadius = minimumRadius;
+			m_CircleBuffer.VertexBufferCurrentPtr++;
 		}
 
-		l_CurrentCircleCount++;
+		m_CircleBuffer.CurrentCircleCount++;
 	}
 
 	void Renderer2D::DrawCircle(const glm::vec3& position, const glm::vec2& size,
@@ -438,38 +334,42 @@ namespace Rapier {
 	}
 
 
-	void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entityId) {
-		if (l_CurrentLineCount == l_MaxLineCount) {
+	void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entityId) 
+	{
+		if (m_LineBuffer.CurrentLineCount == m_LineBuffer.c_MaxLineCount) 
+		{
 			Flush();
 		}
 		PerformanceStats::s_CurrentRendererData.LineCount++;
 
 
-		l_LineVertexBufferCurrentPtr->Position = p0;
-		l_LineVertexBufferCurrentPtr->Color = color;
-		l_LineVertexBufferCurrentPtr->EntityId = entityId;
-		l_LineVertexBufferCurrentPtr++;
+		m_LineBuffer.VertexBufferCurrentPtr->Position = p0;
+		m_LineBuffer.VertexBufferCurrentPtr->Color = color;
+		m_LineBuffer.VertexBufferCurrentPtr->EntityId = entityId;
+		m_LineBuffer.VertexBufferCurrentPtr++;
+					
+		m_LineBuffer.VertexBufferCurrentPtr->Position = p1;
+		m_LineBuffer.VertexBufferCurrentPtr->Color = color;
+		m_LineBuffer.VertexBufferCurrentPtr->EntityId = entityId;
+		m_LineBuffer.VertexBufferCurrentPtr++;
 
-		l_LineVertexBufferCurrentPtr->Position = p1;
-		l_LineVertexBufferCurrentPtr->Color = color;
-		l_LineVertexBufferCurrentPtr->EntityId = entityId;
-		l_LineVertexBufferCurrentPtr++;
-
-		l_CurrentLineCount++;
+		m_LineBuffer.CurrentLineCount++;
 
 
 	}
 
 
 
-	void Renderer2D::CreateVertexArrays() {
+	void Renderer2D::CreateVertexArrays() 
+	{
 
 		Ref<IndexBuffer> ib;
 
-		uint32_t* QuadIndices = new uint32_t[l_MaxQuadIndices];
+		uint32_t* QuadIndices = new uint32_t[m_QuadBuffer.c_MaxQuadIndices];
 
 		uint32_t offset = 0;
-		for (int i = 0; i < l_MaxQuadIndices; i += 6) {
+		for (int i = 0; i < m_QuadBuffer.c_MaxQuadIndices; i += 6)
+		{
 			QuadIndices[i + 0] = offset + 0;
 			QuadIndices[i + 1] = offset + 1;
 			QuadIndices[i + 2] = offset + 2;
@@ -480,15 +380,15 @@ namespace Rapier {
 			offset += 4;
 		}
 
-		ib = IndexBuffer::Create(QuadIndices, l_MaxQuadIndices);
+		ib = IndexBuffer::Create(QuadIndices, m_QuadBuffer.c_MaxQuadIndices);
 		delete[] QuadIndices;
 
 		{
 
-			Ref<VertexArray> va = VertexArray::Create();
+			m_QuadBuffer.VertexArray = VertexArray::Create();
 
-			l_QuadVertexBuffer = VertexBuffer::Create(l_MaxQuadVertices * sizeof(QuadVertex));
-			l_QuadVertexBuffer->SetLayout({
+			m_QuadBuffer.VertexBuffer = VertexBuffer::Create(m_QuadBuffer.c_MaxQuadVertices * sizeof(QuadVertex));
+			m_QuadBuffer.VertexBuffer->SetLayout({
 				{ShaderDataType::Float3, "a_Position"},
 				{ShaderDataType::Float4, "a_Color"},
 				{ShaderDataType::Float2, "a_TextureCoord"},
@@ -496,24 +396,22 @@ namespace Rapier {
 				{ShaderDataType::Int, "a_EntityId"},
 				});
 
-			va->AddVertexBuffer(l_QuadVertexBuffer);
+			m_QuadBuffer.VertexArray->AddVertexBuffer(m_QuadBuffer.VertexBuffer);
 
-			l_QuadVertexBufferBasePtr = new QuadVertex[l_MaxQuadVertices];
-			l_QuadVertexBufferCurrentPtr = l_QuadVertexBufferBasePtr;
+			m_QuadBuffer.VertexBufferBasePtr = new QuadVertex[m_QuadBuffer.c_MaxQuadVertices];
+			m_QuadBuffer.VertexBufferCurrentPtr = m_QuadBuffer.VertexBufferBasePtr;
 
-			va->SetIndexBuffer(ib);
-
-			l_VertexArrays.insert({ "Texture", va });
+			m_QuadBuffer.VertexArray->SetIndexBuffer(ib);
 
 		}
 
 
 		{
 
-			Ref<VertexArray> va = VertexArray::Create();
+			m_CircleBuffer.VertexArray = VertexArray::Create();
 
-			l_CircleVertexBuffer = VertexBuffer::Create(l_MaxCircleVertices * sizeof(CircleVertex));
-			l_CircleVertexBuffer->SetLayout({
+			m_CircleBuffer.VertexBuffer = VertexBuffer::Create(m_CircleBuffer.c_MaxCircleVertices * sizeof(CircleVertex));
+			m_CircleBuffer.VertexBuffer->SetLayout({
 				{ShaderDataType::Float3, "a_Position"},
 				{ShaderDataType::Float4, "a_Color"},
 				{ShaderDataType::Float2, "a_TextureCoord"},
@@ -523,34 +421,30 @@ namespace Rapier {
 				{ShaderDataType::Float, "a_MinimumRadius"},
 				});
 
-			va->AddVertexBuffer(l_CircleVertexBuffer);
+			m_CircleBuffer.VertexArray->AddVertexBuffer(m_CircleBuffer.VertexBuffer);
 
-			l_CircleVertexBufferBasePtr = new CircleVertex[l_MaxCircleVertices];
-			l_CircleVertexBufferCurrentPtr = l_CircleVertexBufferBasePtr;
+			m_CircleBuffer.VertexBufferBasePtr = new CircleVertex[m_CircleBuffer.c_MaxCircleVertices];
+			m_CircleBuffer.VertexBufferCurrentPtr = m_CircleBuffer.VertexBufferBasePtr;
 
-			va->SetIndexBuffer(ib);
-
-			l_VertexArrays.insert({ "Circle", va });
+			m_CircleBuffer.VertexArray->SetIndexBuffer(ib);
 
 		}
 
 		{
 
-			Ref<VertexArray> va = VertexArray::Create();
+			m_LineBuffer.VertexArray = VertexArray::Create();
 
-			l_LineVertexBuffer = VertexBuffer::Create(l_MaxLineVertices * sizeof(LineVertex));
-			l_LineVertexBuffer->SetLayout({
+			m_LineBuffer.VertexBuffer = VertexBuffer::Create(m_LineBuffer.c_MaxLineVertices * sizeof(LineVertex));
+			m_LineBuffer.VertexBuffer->SetLayout({
 				{ShaderDataType::Float3, "a_Position"},
 				{ShaderDataType::Float4, "a_Color"},
 				{ShaderDataType::Int, "a_EntityId"},
 				});
 
-			va->AddVertexBuffer(l_LineVertexBuffer);
+			m_LineBuffer.VertexArray->AddVertexBuffer(m_LineBuffer.VertexBuffer);
 
-			l_LineVertexBufferBasePtr = new LineVertex[l_MaxLineVertices];
-			l_LineVertexBufferCurrentPtr = l_LineVertexBufferBasePtr;
-
-			l_VertexArrays.insert({ "Line", va });
+			m_LineBuffer.VertexBufferBasePtr = new LineVertex[m_LineBuffer.c_MaxLineVertices];
+			m_LineBuffer.VertexBufferCurrentPtr = m_LineBuffer.VertexBufferBasePtr;
 
 		}
 

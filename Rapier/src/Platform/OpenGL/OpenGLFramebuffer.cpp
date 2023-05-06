@@ -4,15 +4,18 @@
 
 #include "glad/glad.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	static GLenum TextureTarget(bool multisampled)
 	{
 		return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 	}
 
-	static bool isDepthFormat(FramebufferTextureFormat format) {
-		switch (format) {
+	static bool isDepthFormat(FramebufferTextureFormat format) 
+	{
+		switch (format) 
+		{
 		case FramebufferTextureFormat::DEPTH24STENCIL8: return true;
 		}
 
@@ -77,21 +80,25 @@ namespace Rapier {
 		Invalidate();
 	}
 
-	OpenGLFramebuffer::~OpenGLFramebuffer() {
+	OpenGLFramebuffer::~OpenGLFramebuffer() 
+	{
 		glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
 		glDeleteTextures(1, &m_DepthAttachment);
 		glDeleteFramebuffers(1, &m_RendererId);
 	}
 
-	void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height) {
+	void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height) 
+	{
 		m_Specification.Width = width;
 		m_Specification.Height = height;
 		Invalidate();
 	}
 
-	void OpenGLFramebuffer::Invalidate() {
+	void OpenGLFramebuffer::Invalidate()
+	{
 
-		if (m_RendererId) { 
+		if (m_RendererId) 
+		{ 
 			glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
 			glDeleteTextures(1, &m_DepthAttachment);
 			glDeleteFramebuffers(1, &m_RendererId);
@@ -158,16 +165,19 @@ namespace Rapier {
 
 	}
 
-	void OpenGLFramebuffer::Bind() const {
+	void OpenGLFramebuffer::Bind() const
+	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
 		glViewport(0, 0, m_Specification.Width, m_Specification.Height);
 	}
 
-	void OpenGLFramebuffer::Unbind() const {
+	void OpenGLFramebuffer::Unbind() const 
+	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	int OpenGLFramebuffer::ReadPixel(uint32_t attachmentIndex, int x, int y) {
+	int OpenGLFramebuffer::ReadPixel(uint32_t attachmentIndex, int x, int y) 
+	{
 		RAPIER_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "Attachment Index out of range !");
 
 		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
@@ -177,7 +187,8 @@ namespace Rapier {
 		return pixelData;
 	}
 
-	void OpenGLFramebuffer::ClearAttachment(uint32_t attachmentIndex, int value) {
+	void OpenGLFramebuffer::ClearAttachment(uint32_t attachmentIndex, int value)
+	{
 		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, GL_RED_INTEGER, GL_INT, &value);
 	}
 }

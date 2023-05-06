@@ -2,8 +2,10 @@
 
 #include "Renderer/Buffer.h"
 
-namespace Rapier {
-	class OpenGLVertexBuffer : public VertexBuffer {
+namespace Rapier 
+{
+	class OpenGLVertexBuffer : public VertexBuffer 
+	{
 	public:
 		OpenGLVertexBuffer(float* vertices, uint32_t size);
 		OpenGLVertexBuffer(uint32_t size);
@@ -23,7 +25,8 @@ namespace Rapier {
 		BufferLayout m_Layout;
 	};
 
-	class OpenGLIndexBuffer : public IndexBuffer {
+	class OpenGLIndexBuffer : public IndexBuffer 
+	{
 	public:
 		OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
 		virtual ~OpenGLIndexBuffer();

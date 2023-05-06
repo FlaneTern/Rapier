@@ -6,8 +6,10 @@
 
 
 
-namespace Rapier {
-	class WindowsWindow : public Window {
+namespace Rapier 
+{
+	class WindowsWindow : public Window 
+	{
 	public:
 		WindowsWindow(const WindowProps& props);
 		virtual ~WindowsWindow();
@@ -19,9 +21,7 @@ namespace Rapier {
 
 		inline void* GetPlatformWindow() const override { return (void*)m_Window; }
 
-		inline void SetEventCallback(const EventCallbackFn& callback) override {
-			m_Data.EventCallback = callback;
-		}
+		inline void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
 
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;
@@ -32,7 +32,8 @@ namespace Rapier {
 
 		GLFWwindow* m_Window;
 
-		struct WindowData {
+		struct WindowData
+		{
 			std::string Title;
 			unsigned int Width, Height;
 			bool VSync;

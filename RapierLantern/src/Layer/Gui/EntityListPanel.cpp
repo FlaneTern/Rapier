@@ -5,17 +5,19 @@
 
 #include "imgui.h"
 
-namespace Rapier {
-
+namespace Rapier 
+{
 
 	static Ref<Scene>  l_ActiveScene = nullptr;
 	static char l_Newname[64] = "";
 
-	static void DrawChangeNativeScriptComponent(Entity& entity) {
+	static void DrawChangeNativeScriptComponent(Entity& entity)
+	{
 
 		for (auto& script : EntityScriptContainer::s_EntityScriptContainer.m_Scripts)
 		{
-			if (ImGui::Button(script->GetName().c_str())) {
+			if (ImGui::Button(script->GetName().c_str())) 
+			{
 				entity.ResetComponent<NativeScriptComponent>(script->Clone());
 				ImGui::CloseCurrentPopup();
 			}
@@ -23,14 +25,17 @@ namespace Rapier {
 	}
 
 
-	static bool DrawAddRemoveNativeScriptComponent(Entity& entity) {
+	static bool DrawAddRemoveNativeScriptComponent(Entity& entity) 
+	{
 		bool hasComponent = entity.HasComponent<NativeScriptComponent>();
-		if (hasComponent && ImGui::Button(NativeScriptComponent::RemoveName.data())) {
+		if (hasComponent && ImGui::Button(NativeScriptComponent::RemoveName.data()))
+		{
 			entity.RemoveComponent<NativeScriptComponent>();
 			return true;
 		}
 
-		if (!hasComponent && ImGui::Button(NativeScriptComponent::AddName.data())) {
+		if (!hasComponent && ImGui::Button(NativeScriptComponent::AddName.data()))
+		{
 			auto& script = entity.AddComponent<NativeScriptComponent>(EntityScriptContainer::s_EntityScriptContainer.m_Scripts[0]->Clone());
 			return true;
 		}
@@ -38,7 +43,8 @@ namespace Rapier {
 		return false;
 	}
 
-	static void DrawUUIDComponentUI(Entity& entity) {
+	static void DrawUUIDComponentUI(Entity& entity) 
+	{
 		ImGui::Text("UUID");
 		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
 		ImGui::Text(std::to_string(entity.GetUUID()).c_str());
@@ -46,17 +52,20 @@ namespace Rapier {
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
 	}
 
-	static void DrawCameraComponentUI(Entity& entity) {
+	static void DrawCameraComponentUI(Entity& entity) 
+	{
 		// Camera projection
 		auto& cameraComponent = entity.GetComponent<CameraComponent>();
 		float cameraProjectionSize = cameraComponent.Camera.GetSize();
 
 		ImGui::Text("Camera Component");
 		ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
-		if (cameraComponent.Primary) {
+		if (cameraComponent.Primary)
+		{
 			ImGui::Text("Primary Camera");
 		}
-		else if (ImGui::Button("Set as Primary Camera")) {
+		else if (ImGui::Button("Set as Primary Camera"))
+		{
 			l_ActiveScene->SetPrimaryCamera(entity);
 		}
 		ImGui::SetNextItemWidth(150);
@@ -67,7 +76,8 @@ namespace Rapier {
 		cameraComponent.Camera.SetSize(cameraProjectionSize);
 	}
 
-	static void DrawTransformComponentUI(Entity& entity) {
+	static void DrawTransformComponentUI(Entity& entity)
+	{
 		auto& transform = entity.GetComponent<TransformComponent>();
 		float* translate = (float*)&transform.Translation;
 		float* rotation = (float*)&transform.Rotation;
@@ -86,7 +96,8 @@ namespace Rapier {
 
 	}
 
-	static void DrawNativeScriptComponentUI(Entity& entity) {
+	static void DrawNativeScriptComponentUI(Entity& entity)
+	{
 		auto& nativeScriptComponent = entity.GetComponent<NativeScriptComponent>();
 
 		ImGui::Text("Native Script Component");
@@ -99,10 +110,12 @@ namespace Rapier {
 		if (ImGui::Button("Change Script")) 
 			ImGui::OpenPopup("Change Script"); 
 
-		if (ImGui::BeginPopupModal("Change Script", NULL, ImGuiWindowFlags_MenuBar)) {
+		if (ImGui::BeginPopupModal("Change Script", NULL, ImGuiWindowFlags_MenuBar)) 
+		{
 			DrawChangeNativeScriptComponent(entity);
 
-			if (ImGui::Button("Cancel")) {
+			if (ImGui::Button("Cancel")) 
+			{
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::EndPopup();
@@ -111,7 +124,8 @@ namespace Rapier {
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
 	}
 
-	static void DrawSpriteRendererComponentUI(Entity& entity) {
+	static void DrawSpriteRendererComponentUI(Entity& entity)
+	{
 		auto& spriteRendererComponent = entity.GetComponent<SpriteRendererComponent>();
 
 		ImGui::Text("Sprite Renderer Component");
@@ -140,14 +154,17 @@ namespace Rapier {
 
 		if (ImGui::BeginPopupModal("Reload Texture", NULL, ImGuiWindowFlags_MenuBar)) 
 		{
-			for (const auto& textureRef : AssetManager::GetAllTexture2D()) {
-				if (ImGui::Button(textureRef->GetFilepath().c_str())) {
+			for (const auto& textureRef : AssetManager::GetAllTexture2D()) 
+			{
+				if (ImGui::Button(textureRef->GetFilepath().c_str())) 
+				{
 					entity.ResetComponent<SpriteRendererComponent>(textureRef);
 					ImGui::CloseCurrentPopup();
 				}
 			}
 
-			if (ImGui::Button("Cancel")) {
+			if (ImGui::Button("Cancel")) 
+			{
 				ImGui::CloseCurrentPopup();
 			}
 			ImGui::EndPopup();
@@ -157,7 +174,8 @@ namespace Rapier {
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
 	}
 
-	static void DrawRigidBody2DComponentUI(Entity& entity) {
+	static void DrawRigidBody2DComponentUI(Entity& entity) 
+	{
 		auto& rigidBody = entity.GetComponent<RigidBody2DComponent>().RigidBody;
 		bool* type = (bool*)&rigidBody->m_Properties.Type;
 		float* mass = (float*)&rigidBody->m_Properties.Mass;
@@ -186,17 +204,20 @@ namespace Rapier {
 
 
 	template<typename... Args>
-	static bool DrawAddRemoveComponents(Entity& entity) {
+	static bool DrawAddRemoveComponents(Entity& entity)
+	{
 		bool modified = false;
 
 		([&] {
 			bool hasComponent = entity.HasComponent<Args>();
-			if (hasComponent && ImGui::Button(Args::RemoveName.data())) {
+			if (hasComponent && ImGui::Button(Args::RemoveName.data()))
+			{
 				entity.RemoveComponent<Args>();
 				modified = true;
 			}
 
-			if (!hasComponent && ImGui::Button(Args::AddName.data())) {
+			if (!hasComponent && ImGui::Button(Args::AddName.data())) 
+			{
 				entity.AddComponent<Args>();
 				modified = true;
 			}
@@ -207,14 +228,17 @@ namespace Rapier {
 	}
 
 
-	static bool DrawAddRemoveRigidBody2DComponent(Entity& entity) {
+	static bool DrawAddRemoveRigidBody2DComponent(Entity& entity)
+	{
 		bool hasComponent = entity.HasComponent<RigidBody2DComponent>();
-		if (hasComponent && ImGui::Button(RigidBody2DComponent::RemoveName.data())) {
+		if (hasComponent && ImGui::Button(RigidBody2DComponent::RemoveName.data()))
+		{
 			entity.RemoveComponent<RigidBody2DComponent>();
 			return true;
 		}
 
-		if (!hasComponent && ImGui::Button(RigidBody2DComponent::AddName.data())) {
+		if (!hasComponent && ImGui::Button(RigidBody2DComponent::AddName.data())) 
+		{
 			auto& transformComponent = entity.GetComponent<TransformComponent>();
 			RigidBody2DData data;
 			data.Position = transformComponent.Translation;
@@ -233,7 +257,8 @@ namespace Rapier {
 
 
 
-	static void DrawEntityUI(entt::entity entityId) {
+	static void DrawEntityUI(entt::entity entityId)
+	{
 
 		bool destroy = false;
 
@@ -253,13 +278,15 @@ namespace Rapier {
 
 		// Currently Key Input gets blocked if main viewport is not focused
 		// This breaks
-		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
+		if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) 
+		{
 			if (!Input::IsKeyPressed(RapierKey_LeftShift))
 				l_ActiveScene->ClearSelectedEntities();
 			l_ActiveScene->AddSelectedEntities(entity);
 		}
 
-		if (ImGui::BeginPopupContextItem(tag.Tag.c_str())) {
+		if (ImGui::BeginPopupContextItem(tag.Tag.c_str()))
+		{
 			if (!Input::IsKeyPressed(RapierKey_LeftShift))
 				l_ActiveScene->ClearSelectedEntities();
 			l_ActiveScene->AddSelectedEntities(entity);
@@ -271,8 +298,8 @@ namespace Rapier {
 			if (ImGui::Button("Add/Remove Components"))
 				ImGui::OpenPopup("Add/Remove Components");
 
-			if (ImGui::BeginPopup("Add/Remove Components")) {
-
+			if (ImGui::BeginPopup("Add/Remove Components")) 
+			{
 				modifiedComponent |= DrawAddRemoveComponents<COMPONENTS_LIST>(entity);
 				modifiedComponent |= DrawAddRemoveRigidBody2DComponent(entity);
 				modifiedComponent |= DrawAddRemoveNativeScriptComponent(entity);
@@ -284,17 +311,20 @@ namespace Rapier {
 			if (ImGui::Button("Rename Entity")) 
 				ImGui::OpenPopup("Rename Entity");
 				
-			if (ImGui::BeginPopup("Rename Entity")) {
+			if (ImGui::BeginPopup("Rename Entity"))
+			{
 				ImGui::InputText("Rename Entity", l_Newname, sizeof(l_Newname));
 
-				if (ImGui::Button("Ok")) {
+				if (ImGui::Button("Ok"))
+				{
 					entity.GetComponent<TagComponent>().Tag = l_Newname;
 					strcpy(l_Newname, "\0");
 					renamed = true;
 					ImGui::CloseCurrentPopup();
 				}
 
-				if (ImGui::Button("Cancel")) {
+				if (ImGui::Button("Cancel")) 
+				{
 					strcpy(l_Newname, "\0");
 					ImGui::CloseCurrentPopup();
 				}
@@ -302,7 +332,8 @@ namespace Rapier {
 				ImGui::EndPopup();
 			}
 
-			if (ImGui::Button("Delete Entity")) {
+			if (ImGui::Button("Delete Entity"))
+			{
 				destroy = true;
 				ImGui::CloseCurrentPopup();
 			}
@@ -313,7 +344,8 @@ namespace Rapier {
 			ImGui::EndPopup();
 		}
 
-		if (node_open) {
+		if (node_open) 
+		{
 			ImGui::Separator();
 			if (entity.HasComponent<UUIDComponent>())
 				DrawUUIDComponentUI(entity);
@@ -333,7 +365,8 @@ namespace Rapier {
 
 		ImGui::Separator();
 
-		if (destroy) {
+		if (destroy)
+		{
 			l_ActiveScene->DestroyEntity(entity);
 		}
 
@@ -341,13 +374,15 @@ namespace Rapier {
 
 
 
-	void EntityListPanel::OnImGuiRender() {
+	void EntityListPanel::OnImGuiRender()
+	{
 
 		l_ActiveScene = m_ActiveScene;
 		ImGui::Begin("EntityList");
 
 
-		if (ImGui::Button("Add Entity")) {
+		if (ImGui::Button("Add Entity")) 
+		{
 			Entity entity = m_ActiveScene->CreateEntity();
 			entity.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f });
 		}

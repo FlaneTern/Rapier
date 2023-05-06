@@ -6,7 +6,8 @@
 #include "Keycode/KeycodeToGLFW.h"
 #include "Input.h"
 
-namespace Rapier {
+namespace Rapier
+{
 	// Implement ifdef based on platform
 
 	bool l_BlockKey = false;
@@ -21,7 +22,8 @@ namespace Rapier {
 
 	//RapierKey_MouseLeft, RapierKey_MouseRight, RapierKey_MouseMiddle, RapierKey_MouseX1, RapierKey_MouseX2, RapierKey_MouseWheelX, RapierKey_MouseWheelY,
 
-	void Input::OnUpdate() {
+	void Input::OnUpdate() 
+	{
 		
 		if (IsMouseButtonPressed(RapierKey_MouseLeft))
 			l_MouseHeldFlags |= 0b00000001;
@@ -40,7 +42,8 @@ namespace Rapier {
 
 	}
 
-	bool Input::IsKeyPressed(int keycode) {
+	bool Input::IsKeyPressed(int keycode)
+	{
 		if (l_BlockKey)
 			return false;
 
@@ -50,7 +53,8 @@ namespace Rapier {
 	}
 
 	// Bugged ?
-	bool Input::IsKeyRepeat(int keycode) {
+	bool Input::IsKeyRepeat(int keycode)
+	{
 		if (l_BlockKey)
 			return false;
 
@@ -59,7 +63,8 @@ namespace Rapier {
 		return pressed == GLFW_REPEAT;
 	}
 
-	bool Input::IsMouseButtonPressed(int button) {
+	bool Input::IsMouseButtonPressed(int button) 
+	{
 		if (l_BlockMouse)
 			return false;
 
@@ -68,7 +73,8 @@ namespace Rapier {
 		return pressed == GLFW_PRESS;
 	}
 
-	bool Input::IsMouseButtonRepeat(int button) {
+	bool Input::IsMouseButtonRepeat(int button) 
+	{
 		if (l_BlockMouse)
 			return false;
 
@@ -82,7 +88,8 @@ namespace Rapier {
 		return false;
 	}
 
-	glm::vec2 Input::GetMousePos() {
+	glm::vec2 Input::GetMousePos()
+	{
 		// input block ?
 
 
@@ -93,11 +100,13 @@ namespace Rapier {
 		return { (float)x, (float)y };
 	}
 
-	void Input::SetBlockKeyInput(bool enable) {
+	void Input::SetBlockKeyInput(bool enable) 
+	{
 		l_BlockKey = enable;
 	}
 
-	void Input::SetBlockMouseInput(bool enable) {
+	void Input::SetBlockMouseInput(bool enable)
+	{
 		l_BlockMouse = enable;
 	}
 }

@@ -1,8 +1,10 @@
 #pragma once
 
-namespace Rapier {
+namespace Rapier 
+{
 	
-	class RAPIER_API Texture {
+	class RAPIER_API Texture 
+	{
 	public:
 		virtual ~Texture() = default;
 

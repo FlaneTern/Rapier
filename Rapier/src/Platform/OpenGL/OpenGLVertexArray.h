@@ -3,8 +3,10 @@
 #include "ipch.h"
 #include "Renderer/VertexArray.h"
 
-namespace Rapier {
-	class OpenGLVertexArray : public VertexArray {
+namespace Rapier 
+{
+	class OpenGLVertexArray : public VertexArray 
+	{
 
 	public:
 		OpenGLVertexArray();

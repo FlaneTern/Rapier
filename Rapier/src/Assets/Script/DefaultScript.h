@@ -8,7 +8,8 @@
 
 
 
-namespace Rapier {
+namespace Rapier 
+{
 
 
 	struct NativeScriptComponent;
@@ -17,7 +18,8 @@ namespace Rapier {
 
 
 
-	class RAPIER_API DefaultEntityScript : public EntityScript {
+	class RAPIER_API DefaultEntityScript : public EntityScript 
+	{
 	protected:
 
 		friend struct NativeScriptComponent;
@@ -38,7 +40,8 @@ namespace Rapier {
 	};
 
 
-	class RAPIER_API CameraController : public DefaultEntityScript {
+	class RAPIER_API CameraController : public DefaultEntityScript 
+	{
 		float TranslationSpeed = 0.5f;
 		float RotationSpeed = 180.0f;
 
@@ -51,7 +54,8 @@ namespace Rapier {
 		virtual std::string GetName() const override { return "CameraController"; }
 	};
 
-	class RAPIER_API TextureControl : public DefaultEntityScript {
+	class RAPIER_API TextureControl : public DefaultEntityScript 
+	{
 		float RotationSpeed = 135.0f;
 		float TranslationSpeed = 2.0f;
 
@@ -77,7 +81,8 @@ namespace Rapier {
 	};
 
 
-	class RAPIER_API SquareControlY : public DefaultEntityScript {
+	class RAPIER_API SquareControlY : public DefaultEntityScript 
+	{
 		bool forward = true;
 
 		virtual void OnCreate() override;

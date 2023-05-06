@@ -2,14 +2,16 @@
 #include "FileSystem/FileSystem.h"
 #include "stb_image.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	std::vector<std::string> FileSystem::s_TextureDirectoryEntries;
 	std::vector<std::string> FileSystem::s_ShaderDirectoryEntries;
 
 	void* FileSystem::s_ScriptHandle;
 
-	void FileSystem::Init() {
+	void FileSystem::Init() 
+	{
 		// Implement recursive on Init !!!!!!!!!!!//////////
 		// Implement recursive on Init !!!!!!!!!!!//////////
 		// Implement recursive on Init !!!!!!!!!!!//////////
@@ -17,10 +19,13 @@ namespace Rapier {
 		RefreshShaderDirectory();
 	}
 
-	std::pair<std::string, std::string> FileSystem::GetDataShader(const std::string& filename) {
+	std::pair<std::string, std::string> FileSystem::GetDataShader(const std::string& filename) 
+	{
 		std::string file = "";
-		for (const auto& entry : std::filesystem::recursive_directory_iterator("../Rapier/res/Shader/")) {
-			if (entry.path().filename() == filename) {
+		for (const auto& entry : std::filesystem::recursive_directory_iterator("../Rapier/res/Shader/")) 
+		{
+			if (entry.path().filename() == filename)
+			{
 				file = entry.path().string();
 				break;
 			}
@@ -32,16 +37,19 @@ namespace Rapier {
 		std::stringstream fs;
 		std::fstream stream(file);
 		std::string temp;
-		while (getline(stream, temp)) {
+		while (getline(stream, temp)) 
+		{
 			if (temp == "//START VERTEX") break;
 		}
 
-		while (getline(stream, temp)) {
+		while (getline(stream, temp)) 
+		{
 			if (temp == "//START FRAGMENT") break;
 			vs << temp << "\n";
 		}
 
-		while (getline(stream, temp)) {
+		while (getline(stream, temp)) 
+		{
 			fs << temp << "\n";
 		}
 
@@ -50,10 +58,13 @@ namespace Rapier {
 		return data;
 	}
 
-	Ref<TextureData> FileSystem::GetDataTexture(const std::string& filename) {
+	Ref<TextureData> FileSystem::GetDataTexture(const std::string& filename) 
+	{
 		std::string file = "";
-		for (const auto& entry : std::filesystem::recursive_directory_iterator("../Rapier/res/Texture/")) {
-			if (entry.path().filename() == filename) {
+		for (const auto& entry : std::filesystem::recursive_directory_iterator("../Rapier/res/Texture/")) 
+		{
+			if (entry.path().filename() == filename) 
+			{
 				file = entry.path().string();
 				break;
 			}
@@ -74,30 +85,39 @@ namespace Rapier {
 		return data;
 	}
 
-	bool FileSystem::IsDirectory(const std::string& name) {
+	bool FileSystem::IsDirectory(const std::string& name) 
+	{
 		return name.back() == '/';
 	}
 
-	bool FileSystem::IsTexture(const std::string& name) {
-		if (name.size() < 4) return false;
+	bool FileSystem::IsTexture(const std::string& name) 
+	{
+		if (name.size() < 4) 
+			return false;
 		return name.substr(name.size() - 4, 4) == ".png";
 	}
 
-	bool FileSystem::IsShader(const std::string& name) {
-		if (name.size() < 8) return false;
+	bool FileSystem::IsShader(const std::string& name) 
+	{
+		if (name.size() < 8)
+			return false;
 		return name.substr(name.size() - 8, 8) == ".rshader";
 	}
 
-	void FileSystem::RefreshTextureDirectory() {
+	void FileSystem::RefreshTextureDirectory() 
+	{
 		s_TextureDirectoryEntries.clear();
-		for (const auto& entry : std::filesystem::directory_iterator("../Rapier/res/Texture/")) {
+		for (const auto& entry : std::filesystem::directory_iterator("../Rapier/res/Texture/")) 
+		{
 			s_TextureDirectoryEntries.push_back(entry.path().filename().string());
 		}
 	}
 
-	void FileSystem::RefreshShaderDirectory() {
+	void FileSystem::RefreshShaderDirectory() 
+	{
 		s_ShaderDirectoryEntries.clear();
-		for (const auto& entry : std::filesystem::directory_iterator("../Rapier/res/Shader/")) {
+		for (const auto& entry : std::filesystem::directory_iterator("../Rapier/res/Shader/")) 
+		{
 			s_ShaderDirectoryEntries.push_back(entry.path().filename().string());
 		}
 	}

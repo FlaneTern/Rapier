@@ -1,8 +1,10 @@
 #pragma once
 
-namespace Rapier {
+namespace Rapier
+{
 
-	class RAPIER_API Timer {
+	class RAPIER_API Timer 
+	{
 	public:
 		Timer(const std::string& name = "Unknown Function Name");
 

@@ -3,8 +3,10 @@
 #include "glm/glm.hpp"
 #include "Assets/Shader/Shader.h"
 
-namespace Rapier{
-	class OpenGLShader : public Shader {
+namespace Rapier
+{
+	class OpenGLShader : public Shader
+	{
 	public:
 		OpenGLShader(const std::string& filename);
 		~OpenGLShader();

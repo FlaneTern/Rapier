@@ -21,7 +21,8 @@
 
 struct ImGuiContext;
 
-namespace Rapier {
+namespace Rapier 
+{
 
 
 	class RAPIER_API Application

@@ -2,20 +2,24 @@
 
 #include "Time/Timer.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 	class Renderer2D;
 	class ImGuiLayer;
 
-	struct FunctionTimeData {
+	struct FunctionTimeData 
+	{
 		std::string FunctionName = "";
 		float FunctionTimeMS = 0.0f;
 	};
 
-	struct FrameData {
+	struct FrameData 
+	{
 		std::vector<FunctionTimeData> FunctionTime;
 	};
 
-	struct RendererData {
+	struct RendererData
+	{
 		uint32_t QuadCount = 0;
 		uint32_t CircleCount = 0;
 		uint32_t LineCount = 0;
@@ -23,7 +27,8 @@ namespace Rapier {
 		uint32_t DrawCallCount = 0;
 	};
 
-	class RAPIER_API PerformanceStats {
+	class RAPIER_API PerformanceStats 
+	{
 	public:
 		static void BeginFrame();
 

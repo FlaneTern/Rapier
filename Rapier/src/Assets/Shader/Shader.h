@@ -2,8 +2,10 @@
 #include "ipch.h"
 #include "glm/glm.hpp"
 
-namespace Rapier {
-	class RAPIER_API Shader {
+namespace Rapier 
+{
+	class RAPIER_API Shader 
+	{
 	public:
 
 		virtual void Bind() const = 0;

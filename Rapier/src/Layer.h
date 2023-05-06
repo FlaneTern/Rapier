@@ -6,7 +6,8 @@
 #include "Time/DeltaTime.h"
 
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	class RAPIER_API Layer
 	{

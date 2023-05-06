@@ -3,8 +3,10 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 
-namespace Rapier {
-	class RAPIER_API Camera {
+namespace Rapier 
+{
+	class RAPIER_API Camera 
+	{
 	public:
 		Camera() = default;
 

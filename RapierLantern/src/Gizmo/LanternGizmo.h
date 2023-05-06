@@ -1,19 +1,22 @@
 #pragma once
 
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	class LanternCamera;
 	class LanternLayer;
 
-	enum class GizmoState {
+	enum class GizmoState
+	{
 		Translation,
 		Rotation,
 		Scale
 	};
 
 
-	struct GizmoRenderDataTranslation {
+	struct GizmoRenderDataTranslation 
+	{
 		glm::mat4 TransformXQuad = glm::mat4(1.0f);
 		glm::mat4 TransformYQuad = glm::mat4(1.0f);
 		glm::mat4 TransformXCircleEdge = glm::mat4(1.0f);
@@ -24,12 +27,14 @@ namespace Rapier {
 		glm::vec4 ColorMidCircle = { 1.0f, 1.0f, 0.0f, 1.0f };
 	};
 
-	struct GizmoRenderDataRotation {
+	struct GizmoRenderDataRotation 
+	{
 		glm::mat4 Transform = glm::mat4(1.0f);
 		glm::vec4 Color = { 1.0f, 1.0f, 0.0f, 1.0f };
 	};
 
-	struct GizmoRenderDataScale {
+	struct GizmoRenderDataScale 
+	{
 		glm::mat4 TransformXQuad = glm::mat4(1.0f);
 		glm::mat4 TransformYQuad = glm::mat4(1.0f);
 		glm::mat4 TransformXQuadEdge = glm::mat4(1.0f);
@@ -40,7 +45,8 @@ namespace Rapier {
 		glm::vec4 ColorMidQuad = { 1.0f, 1.0f, 0.0f, 1.0f };
 	};
 
-	class LanternGizmo {
+	class LanternGizmo
+	{
 	public:
 
 		static void OnUpdate(DeltaTime dt, LanternCamera camera, glm::vec2 mousePos, int entityId);

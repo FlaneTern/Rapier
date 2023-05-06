@@ -4,9 +4,11 @@
 #include "Assets/Texture/Texture.h"
 #include "Renderer/VertexArray.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
-	class RAPIER_API AssetManager {
+	class RAPIER_API AssetManager 
+	{
 
 	public:
 		static void Init();

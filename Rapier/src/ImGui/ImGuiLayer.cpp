@@ -23,15 +23,17 @@
 
 
 
-namespace Rapier {
+namespace Rapier 
+{
 	ImGuiLayer::ImGuiLayer()
-		: Layer("ImGuiLayer") {	}
+		: Layer("ImGuiLayer") {}
 
-	ImGuiLayer::~ImGuiLayer() {
-
+	ImGuiLayer::~ImGuiLayer() 
+	{
 	} 
 
-	void ImGuiLayer::OnAttach() {
+	void ImGuiLayer::OnAttach() 
+	{
 		IMGUI_CHECKVERSION();
 		RAPIER_CORE_INFO("{0}", glfwGetVersionString());
 		Application::Get().m_ImGuiContext = ImGui::CreateContext();
@@ -46,7 +48,8 @@ namespace Rapier {
 		ImGui::StyleColorsDark();
 
 		ImGuiStyle& style = ImGui::GetStyle();
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) 
+		{
 			style.WindowRounding = 0.0f;
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
@@ -86,15 +89,18 @@ namespace Rapier {
 		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 	}
 
-	void ImGuiLayer::OnDetach() {
+	void ImGuiLayer::OnDetach() 
+	{
 
 	}
 
-	void ImGuiLayer::OnUpdate(DeltaTime dt) {
+	void ImGuiLayer::OnUpdate(DeltaTime dt) 
+	{
 		this->dt = dt;
 	}
 
-	void ImGuiLayer::OnImGuiRender() {
+	void ImGuiLayer::OnImGuiRender() 
+	{
 		static bool show = true;
 		ImGui::Begin("Stats", &show);
 
@@ -102,10 +108,12 @@ namespace Rapier {
 
 		ImGui::Separator();
 		bool fd_node_open = ImGui::TreeNodeEx("Frame Stats", base_flags, "Frame Stats");
-		if (fd_node_open) {
+		if (fd_node_open) 
+		{
 			auto& frameData = PerformanceStats::s_CurrentFrameData;
 			ImGui::Separator();
-			for (const auto& funcTime : frameData.FunctionTime) {
+			for (const auto& funcTime : frameData.FunctionTime) 
+			{
 				ImGui::Text("%s : %f ms", funcTime.FunctionName.c_str(), funcTime.FunctionTimeMS);
 			}
 			ImGui::TreePop();
@@ -114,7 +122,8 @@ namespace Rapier {
 		ImGui::Separator();
 
 		bool rd_node_open = ImGui::TreeNodeEx("Renderer Stats", base_flags, "Renderer Stats");
-		if (rd_node_open) {
+		if (rd_node_open) 
+		{
 			auto& rendererData = PerformanceStats::s_CurrentRendererData;
 			ImGui::Separator();
 			ImGui::Text("Draw Calls : %u", rendererData.DrawCallCount);
@@ -131,13 +140,15 @@ namespace Rapier {
 	}
 
 
-	void ImGuiLayer::Begin() {
+	void ImGuiLayer::Begin() 
+	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 	}
 
-	void ImGuiLayer::End() {
+	void ImGuiLayer::End() 
+	{
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::Get();
 
@@ -145,7 +156,8 @@ namespace Rapier {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) 
+		{
 			GLFWwindow* backup_current_context = glfwGetCurrentContext();
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
@@ -154,7 +166,8 @@ namespace Rapier {
 	}
 
 
-	void ImGuiLayer::OnEvent(Event& event) {
+	void ImGuiLayer::OnEvent(Event& event) 
+	{
 		EventDispatcher dispatcher(event);
 	
 		dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(ImGuiLayer::OnMouseButtonPressedEvent));

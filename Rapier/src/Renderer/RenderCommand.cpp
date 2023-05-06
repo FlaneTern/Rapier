@@ -3,7 +3,9 @@
 
 #include "Platform/OpenGL/OpenGLRendererAPI.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	RendererAPI* RenderCommand::s_RendererAPI = new OpenGLRendererAPI();
+
 }

@@ -1,14 +1,17 @@
 #pragma once
 
-namespace Rapier {
+namespace Rapier 
+{
 
-	enum class FileType {
+	enum class FileType 
+	{
 		None = 0,
 		Shader,
 		Texture
 	};
 
-	struct TextureData {
+	struct TextureData 
+	{
 		TextureData(const char* s, uint32_t w, uint32_t h, uint32_t ch)
 			: Data(s), Width(w), Height(h), Channels(ch) {}
 
@@ -18,7 +21,8 @@ namespace Rapier {
 		uint32_t Channels;
 	};
 
-	class RAPIER_API FileSystem {
+	class RAPIER_API FileSystem 
+	{
 
 	public:
 

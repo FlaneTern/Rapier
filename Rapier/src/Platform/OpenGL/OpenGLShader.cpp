@@ -7,8 +7,10 @@
 
 #include "FileSystem/FileSystem.h"
 
-namespace Rapier {
-	OpenGLShader::OpenGLShader(const std::string& filename) {
+namespace Rapier 
+{
+	OpenGLShader::OpenGLShader(const std::string& filename) 
+	{
 		// Read our shaders into the appropriate buffers
 
 		// Create an empty vertex shader handle
@@ -117,34 +119,41 @@ namespace Rapier {
 	}
 
 
-	OpenGLShader::~OpenGLShader() {
+	OpenGLShader::~OpenGLShader() 
+	{
 		glDeleteProgram(m_RendererId);
 	}
 
-	void OpenGLShader::Bind() const {
+	void OpenGLShader::Bind() const 
+	{
 		glUseProgram(m_RendererId);
 	}
 
-	void OpenGLShader::Unbind() const {
+	void OpenGLShader::Unbind() const
+	{
 		glUseProgram(0);
 	}
 
-	void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix) {
+	void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
+	{
 		GLint location  = glGetUniformLocation(m_RendererId, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 
-	void OpenGLShader::UploadUniformInt(const std::string& name, int value) {
+	void OpenGLShader::UploadUniformInt(const std::string& name, int value)
+	{
 		GLint location = glGetUniformLocation(m_RendererId, name.c_str());
 		glUniform1i(location, value);
 	}
 
-	void OpenGLShader::UploadUniformFloat4(const std::string& name, glm::vec4 value) {
+	void OpenGLShader::UploadUniformFloat4(const std::string& name, glm::vec4 value)
+	{
 		GLint location = glGetUniformLocation(m_RendererId, name.c_str());
 		glUniform4f(location, value.x, value.y, value.z, value.w);
 	}
 
-	void OpenGLShader::UploadUniformIntArray(const std::string& name, int* value, uint32_t count) {
+	void OpenGLShader::UploadUniformIntArray(const std::string& name, int* value, uint32_t count)
+	{
 		GLint location = glGetUniformLocation(m_RendererId, name.c_str());
 		glUniform1iv(location, count, value);
 	}

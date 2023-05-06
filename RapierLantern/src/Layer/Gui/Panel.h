@@ -3,9 +3,11 @@
 
 #include "Scene/Scene.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
-	class Panel {
+	class Panel
+	{
 	public:
 		Panel() {}
 		Panel(Ref<Scene> scene)

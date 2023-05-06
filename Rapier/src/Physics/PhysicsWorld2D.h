@@ -2,9 +2,11 @@
 
 #include "Physics/RigidBody2D.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
-	class RAPIER_API PhysicsWorld2D {
+	class RAPIER_API PhysicsWorld2D 
+	{
 	public:
 		PhysicsWorld2D();
 		PhysicsWorld2D(glm::vec2 gravity);

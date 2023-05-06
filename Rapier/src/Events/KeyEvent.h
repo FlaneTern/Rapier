@@ -2,9 +2,11 @@
 
 #include "Event.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
-	class RAPIER_API KeyEvent : public Event {
+	class RAPIER_API KeyEvent : public Event 
+	{
 	public:
 		inline int GetKeyCode() const { return m_KeyCode; }
 
@@ -18,7 +20,8 @@ namespace Rapier {
 
 	};
 
-	class RAPIER_API KeyPressedEvent : public KeyEvent {
+	class RAPIER_API KeyPressedEvent : public KeyEvent 
+	{
 	public:
 		KeyPressedEvent(int keyCode, int scanCode, int repeatCount)
 			: KeyEvent(keyCode), m_ScanCode(scanCode), m_RepeatCount(repeatCount) {}
@@ -26,7 +29,8 @@ namespace Rapier {
 		inline int GetRepeatCount() const { return m_RepeatCount; }
 		inline int GetScanCode() const { return m_ScanCode; }
 
-		std::string ToString() const override {
+		std::string ToString() const override 
+		{
 			std::stringstream ss;
 			ss << "KeyPressedEvent: " << m_KeyCode << " (" << m_RepeatCount << " repeats)";
 			return ss.str();
@@ -42,14 +46,16 @@ namespace Rapier {
 
 
 
-	class RAPIER_API KeyReleasedEvent : public KeyEvent {
+	class RAPIER_API KeyReleasedEvent : public KeyEvent 
+	{
 	public:
 		KeyReleasedEvent(int keyCode, int scanCode)
 			: KeyEvent(keyCode), m_ScanCode(scanCode) {}
 
 		inline int GetScanCode() const { return m_ScanCode; }
 
-		std::string ToString() const override {
+		std::string ToString() const override 
+		{
 			std::stringstream ss;
 			ss << "KeyReleasedEvent: " << m_KeyCode;
 			return ss.str();
@@ -61,13 +67,15 @@ namespace Rapier {
 		int m_ScanCode;
 	};
 
-	class RAPIER_API KeyTypedEvent : public KeyEvent {
+	class RAPIER_API KeyTypedEvent : public KeyEvent 
+	{
 	public:
 		KeyTypedEvent(int keyCode)
 			: KeyEvent(keyCode) {}
 
 
-		std::string ToString() const override {
+		std::string ToString() const override 
+		{
 			std::stringstream ss;
 			ss << "KeyTypedEvent: " << m_KeyCode;
 			return ss.str();

@@ -2,14 +2,17 @@
 #include "Time/DeltaTime.h"
 #include "glm/glm.hpp"
 
-namespace Rapier {
-	enum class RigidBodyType {
+namespace Rapier 
+{
+	enum class RigidBodyType 
+	{
 		Static,
 		Dynamic
 	};
 	
 
-	struct RigidBody2DData {
+	struct RigidBody2DData 
+	{
 		glm::vec2 Position = { 0.0f, 0.0f };
 		float Rotation = 0.0f;
 		glm::vec2 Velocity = { 0.0f, 0.0f };
@@ -17,7 +20,8 @@ namespace Rapier {
 		glm::vec2 HalfScale = { 0.5f, 0.5 };
 	};
 
-	struct RigidBody2DProperties {
+	struct RigidBody2DProperties 
+	{
 		RigidBodyType Type = RigidBodyType::Dynamic;
 		bool FixedRotation = false;
 		float Mass = 1.0f;
@@ -25,7 +29,8 @@ namespace Rapier {
 		float Restitution = 0.3f;
 	};
 
-	class RAPIER_API RigidBody2D {
+	class RAPIER_API RigidBody2D 
+	{
 	public:
 		RigidBody2D() = default;
 		RigidBody2D(RigidBody2DData data);

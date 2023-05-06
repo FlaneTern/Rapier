@@ -1,9 +1,11 @@
 #pragma once
 #include "Rapier.h"
 
-namespace Rapier {
+namespace Rapier
+{
 
-	class RapierLantern : public Application {
+	class RapierLantern : public Application 
+	{
 	public:
 		RapierLantern();
 

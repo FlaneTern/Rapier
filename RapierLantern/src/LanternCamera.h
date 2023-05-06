@@ -4,10 +4,12 @@
 
 #include "glm/glm.hpp"
 
-namespace Rapier {
+namespace Rapier 
+{
 	class LanternLayer;
 
-	class LanternCamera : public Camera {
+	class LanternCamera : public Camera
+	{
 	public:
 		LanternCamera();
 

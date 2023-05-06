@@ -13,12 +13,14 @@
 
 
 
-namespace Rapier {
+namespace Rapier 
+{
 	
 	class Entity;
 	class EntityScript;
 
-	struct UUIDComponent {
+	struct UUIDComponent 
+	{
 		UUID Id;
 
 		UUIDComponent() = default;
@@ -29,7 +31,8 @@ namespace Rapier {
 			: Id(uuid) {}
 	};
 
-	struct TagComponent {
+	struct TagComponent 
+	{
 		std::string Tag;
 
 		TagComponent() = default;
@@ -44,7 +47,8 @@ namespace Rapier {
 		static constexpr std::string_view RemoveName = "Remove Tag Component\0";
 	};
 
-	struct TransformComponent {
+	struct TransformComponent
+	{
 		glm::vec3 Translation = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 Rotation = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
@@ -55,7 +59,8 @@ namespace Rapier {
 			: Translation(translation) {}
 
 
-		glm::mat4 GetTransform() {
+		glm::mat4 GetTransform()
+		{
 			glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), glm::radians(Rotation.x), { 1, 0 ,0 })
 				* glm::rotate(glm::mat4(1.0f), glm::radians(Rotation.y), { 0, 1 ,0 })
 				* glm::rotate(glm::mat4(1.0f), glm::radians(Rotation.z), { 0, 0 ,1 });
@@ -72,7 +77,8 @@ namespace Rapier {
 	};
 
 
-	struct SpriteRendererComponent {
+	struct SpriteRendererComponent
+	{
 		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
 		Ref<Texture2D> Texture = AssetManager::GetWhiteTexture();
 
@@ -92,7 +98,8 @@ namespace Rapier {
 	};
 
 	class EntityScript;
-	struct RAPIER_API NativeScriptComponent {
+	struct RAPIER_API NativeScriptComponent
+	{
 		Ref<EntityScript> Instance = nullptr;
 		bool EnableOnUpdate = true;
 		bool IsCreated = false;
@@ -103,7 +110,8 @@ namespace Rapier {
 		static constexpr std::string_view RemoveName = "Remove Native Script Component\0";
 	};
 
-	struct CameraComponent {
+	struct CameraComponent 
+	{
 		Camera Camera;
 		bool Primary = false;
 		bool FixedAspectRatio = false;
@@ -120,7 +128,8 @@ namespace Rapier {
 	};
 
 
-	struct RigidBody2DComponent {
+	struct RigidBody2DComponent 
+	{
 		Ref<RigidBody2D> RigidBody;
 
 		RigidBody2DComponent() = default;

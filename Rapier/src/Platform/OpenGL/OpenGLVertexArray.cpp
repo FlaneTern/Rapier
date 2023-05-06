@@ -4,10 +4,12 @@
 
 #include "glad/glad.h"
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	// temp/////////////////
-	static GLenum ShaderDataTypeToOpenGLType(ShaderDataType type) {
+	static GLenum ShaderDataTypeToOpenGLType(ShaderDataType type) 
+	{
 		switch (type) {
 		case ShaderDataType::Float:     return GL_FLOAT;
 		case ShaderDataType::Float2:    return GL_FLOAT;
@@ -27,23 +29,28 @@ namespace Rapier {
 
 
 
-	OpenGLVertexArray::OpenGLVertexArray() {
+	OpenGLVertexArray::OpenGLVertexArray() 
+	{
 		glCreateVertexArrays(1, &m_RendererId);
 	}
 
-	OpenGLVertexArray::~OpenGLVertexArray() {
+	OpenGLVertexArray::~OpenGLVertexArray() 
+	{
 		glDeleteVertexArrays(1, &m_RendererId);
 	}
 
 
-	void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) {
+	void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) 
+	{
 		glBindVertexArray(m_RendererId);
 		vertexBuffer->Bind();
 
 		uint32_t index = 0;
 		const auto& layout = vertexBuffer->GetLayout();
-		for (const auto& element : layout) {
-			switch (element.Type) {
+		for (const auto& element : layout)
+		{
+			switch (element.Type)
+			{
 			case ShaderDataType::Float:
 			case ShaderDataType::Float2:
 			case ShaderDataType::Float3:
@@ -86,18 +93,21 @@ namespace Rapier {
 		m_VertexBuffers.push_back(vertexBuffer);
 	}
 
-	void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) {
+	void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) 
+	{
 		glBindVertexArray(m_RendererId);
 		indexBuffer->Bind();
 
 		m_IndexBuffer = indexBuffer;
 	}
 
-	void OpenGLVertexArray::Bind() const {
+	void OpenGLVertexArray::Bind() const 
+	{
 		glBindVertexArray(m_RendererId);
 	}
 
-	void OpenGLVertexArray::Unbind() const {
+	void OpenGLVertexArray::Unbind() const 
+	{
 		glBindVertexArray(0);
 	}
 }

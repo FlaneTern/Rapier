@@ -3,10 +3,12 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
-namespace Rapier {
+namespace Rapier 
+{
 
 	Camera::Camera(float aspectRatio, float size, float farClip, float nearClip, uint32_t height)
-		: m_AspectRatio(aspectRatio), m_Size(size), m_FarClip(farClip), m_NearClip(nearClip), m_Height(height) {
+		: m_AspectRatio(aspectRatio), m_Size(size), m_FarClip(farClip), m_NearClip(nearClip), m_Height(height) 
+	{
 		CalculateProjection();
 	}
 
@@ -18,7 +20,8 @@ namespace Rapier {
 		m_AspectRatio = (right - left) / m_Size;
 	}
 
-	void Camera::SetViewportSize(uint32_t width, uint32_t height) {
+	void Camera::SetViewportSize(uint32_t width, uint32_t height) 
+	{
 		m_Size *= (float)height / (float)m_Height;
 		m_Height = height;
 		m_AspectRatio = (float)width / (float)height;
@@ -28,7 +31,8 @@ namespace Rapier {
 
 
 
-	void Camera::CalculateProjection() {
+	void Camera::CalculateProjection() 
+	{
 		float left = -m_Size * m_AspectRatio * 0.5f;
 		float right = m_Size * m_AspectRatio * 0.5f;
 		float bottom = -m_Size * 0.5f;
